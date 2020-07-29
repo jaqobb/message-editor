@@ -37,7 +37,7 @@ import org.bukkit.entity.Player;
 public final class MessageEditorPacketListener extends PacketAdapter {
 
 	public MessageEditorPacketListener(MessageEditorPlugin plugin) {
-		super(plugin, ListenerPriority.HIGHEST, PacketType.Play.Server.CHAT);
+		super(plugin, ListenerPriority.HIGHEST, PacketType.Play.Server.CHAT, PacketType.Play.Server.BOSS);
 	}
 
 	@Override
