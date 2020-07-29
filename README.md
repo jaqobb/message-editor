@@ -35,7 +35,7 @@ After the config.yml file has been generated, set `log-messages` to `true` or if
 
 `attach-special-hover-and-click-events` set to `true` will attach special hover and click events to every chat message, so you can just click on that message, and the message's JSON will be copied to your clipboard.
 
-Only one of those options should be enabled at any given time. Special hover and click events require your server version to be at least 1.15, and will be automatically disabled if copying to clipboard is not supported on your server (that is your server version is below 1.15).
+Some places cannot have hover and click events (like action bar), so it is advised to have both settings enabled.
 
 Let us try to edit a message on a 1.16.1 server. We are gonna edit the /version message, "You are x version(s) behind" part to be more precise.
 
@@ -49,7 +49,7 @@ In this case you should end up with this JSON:
 
 `\{"extra":\[\{"text":"You are 1 version\(s\) behind"\}\],"text":""\}`
 
-You should see the same JSON in your console if you are using `log-messages` setting instead of `attach-special-hover-and-click-events`. In that case hovering and clicking is not required and you just have to check the console for the message's JSON.
+You should see the same JSON in your console if you have `log-messages` set to `true`.
 
 This JSON is already ready for additional regex. If your message is static then you are already good to go and edit the message. In this case we are not ready since we can be behind more than 1 version.
 
