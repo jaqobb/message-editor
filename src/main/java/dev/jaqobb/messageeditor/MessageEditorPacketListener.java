@@ -45,18 +45,21 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 	public void onPacketSending(PacketEvent event) {
 		PacketContainer packet = event.getPacket();
 		WrappedChatComponent message = packet.getChatComponents().read(0);
+		String messageJson = message.getJson();
 		MessageEdit messageEdit = null;
 		Matcher messageEditMatcher = null;
 		for (MessageEdit currentMessageEdit : this.plugin.getMessageEdits()) {
-			Matcher currentMessageEditMatcher = currentMessageEdit.getMessageBeforePattern().matcher(message.getJson());
-			if (currentMessageEditMatcher.matches()) {
+			Matcher currentMessageEditMatcher = currentMessageEdit.getMatcher(messageJson);
+			if (currentMessageEditMatcher != null) {
 				messageEdit = currentMessageEdit;
 				messageEditMatcher = currentMessageEditMatcher;
 				break;
 			}
 		}
 		if (messageEdit != null && messageEditMatcher != null) {
-			packet.getChatComponents().write(0, WrappedChatComponent.fromJson(messageEditMatcher.replaceAll(messageEdit.getMessageAfter())));
+			String messageAfter = messageEditMatcher.replaceAll(messageEdit.getMessageAfter());
+			// TODO: PlaceholderAPI & MVdWPlaceholderAPI support?
+			packet.getChatComponents().write(0, WrappedChatComponent.fromJson(messageAfter));
 		}
 	}
 }

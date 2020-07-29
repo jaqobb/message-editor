@@ -26,6 +26,7 @@ package dev.jaqobb.messageeditor;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
@@ -45,13 +46,20 @@ public final class MessageEdit implements ConfigurationSerializable {
 		return this.messageBeforePattern;
 	}
 
+	public String getMessageBefore() {
+		return this.messageBeforePattern.pattern();
+	}
+
 	public String getMessageAfter() {
 		return this.messageAfter;
 	}
 
-	public boolean matches(String message) {
-		// TODO: Cache for the same messages?
-		return this.messageBeforePattern.matcher(message).matches();
+	public Matcher getMatcher(String messageBefore) {
+		Matcher matcher = this.messageBeforePattern.matcher(messageBefore);
+		if (!matcher.matches()) {
+			return null;
+		}
+		return matcher;
 	}
 
 	@Override
