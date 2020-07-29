@@ -31,24 +31,28 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import java.util.regex.Matcher;
+import org.bukkit.entity.Player;
 
 public final class MessageEditorPacketListener extends PacketAdapter {
 
-	private final MessageEditorPlugin plugin;
-
 	public MessageEditorPacketListener(MessageEditorPlugin plugin) {
 		super(plugin, ListenerPriority.HIGHEST, PacketType.Play.Server.CHAT);
-		this.plugin = plugin;
+	}
+
+	@Override
+	public MessageEditorPlugin getPlugin() {
+		return (MessageEditorPlugin) super.getPlugin();
 	}
 
 	@Override
 	public void onPacketSending(PacketEvent event) {
+		Player player = event.getPlayer();
 		PacketContainer packet = event.getPacket();
 		WrappedChatComponent message = packet.getChatComponents().read(0);
 		String messageJson = message.getJson();
 		MessageEdit messageEdit = null;
 		Matcher messageEditMatcher = null;
-		for (MessageEdit currentMessageEdit : this.plugin.getMessageEdits()) {
+		for (MessageEdit currentMessageEdit : this.getPlugin().getMessageEdits()) {
 			Matcher currentMessageEditMatcher = currentMessageEdit.getMatcher(messageJson);
 			if (currentMessageEditMatcher != null) {
 				messageEdit = currentMessageEdit;
@@ -58,7 +62,12 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 		}
 		if (messageEdit != null && messageEditMatcher != null) {
 			String messageAfter = messageEditMatcher.replaceAll(messageEdit.getMessageAfter());
-			// TODO: PlaceholderAPI & MVdWPlaceholderAPI support?
+			if (this.getPlugin().isPlaceholderApiPresent()) {
+				messageAfter = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, messageAfter);
+			}
+			if (this.getPlugin().isMvdwPlaceholderApiPresent()) {
+				messageAfter = be.maximvdw.placeholderapi.PlaceholderAPI.replacePlaceholders(player, messageAfter);
+			}
 			packet.getChatComponents().write(0, WrappedChatComponent.fromJson(messageAfter));
 		}
 	}

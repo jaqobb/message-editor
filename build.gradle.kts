@@ -17,6 +17,7 @@ bukkit {
 	main = "dev.jaqobb.messageeditor.MessageEditorPlugin"
 	version = project.version as String
 	depend = listOf("ProtocolLib")
+	softDepend = listOf("PlaceholderAPI", "MVdWPlaceholderAPI")
 	description = project.description
 	author = "jaqobb"
 	website = "https://jaqobb.dev"
@@ -40,9 +41,23 @@ repositories {
 			includeGroup("com.comphenix.protocol")
 		}
 	}
+	maven("https://repo.extendedclip.com/content/repositories/placeholderapi/") {
+		content {
+			includeGroup("me.clip")
+		}
+	}
+	maven("http://repo.mvdw-software.be/content/groups/public/") {
+		content {
+			includeGroup("be.maximvdw")
+		}
+	}
 }
 
 dependencies {
 	compileOnly("org.spigotmc:spigot-api:1.16.1-R0.1-SNAPSHOT")
 	compileOnly("com.comphenix.protocol:ProtocolLib:4.6.0-SNAPSHOT")
+	compileOnly("me.clip:placeholderapi:2.10.6")
+	compileOnly("be.maximvdw:MVdWPlaceholderAPI:3.0.2-SNAPSHOT") {
+		exclude("org.spigotmc")
+	}
 }

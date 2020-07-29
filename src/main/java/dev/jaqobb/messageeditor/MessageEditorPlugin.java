@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class MessageEditorPlugin extends JavaPlugin {
@@ -38,6 +39,8 @@ public final class MessageEditorPlugin extends JavaPlugin {
 	}
 
 	private List<MessageEdit> messageEdits;
+	private boolean placeholderApiPresent;
+	private boolean mvdwPlaceholderApiPresent;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -45,6 +48,12 @@ public final class MessageEditorPlugin extends JavaPlugin {
 		this.getLogger().log(Level.INFO, "Loading configuration...");
 		this.saveDefaultConfig();
 		this.messageEdits = (List<MessageEdit>) this.getConfig().getList("message-edits");
+		this.getLogger().log(Level.INFO, "Checking for placeholder APIs...");
+		PluginManager pluginManager = this.getServer().getPluginManager();
+		this.placeholderApiPresent = pluginManager.isPluginEnabled("PlaceholderAPI");
+		this.mvdwPlaceholderApiPresent = pluginManager.isPluginEnabled("MVdWPlaceholderAPI");
+		this.getLogger().log(Level.INFO, "PlaceholderAPI: " + (this.placeholderApiPresent ? "present" : "not present") + ".");
+		this.getLogger().log(Level.INFO, "MVdWPlaceholderAPI: " + (this.mvdwPlaceholderApiPresent ? "present" : "not present") + ".");
 	}
 
 	@Override
@@ -55,5 +64,13 @@ public final class MessageEditorPlugin extends JavaPlugin {
 
 	public List<MessageEdit> getMessageEdits() {
 		return Collections.unmodifiableList(this.messageEdits);
+	}
+
+	public boolean isPlaceholderApiPresent() {
+		return this.placeholderApiPresent;
+	}
+
+	public boolean isMvdwPlaceholderApiPresent() {
+		return this.mvdwPlaceholderApiPresent;
 	}
 }
