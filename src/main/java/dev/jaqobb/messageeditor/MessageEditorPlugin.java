@@ -38,22 +38,24 @@ public final class MessageEditorPlugin extends JavaPlugin {
 		ConfigurationSerialization.registerClass(MessageEdit.class);
 	}
 
+	private boolean logMessagesEnabled;
 	private List<MessageEdit> messageEdits;
-	private boolean placeholderApiPresent;
-	private boolean mvdwPlaceholderApiPresent;
+	private boolean placeholderApiFound;
+	private boolean mvdwPlaceholderApiFound;
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onLoad() {
 		this.getLogger().log(Level.INFO, "Loading configuration...");
 		this.saveDefaultConfig();
+		this.logMessagesEnabled = this.getConfig().getBoolean("log-messages");
 		this.messageEdits = (List<MessageEdit>) this.getConfig().getList("message-edits");
 		this.getLogger().log(Level.INFO, "Checking for placeholder APIs...");
 		PluginManager pluginManager = this.getServer().getPluginManager();
-		this.placeholderApiPresent = pluginManager.isPluginEnabled("PlaceholderAPI");
-		this.mvdwPlaceholderApiPresent = pluginManager.isPluginEnabled("MVdWPlaceholderAPI");
-		this.getLogger().log(Level.INFO, "PlaceholderAPI: " + (this.placeholderApiPresent ? "present" : "not present") + ".");
-		this.getLogger().log(Level.INFO, "MVdWPlaceholderAPI: " + (this.mvdwPlaceholderApiPresent ? "present" : "not present") + ".");
+		this.placeholderApiFound = pluginManager.isPluginEnabled("PlaceholderAPI");
+		this.mvdwPlaceholderApiFound = pluginManager.isPluginEnabled("MVdWPlaceholderAPI");
+		this.getLogger().log(Level.INFO, "PlaceholderAPI: " + (this.placeholderApiFound ? "found" : "not found") + ".");
+		this.getLogger().log(Level.INFO, "MVdWPlaceholderAPI: " + (this.mvdwPlaceholderApiFound ? "found" : "not found") + ".");
 	}
 
 	@Override
@@ -62,15 +64,19 @@ public final class MessageEditorPlugin extends JavaPlugin {
 		ProtocolLibrary.getProtocolManager().addPacketListener(new MessageEditorPacketListener(this));
 	}
 
+	public boolean isLoggingMessagesEnabled() {
+		return this.logMessagesEnabled;
+	}
+
 	public List<MessageEdit> getMessageEdits() {
 		return Collections.unmodifiableList(this.messageEdits);
 	}
 
 	public boolean isPlaceholderApiPresent() {
-		return this.placeholderApiPresent;
+		return this.placeholderApiFound;
 	}
 
 	public boolean isMvdwPlaceholderApiPresent() {
-		return this.mvdwPlaceholderApiPresent;
+		return this.mvdwPlaceholderApiFound;
 	}
 }

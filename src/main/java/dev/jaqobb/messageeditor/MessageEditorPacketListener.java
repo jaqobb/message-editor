@@ -30,6 +30,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import org.bukkit.entity.Player;
 
@@ -50,6 +51,9 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 		PacketContainer packet = event.getPacket();
 		WrappedChatComponent message = packet.getChatComponents().read(0);
 		String messageJson = message.getJson();
+		if (this.getPlugin().isLoggingMessagesEnabled()) {
+			this.getPlugin().getLogger().log(Level.INFO, "Message JSON: " + messageJson.replace("{", "\\{").replace("}", "\\}").replace("[", "\\[").replace("]", "\\]"));
+		}
 		MessageEdit messageEdit = null;
 		Matcher messageEditMatcher = null;
 		for (MessageEdit currentMessageEdit : this.getPlugin().getMessageEdits()) {
