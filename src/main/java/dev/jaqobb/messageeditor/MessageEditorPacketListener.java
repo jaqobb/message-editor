@@ -43,6 +43,12 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 
 	private static final String SPECIAL_REGEX_CHARACTERS = "[{}()\\[\\].+*?^$\\\\|]";
 
+	@SuppressWarnings("deprecation")
+	private static final HoverEvent CLICK_TO_COPY_HOVER_EVENT = new HoverEvent(
+		HoverEvent.Action.SHOW_TEXT,
+		TextComponent.fromLegacyText(ChatColor.GRAY + "Click to copy this message's JSON to your clipboard.", ChatColor.GRAY)
+	);
+
 	public MessageEditorPacketListener(MessageEditorPlugin plugin) {
 		super(plugin, ListenerPriority.HIGHEST, PacketType.Play.Server.CHAT);
 	}
@@ -52,7 +58,6 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 		return (MessageEditorPlugin) super.getPlugin();
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void onPacketSending(PacketEvent event) {
 		Player player = event.getPlayer();
@@ -96,7 +101,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 		if (this.getPlugin().isAttachingHoverAndClickEventsEnabled()) {
 			TextComponent messageToSend = new TextComponent(ComponentSerializer.parse(messageJson));
 			if (messageToSend.getHoverEvent() == null && messageToSend.getClickEvent() == null) {
-				messageToSend.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(ChatColor.GRAY + "Click to copy this message's JSON to your clipboard.", ChatColor.GRAY)));
+				messageToSend.setHoverEvent(CLICK_TO_COPY_HOVER_EVENT);
 				messageToSend.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, messageJsonEscaped));
 				packet.getChatComponents().write(0, WrappedChatComponent.fromJson(ComponentSerializer.toString(messageToSend)));
 			}
