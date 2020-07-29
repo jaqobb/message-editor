@@ -32,6 +32,11 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.entity.Player;
 
 public final class MessageEditorPacketListener extends PacketAdapter {
@@ -47,15 +52,13 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 		return (MessageEditorPlugin) super.getPlugin();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onPacketSending(PacketEvent event) {
 		Player player = event.getPlayer();
 		PacketContainer packet = event.getPacket();
 		WrappedChatComponent message = packet.getChatComponents().read(0);
 		String messageJson = message.getJson();
-		if (this.getPlugin().isLoggingMessagesEnabled()) {
-			this.getPlugin().getLogger().log(Level.INFO, "Message JSON: " + messageJson.replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0"));
-		}
 		String newMessage = this.getPlugin().getCachedMessage(messageJson);
 		MessageEdit messageEdit = null;
 		Matcher messageEditMatcher = null;
@@ -72,17 +75,31 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 		if (newMessage != null || (messageEdit != null && messageEditMatcher != null)) {
 			if (newMessage != null) {
 				packet.getChatComponents().write(0, WrappedChatComponent.fromJson(newMessage));
-				return;
+			} else {
+				String messageAfter = messageEditMatcher.replaceAll(messageEdit.getMessageAfter());
+				if (this.getPlugin().isPlaceholderApiPresent()) {
+					messageAfter = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, messageAfter);
+				}
+				if (this.getPlugin().isMvdwPlaceholderApiPresent()) {
+					messageAfter = be.maximvdw.placeholderapi.PlaceholderAPI.replacePlaceholders(player, messageAfter);
+				}
+				this.getPlugin().cacheMessage(messageJson, messageAfter);
+				packet.getChatComponents().write(0, WrappedChatComponent.fromJson(messageAfter));
 			}
-			String messageAfter = messageEditMatcher.replaceAll(messageEdit.getMessageAfter());
-			if (this.getPlugin().isPlaceholderApiPresent()) {
-				messageAfter = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, messageAfter);
+		}
+		message = packet.getChatComponents().read(0);
+		messageJson = message.getJson();
+		String messageJsonEscaped = messageJson.replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0");
+		if (this.getPlugin().isLoggingMessagesEnabled()) {
+			this.getPlugin().getLogger().log(Level.INFO, "Message JSON: " + messageJsonEscaped);
+		}
+		if (this.getPlugin().isAttachingHoverAndClickEventsEnabled()) {
+			TextComponent messageToSend = new TextComponent(ComponentSerializer.parse(messageJson));
+			if (messageToSend.getHoverEvent() == null && messageToSend.getClickEvent() == null) {
+				messageToSend.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(ChatColor.GRAY + "Click to copy this message's JSON to your clipboard.", ChatColor.GRAY)));
+				messageToSend.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, messageJsonEscaped));
+				packet.getChatComponents().write(0, WrappedChatComponent.fromJson(ComponentSerializer.toString(messageToSend)));
 			}
-			if (this.getPlugin().isMvdwPlaceholderApiPresent()) {
-				messageAfter = be.maximvdw.placeholderapi.PlaceholderAPI.replacePlaceholders(player, messageAfter);
-			}
-			this.getPlugin().cacheMessage(messageJson, messageAfter);
-			packet.getChatComponents().write(0, WrappedChatComponent.fromJson(messageAfter));
 		}
 	}
 }

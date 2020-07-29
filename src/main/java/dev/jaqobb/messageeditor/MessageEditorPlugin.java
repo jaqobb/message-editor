@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import net.md_5.bungee.api.chat.ClickEvent;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -42,7 +43,8 @@ public final class MessageEditorPlugin extends JavaPlugin {
 		ConfigurationSerialization.registerClass(MessageEdit.class);
 	}
 
-	private boolean logMessagesEnabled;
+	private boolean logMessages;
+	private boolean attachHoverAndClickEvents;
 	private List<MessageEdit> messageEdits;
 	private boolean placeholderApiFound;
 	private boolean mvdwPlaceholderApiFound;
@@ -53,7 +55,19 @@ public final class MessageEditorPlugin extends JavaPlugin {
 	public void onLoad() {
 		this.getLogger().log(Level.INFO, "Loading configuration...");
 		this.saveDefaultConfig();
-		this.logMessagesEnabled = this.getConfig().getBoolean("log-messages");
+		this.logMessages = this.getConfig().getBoolean("log-messages");
+		this.attachHoverAndClickEvents = this.getConfig().getBoolean("attach-hover-and-click-events");
+		if (this.attachHoverAndClickEvents) {
+			this.getLogger().log(Level.INFO, "Checking if copying to clipboard is supported...");
+			try {
+				ClickEvent.Action.valueOf("COPY_TO_CLIPBOARD");
+				this.getLogger().log(Level.INFO, "Copying to clipboard is supported...");
+			} catch (IllegalArgumentException exception) {
+				this.getLogger().log(Level.INFO, "Copying to clipboard is not supported on your server, disabling attaching hover and click events...");
+				this.getLogger().log(Level.INFO, "Attaching hover and click events works only on server versions 1.15 and above.");
+				this.attachHoverAndClickEvents = false;
+			}
+		}
 		this.messageEdits = (List<MessageEdit>) this.getConfig().getList("message-edits");
 		this.getLogger().log(Level.INFO, "Checking for placeholder APIs...");
 		PluginManager pluginManager = this.getServer().getPluginManager();
@@ -73,7 +87,11 @@ public final class MessageEditorPlugin extends JavaPlugin {
 	}
 
 	public boolean isLoggingMessagesEnabled() {
-		return this.logMessagesEnabled;
+		return this.logMessages;
+	}
+
+	public boolean isAttachingHoverAndClickEventsEnabled() {
+		return this.attachHoverAndClickEvents;
 	}
 
 	public List<MessageEdit> getMessageEdits() {

@@ -1,5 +1,7 @@
 log-messages: false
 
+attach-hover-and-click-events: false
+
 message-edits:
 - ==: MessageEdit
   message-before-pattern: '\{"extra":\[\{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"yellow","text":"([a-zA-Z0-9_]{3,16}) joined the game"\}\],"text":""\}'
