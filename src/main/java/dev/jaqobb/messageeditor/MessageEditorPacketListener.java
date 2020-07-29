@@ -44,7 +44,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 	private static final String SPECIAL_REGEX_CHARACTERS = "[{}()\\[\\].+*?^$\\\\|]";
 
 	public MessageEditorPacketListener(MessageEditorPlugin plugin) {
-		super(plugin, ListenerPriority.HIGHEST, PacketType.Play.Server.CHAT, PacketType.Play.Server.BOSS);
+		super(plugin, ListenerPriority.HIGHEST, PacketType.Play.Server.CHAT);
 	}
 
 	@Override
