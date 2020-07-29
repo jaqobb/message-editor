@@ -24,8 +24,13 @@
 
 package dev.jaqobb.messageeditor;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
@@ -36,10 +41,14 @@ public final class MessageEdit implements ConfigurationSerializable {
 
 	private final Pattern messageBeforePattern;
 	private final String messageAfter;
+	private final Cache<String, String> cachedMessages;
 
 	public MessageEdit(String messageBeforePattern, String messageAfter) {
 		this.messageBeforePattern = Pattern.compile(messageBeforePattern);
 		this.messageAfter = messageAfter;
+		this.cachedMessages = CacheBuilder.newBuilder()
+			.expireAfterAccess(15L, TimeUnit.MINUTES)
+			.build();
 	}
 
 	public Pattern getMessageBeforePattern() {
@@ -52,6 +61,30 @@ public final class MessageEdit implements ConfigurationSerializable {
 
 	public String getMessageAfter() {
 		return this.messageAfter;
+	}
+
+	public Set<String> getCachedMessages() {
+		return Collections.unmodifiableSet(this.cachedMessages.asMap().keySet());
+	}
+
+	public String getCachedMessage(String messageBefore) {
+		return this.cachedMessages.getIfPresent(messageBefore);
+	}
+
+	public boolean isMessageCached(String messageBefore) {
+		return this.cachedMessages.asMap().containsKey(messageBefore);
+	}
+
+	public void cacheMessage(String messageBefore, String messageAfter) {
+		this.cachedMessages.put(messageBefore, messageAfter);
+	}
+
+	public void uncacheMessage(String messageBefore) {
+		this.cachedMessages.invalidate(messageBefore);
+	}
+
+	public void clearCachedMessages() {
+		this.cachedMessages.cleanUp();
 	}
 
 	public Matcher getMatcher(String messageBefore) {

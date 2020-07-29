@@ -54,9 +54,14 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 		if (this.getPlugin().isLoggingMessagesEnabled()) {
 			this.getPlugin().getLogger().log(Level.INFO, "Message JSON: " + messageJson.replace("{", "\\{").replace("}", "\\}").replace("[", "\\[").replace("]", "\\]"));
 		}
+		String newMessage = null;
 		MessageEdit messageEdit = null;
 		Matcher messageEditMatcher = null;
 		for (MessageEdit currentMessageEdit : this.getPlugin().getMessageEdits()) {
+			if (currentMessageEdit.isMessageCached(messageJson)) {
+				newMessage = currentMessageEdit.getCachedMessage(messageJson);
+				break;
+			}
 			Matcher currentMessageEditMatcher = currentMessageEdit.getMatcher(messageJson);
 			if (currentMessageEditMatcher != null) {
 				messageEdit = currentMessageEdit;
@@ -64,7 +69,11 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 				break;
 			}
 		}
-		if (messageEdit != null && messageEditMatcher != null) {
+		if (newMessage != null || (messageEdit != null && messageEditMatcher != null)) {
+			if (newMessage != null) {
+				packet.getChatComponents().write(0, WrappedChatComponent.fromJson(newMessage));
+				return;
+			}
 			String messageAfter = messageEditMatcher.replaceAll(messageEdit.getMessageAfter());
 			if (this.getPlugin().isPlaceholderApiPresent()) {
 				messageAfter = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, messageAfter);
@@ -72,6 +81,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 			if (this.getPlugin().isMvdwPlaceholderApiPresent()) {
 				messageAfter = be.maximvdw.placeholderapi.PlaceholderAPI.replacePlaceholders(player, messageAfter);
 			}
+			messageEdit.cacheMessage(messageJson, messageAfter);
 			packet.getChatComponents().write(0, WrappedChatComponent.fromJson(messageAfter));
 		}
 	}
