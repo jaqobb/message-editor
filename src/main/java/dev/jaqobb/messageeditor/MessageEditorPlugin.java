@@ -44,10 +44,8 @@ public final class MessageEditorPlugin extends JavaPlugin {
 
 	private boolean logMessagesEnabled;
 	private List<MessageEdit> messageEdits;
-
 	private boolean placeholderApiFound;
 	private boolean mvdwPlaceholderApiFound;
-
 	private Cache<String, String> cachedMessages;
 
 	@SuppressWarnings("unchecked")

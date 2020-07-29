@@ -36,6 +36,8 @@ import org.bukkit.entity.Player;
 
 public final class MessageEditorPacketListener extends PacketAdapter {
 
+	private static final String SPECIAL_REGEX_CHARACTERS = "[{}()\\[\\].+*?^$\\\\|]";
+
 	public MessageEditorPacketListener(MessageEditorPlugin plugin) {
 		super(plugin, ListenerPriority.HIGHEST, PacketType.Play.Server.CHAT, PacketType.Play.Server.BOSS);
 	}
@@ -52,7 +54,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 		WrappedChatComponent message = packet.getChatComponents().read(0);
 		String messageJson = message.getJson();
 		if (this.getPlugin().isLoggingMessagesEnabled()) {
-			this.getPlugin().getLogger().log(Level.INFO, "Message JSON: " + messageJson.replace("{", "\\{").replace("}", "\\}").replace("[", "\\[").replace("]", "\\]"));
+			this.getPlugin().getLogger().log(Level.INFO, "Message JSON: " + messageJson.replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0"));
 		}
 		String newMessage = this.getPlugin().getCachedMessage(messageJson);
 		MessageEdit messageEdit = null;
