@@ -69,7 +69,7 @@ case "${1}" in
 	(
 		set -e
 		cd "${base_folder}"
-		./gradlew clean build sourcesJar shadowJar
+		./gradlew clean build
 		cd "${base_folder}/build/libs"
 		plugin_name=$(grep < "${base_folder}/settings.gradle.kts" "rootProject.name =" | cut -d ' ' -f 3 | tr -d \" | head -1)
 		plugin_version=$(grep < "${base_folder}/build.gradle.kts" "version =" | cut -d ' ' -f 3 | tr -d \" | head -1)
