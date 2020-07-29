@@ -25,8 +25,12 @@
 package dev.jaqobb.messageeditor;
 
 import com.comphenix.protocol.ProtocolLibrary;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.PluginManager;
@@ -40,8 +44,11 @@ public final class MessageEditorPlugin extends JavaPlugin {
 
 	private boolean logMessagesEnabled;
 	private List<MessageEdit> messageEdits;
+
 	private boolean placeholderApiFound;
 	private boolean mvdwPlaceholderApiFound;
+
+	private Cache<String, String> cachedMessages;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -56,6 +63,9 @@ public final class MessageEditorPlugin extends JavaPlugin {
 		this.mvdwPlaceholderApiFound = pluginManager.isPluginEnabled("MVdWPlaceholderAPI");
 		this.getLogger().log(Level.INFO, "PlaceholderAPI: " + (this.placeholderApiFound ? "found" : "not found") + ".");
 		this.getLogger().log(Level.INFO, "MVdWPlaceholderAPI: " + (this.mvdwPlaceholderApiFound ? "found" : "not found") + ".");
+		this.cachedMessages = CacheBuilder.newBuilder()
+			.expireAfterAccess(15L, TimeUnit.MINUTES)
+			.build();
 	}
 
 	@Override
@@ -78,5 +88,25 @@ public final class MessageEditorPlugin extends JavaPlugin {
 
 	public boolean isMvdwPlaceholderApiPresent() {
 		return this.mvdwPlaceholderApiFound;
+	}
+
+	public Set<String> getCachedMessages() {
+		return Collections.unmodifiableSet(this.cachedMessages.asMap().keySet());
+	}
+
+	public String getCachedMessage(String messageBefore) {
+		return this.cachedMessages.getIfPresent(messageBefore);
+	}
+
+	public void cacheMessage(String messageBefore, String messageAfter) {
+		this.cachedMessages.put(messageBefore, messageAfter);
+	}
+
+	public void uncacheMessage(String messageBefore) {
+		this.cachedMessages.invalidate(messageBefore);
+	}
+
+	public void clearCachedMessages() {
+		this.cachedMessages.invalidateAll();
 	}
 }
