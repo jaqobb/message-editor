@@ -14,15 +14,6 @@ Message Editor currently supports:
 * [ ] Triggering message editing only on specific positions
 * [ ] Changing message positions
 
-### Requirements
-
-Message Editor requirements are:
-* Server version at least 1.8
-* Server version at least 1.15 - if you want to attach special hover and click events
-* ProtocolLib (possibly the latest version available)
-* PlaceholderAPI (optional) - if you want to add placeholders to your new messages
-* MVdWPlaceholderAPI (optional) if you want to add placeholders to your new messages
-
 ### Showcase
 
 ![](images/showcase_before.png)
@@ -34,3 +25,12 @@ Join message before editing it using Message Editor.
 Join message after editing it using Message Editor.
 
 ### Usage
+
+### Requirements
+
+Message Editor requires:
+* Server version at least 1.8
+* Server version at least 1.15 - if you want to attach special hover and click events
+* ProtocolLib (possibly the latest version available)
+* PlaceholderAPI (optional) - if you want to add placeholders to new messages
+* MVdWPlaceholderAPI (optional) if you want to add placeholders to new messages
