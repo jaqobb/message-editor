@@ -1,4 +1,5 @@
-# Message Editor [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT) ![build](https://github.com/jaqobb/message-editor/workflows/build/badge.svg)
+# Message Editor 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT) ![build](https://github.com/jaqobb/message-editor/workflows/build/badge.svg)
 
 Message Editor is a Spigot plugin that allows editing in-game messages that were previously unmodifiable, in easy and fast way.
 
