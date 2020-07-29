@@ -1,8 +1,8 @@
-# Message Editor
+# Message Editor ![build](https://github.com/jaqobb/message-editor/workflows/build/badge.svg)
 
 Message Editor is a Spigot plugin that allows editing in-game messages that were previously unmodifiable, in easy and fast way.
 
-#### Features
+### Features
 
 Message Editor currently supports editing:
 * [x] Chat messages
@@ -11,6 +11,6 @@ Message Editor currently supports editing:
 * [ ] Scoreboard titles
 * [ ] Scoreboard entries
 
-#### Showcase
+### Showcase
 
-#### Usage
+### Usage
