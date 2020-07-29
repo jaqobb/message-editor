@@ -5,7 +5,7 @@ Message Editor is a Spigot plugin that allows editing in-game messages that were
 
 ### Features
 
-Message Editor currently supports:
+Message Editor supports:
 * [x] Editing chat messages - since 1.0.0
 * [x] Editing action bar messages - since 1.0.0
 * [ ] Editing boss bar titles
