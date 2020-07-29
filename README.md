@@ -11,7 +11,7 @@ Message Editor supports:
 * [ ] Editing boss bar titles
 * [ ] Editing scoreboard titles
 * [ ] Editing scoreboard entries
-* [ ] Editing kick messages
+* [ ] Editing kick/disconnect messages
 * [ ] Triggering message editing only on specific positions
 * [ ] Changing message positions
 
