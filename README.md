@@ -11,6 +11,15 @@ Message Editor currently supports editing:
 * [ ] Scoreboard titles
 * [ ] Scoreboard entries
 
+### Requirements
+
+Message Editor requirements are:
+* Server version at least 1.8
+* Server version at least 1.15 - if you want to attach special hover and click events
+* ProtocolLib (possibly the latest version available)
+* PlaceholderAPI (optional) - if you want to add placeholders to your new messages
+* MVdWPlaceholderAPI (optional) if you want to add placeholders to your new messages
+
 ### Showcase
 
 ![](images/showcase_before.png)
