@@ -1,6 +1,6 @@
 log-messages: false
 
-attach-hover-and-click-events: false
+attach-special-hover-and-click-events: false
 
 message-edits:
 - ==: MessageEdit

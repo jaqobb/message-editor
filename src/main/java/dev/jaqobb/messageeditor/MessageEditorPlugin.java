@@ -44,7 +44,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
 	}
 
 	private boolean logMessages;
-	private boolean attachHoverAndClickEvents;
+	private boolean attachSpecialHoverAndClickEvents;
 	private List<MessageEdit> messageEdits;
 
 	private boolean placeholderApiFound;
@@ -58,8 +58,8 @@ public final class MessageEditorPlugin extends JavaPlugin {
 		this.getLogger().log(Level.INFO, "Loading configuration...");
 		this.saveDefaultConfig();
 		this.logMessages = this.getConfig().getBoolean("log-messages");
-		this.attachHoverAndClickEvents = this.getConfig().getBoolean("attach-hover-and-click-events");
-		if (this.attachHoverAndClickEvents) {
+		this.attachSpecialHoverAndClickEvents = this.getConfig().getBoolean("attach-special-hover-and-click-events");
+		if (this.attachSpecialHoverAndClickEvents) {
 			this.getLogger().log(Level.INFO, "Checking if copying to clipboard is supported...");
 			try {
 				ClickEvent.Action.valueOf("COPY_TO_CLIPBOARD");
@@ -67,7 +67,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
 			} catch (IllegalArgumentException exception) {
 				this.getLogger().log(Level.INFO, "Copying to clipboard is not supported on your server, disabling attaching special hover and click events...");
 				this.getLogger().log(Level.INFO, "Attaching special hover and click events works only on server version at least 1.15.");
-				this.attachHoverAndClickEvents = false;
+				this.attachSpecialHoverAndClickEvents = false;
 			}
 		}
 		this.messageEdits = (List<MessageEdit>) this.getConfig().getList("message-edits");
@@ -92,8 +92,8 @@ public final class MessageEditorPlugin extends JavaPlugin {
 		return this.logMessages;
 	}
 
-	public boolean isAttachingHoverAndClickEventsEnabled() {
-		return this.attachHoverAndClickEvents;
+	public boolean isAttachingSpecialHoverAndClickEventsEnabled() {
+		return this.attachSpecialHoverAndClickEvents;
 	}
 
 	public List<MessageEdit> getMessageEdits() {

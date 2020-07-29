@@ -98,7 +98,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 		if (this.getPlugin().isLoggingMessagesEnabled()) {
 			this.getPlugin().getLogger().log(Level.INFO, "Message JSON: " + messageJsonEscaped);
 		}
-		if (this.getPlugin().isAttachingHoverAndClickEventsEnabled()) {
+		if (this.getPlugin().isAttachingSpecialHoverAndClickEventsEnabled()) {
 			TextComponent messageToSend = new TextComponent(ComponentSerializer.parse(messageJson));
 			if (messageToSend.getHoverEvent() == null && messageToSend.getClickEvent() == null) {
 				messageToSend.setHoverEvent(CLICK_TO_COPY_HOVER_EVENT);
