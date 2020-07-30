@@ -46,7 +46,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 	@SuppressWarnings("deprecation")
 	private static final HoverEvent COPY_TO_CLIPBOARD_HOVER_EVENT = new HoverEvent(
 		HoverEvent.Action.SHOW_TEXT,
-		TextComponent.fromLegacyText(ChatColor.GRAY + "Click to copy this message's JSON to your clipboard.", ChatColor.GRAY)
+		TextComponent.fromLegacyText(ChatColor.GRAY + "Click to copy this message's JSON to your clipboard.")
 	);
 
 	public MessageEditorPacketListener(MessageEditorPlugin plugin) {
