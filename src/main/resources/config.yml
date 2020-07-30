@@ -4,6 +4,7 @@ log-messages: true
 # Whether special hover and click events should be attached to messages.
 # Click event copies message's JSON to your clipboard.
 # Hover event notifies about the click event.
+# Special hover and click events will not be attached to messages that already contain either of the events.
 # This option works only on 1.15 and above, and will be automatically disabled on lower versions.
 attach-special-hover-and-click-events: true
 
