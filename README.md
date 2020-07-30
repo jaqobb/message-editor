@@ -12,8 +12,8 @@ Message Editor supports:
 * [ ] Editing scoreboard titles
 * [ ] Editing scoreboard entries
 * [ ] Editing kick/disconnect messages
+* [ ] Editing message positions
 * [ ] Triggering message editing only on specific positions
-* [ ] Changing message positions
 
 ### Showcase
 
