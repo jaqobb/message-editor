@@ -98,7 +98,13 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 		if (this.getPlugin().isLoggingMessagesEnabled()) {
 			this.getPlugin().getLogger().log(Level.INFO, "Message JSON: " + messageJsonEscaped);
 		}
-		if (this.getPlugin().isAttachingSpecialHoverAndClickEventsEnabled()) {
+		// 0 and 1 - chat
+		// 2 - action bar
+		Byte position = packet.getBytes().readSafely(0);
+		if (position == null) {
+			position = packet.getChatTypes().read(0).getId();
+		}
+		if (position != 2 && this.getPlugin().isAttachingSpecialHoverAndClickEventsEnabled()) {
 			TextComponent messageToSend = new TextComponent(ComponentSerializer.parse(messageJson));
 			if (messageToSend.getHoverEvent() == null && messageToSend.getClickEvent() == null) {
 				messageToSend.setHoverEvent(COPY_TO_CLIPBOARD_HOVER_EVENT);
