@@ -37,6 +37,7 @@ import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+// Test
 public final class MessageEditorPlugin extends JavaPlugin {
 
 	static {
