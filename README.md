@@ -27,16 +27,6 @@ Join message after editing it using Message Editor.
 
 ### Usage
 
-While you are setting up the plugin, only administration should be allowed to join the server.
-
-After the config.yml file has been generated, set `log-messages` to `true` or if you are at least on 1.15, set `log-messages` to `false` and `attach-special-hover-and-click-events` to `true`.
-
-`log-messages` set to `true` will log every message's JSON to the console, so that you can copy it and then edit to meet your needs.
-
-`attach-special-hover-and-click-events` set to `true` will attach special hover and click events to every chat message, so you can just click on that message, and the message's JSON will be copied to your clipboard.
-
-Some places cannot have hover and click events (like action bar), so it is advised to have both settings enabled.
-
 Let us try to edit a message on a 1.16.1 server. We are gonna edit the /version message, "You are x version(s) behind" part to be more precise.
 
 After running /version command and hovering over the message you want to edit you should see a hover message:
@@ -71,10 +61,9 @@ Since we captured the number of versions we are behind, we can now also use it i
 
 We are pretty much done. The only thing left is adding all we have done to the config.yml file, so it looks like that in the end:
 ```yml
-log-messages: false
-
-attach-special-hover-and-click-events: true
-
+# Messages that should be edited.
+# For in-depth tutorial check here:
+# https://github.com/jaqobb/message-editor#usage
 message-edits:
 - ==: MessageEdit
   message-before-pattern: '\{"extra":\[\{"text":"You are (\d+) version\(s\) behind"\}\],"text":""\}'
@@ -96,8 +85,7 @@ Keep in mind that you can use PlaceholderAPI and MVdWPlaceholderAPI in edited me
 ### Requirements
 
 Message Editor requires:
-* Server version at least 1.8
-* Server version at least 1.15 - if you want to attach special hover and click events
+* Server version at least 1.15
 * ProtocolLib (possibly the latest version available)
 * PlaceholderAPI (optional) - if you want to add placeholders to new messages
 * MVdWPlaceholderAPI (optional) if you want to add placeholders to new messages

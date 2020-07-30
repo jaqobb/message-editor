@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-import net.md_5.bungee.api.chat.ClickEvent;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -43,13 +42,9 @@ public final class MessageEditorPlugin extends JavaPlugin {
 		ConfigurationSerialization.registerClass(MessageEdit.class);
 	}
 
-	private boolean logMessages;
-	private boolean attachSpecialHoverAndClickEvents;
 	private List<MessageEdit> messageEdits;
-
 	private boolean placeholderApiFound;
 	private boolean mvdwPlaceholderApiFound;
-
 	private Cache<String, String> cachedMessages;
 
 	@SuppressWarnings("unchecked")
@@ -57,19 +52,6 @@ public final class MessageEditorPlugin extends JavaPlugin {
 	public void onLoad() {
 		this.getLogger().log(Level.INFO, "Loading configuration...");
 		this.saveDefaultConfig();
-		this.logMessages = this.getConfig().getBoolean("log-messages");
-		this.attachSpecialHoverAndClickEvents = this.getConfig().getBoolean("attach-special-hover-and-click-events");
-		if (this.attachSpecialHoverAndClickEvents) {
-			this.getLogger().log(Level.INFO, "Checking if copying to clipboard is supported...");
-			try {
-				ClickEvent.Action.valueOf("COPY_TO_CLIPBOARD");
-				this.getLogger().log(Level.INFO, "Copying to clipboard is supported...");
-			} catch (IllegalArgumentException exception) {
-				this.getLogger().log(Level.INFO, "Copying to clipboard is not supported on your server, disabling attaching special hover and click events...");
-				this.getLogger().log(Level.INFO, "Attaching special hover and click events works only on server version at least 1.15.");
-				this.attachSpecialHoverAndClickEvents = false;
-			}
-		}
 		this.messageEdits = (List<MessageEdit>) this.getConfig().getList("message-edits");
 		this.getLogger().log(Level.INFO, "Checking for placeholder APIs...");
 		PluginManager pluginManager = this.getServer().getPluginManager();
@@ -86,14 +68,6 @@ public final class MessageEditorPlugin extends JavaPlugin {
 	public void onEnable() {
 		this.getLogger().log(Level.INFO, "Registering packet listener...");
 		ProtocolLibrary.getProtocolManager().addPacketListener(new MessageEditorPacketListener(this));
-	}
-
-	public boolean isLoggingMessagesEnabled() {
-		return this.logMessages;
-	}
-
-	public boolean isAttachingSpecialHoverAndClickEventsEnabled() {
-		return this.attachSpecialHoverAndClickEvents;
 	}
 
 	public List<MessageEdit> getMessageEdits() {

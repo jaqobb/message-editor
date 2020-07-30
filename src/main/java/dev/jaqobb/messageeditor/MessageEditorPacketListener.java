@@ -30,7 +30,6 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -95,9 +94,6 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 		message = packet.getChatComponents().read(0);
 		messageJson = message.getJson();
 		String messageJsonEscaped = messageJson.replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0");
-		if (this.getPlugin().isLoggingMessagesEnabled()) {
-			this.getPlugin().getLogger().log(Level.INFO, "Message JSON: " + messageJsonEscaped);
-		}
 		if (packet.getType() == PacketType.Play.Server.CHAT) {
 			// 0 and 1 - chat
 			// 2 - action bar
@@ -105,13 +101,11 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 			if (position == null) {
 				position = packet.getChatTypes().read(0).getId();
 			}
-			if (position != 2 && this.getPlugin().isAttachingSpecialHoverAndClickEventsEnabled()) {
+			if (position != 2) {
 				TextComponent messageToSend = new TextComponent(ComponentSerializer.parse(messageJson));
-				if (messageToSend.getHoverEvent() == null && messageToSend.getClickEvent() == null) {
-					messageToSend.setHoverEvent(COPY_TO_CLIPBOARD_HOVER_EVENT);
-					messageToSend.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, messageJsonEscaped));
-					packet.getChatComponents().write(0, WrappedChatComponent.fromJson(ComponentSerializer.toString(messageToSend)));
-				}
+				messageToSend.setHoverEvent(COPY_TO_CLIPBOARD_HOVER_EVENT);
+				messageToSend.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, messageJsonEscaped));
+				packet.getChatComponents().write(0, WrappedChatComponent.fromJson(ComponentSerializer.toString(messageToSend)));
 			}
 		}
 	}
