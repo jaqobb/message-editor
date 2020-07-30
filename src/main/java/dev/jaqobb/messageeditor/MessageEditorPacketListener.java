@@ -98,18 +98,20 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 		if (this.getPlugin().isLoggingMessagesEnabled()) {
 			this.getPlugin().getLogger().log(Level.INFO, "Message JSON: " + messageJsonEscaped);
 		}
-		// 0 and 1 - chat
-		// 2 - action bar
-		Byte position = packet.getBytes().readSafely(0);
-		if (position == null) {
-			position = packet.getChatTypes().read(0).getId();
-		}
-		if (position != 2 && this.getPlugin().isAttachingSpecialHoverAndClickEventsEnabled()) {
-			TextComponent messageToSend = new TextComponent(ComponentSerializer.parse(messageJson));
-			if (messageToSend.getHoverEvent() == null && messageToSend.getClickEvent() == null) {
-				messageToSend.setHoverEvent(COPY_TO_CLIPBOARD_HOVER_EVENT);
-				messageToSend.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, messageJsonEscaped));
-				packet.getChatComponents().write(0, WrappedChatComponent.fromJson(ComponentSerializer.toString(messageToSend)));
+		if (packet.getType() == PacketType.Play.Server.CHAT) {
+			// 0 and 1 - chat
+			// 2 - action bar
+			Byte position = packet.getBytes().readSafely(0);
+			if (position == null) {
+				position = packet.getChatTypes().read(0).getId();
+			}
+			if (position != 2 && this.getPlugin().isAttachingSpecialHoverAndClickEventsEnabled()) {
+				TextComponent messageToSend = new TextComponent(ComponentSerializer.parse(messageJson));
+				if (messageToSend.getHoverEvent() == null && messageToSend.getClickEvent() == null) {
+					messageToSend.setHoverEvent(COPY_TO_CLIPBOARD_HOVER_EVENT);
+					messageToSend.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, messageJsonEscaped));
+					packet.getChatComponents().write(0, WrappedChatComponent.fromJson(ComponentSerializer.toString(messageToSend)));
+				}
 			}
 		}
 	}
