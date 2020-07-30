@@ -50,7 +50,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 	);
 
 	public MessageEditorPacketListener(MessageEditorPlugin plugin) {
-		super(plugin, ListenerPriority.HIGHEST, PacketType.Play.Server.CHAT);
+		super(plugin, ListenerPriority.HIGHEST, PacketType.Login.Server.DISCONNECT, PacketType.Play.Server.KICK_DISCONNECT, PacketType.Play.Server.CHAT);
 	}
 
 	@Override

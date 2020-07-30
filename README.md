@@ -8,10 +8,10 @@ Message Editor is a Spigot plugin that allows editing in-game messages that were
 Message Editor supports:
 * [x] Editing chat messages - since 1.0.0
 * [x] Editing action bar messages - since 1.0.0
+* [x] Editing kick/disconnect messages - since 1.0.1
 * [ ] Editing boss bar titles
 * [ ] Editing scoreboard titles
 * [ ] Editing scoreboard entries
-* [ ] Editing kick/disconnect messages
 * [ ] Editing message positions
 * [ ] Triggering message editing only on specific positions
 
