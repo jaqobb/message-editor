@@ -91,7 +91,7 @@ After this is done you should be able to see the new message after running /vers
 
 ![](images/usage_after.png)
 
-Keep in mind that you can use PlaceholderAPI and MVdWPlaceholderAPI in the new messages.
+Keep in mind that you can use PlaceholderAPI and MVdWPlaceholderAPI in edited messages.
 
 ### Requirements
 
