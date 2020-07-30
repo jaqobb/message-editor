@@ -3,6 +3,8 @@
 
 Message Editor is a Spigot plugin that allows editing in-game messages that were previously unmodifiable, in easy and fast way.
 
+Click [here](https://www.spigotmc.org/resources/message-editor.82154/) to get to the project's SpigotMC page.
+
 ### Features
 
 Message Editor supports:
