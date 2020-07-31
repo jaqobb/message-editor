@@ -49,7 +49,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 	);
 
 	public MessageEditorPacketListener(MessageEditorPlugin plugin) {
-		super(plugin, ListenerPriority.HIGHEST, PacketType.Login.Server.DISCONNECT, PacketType.Play.Server.KICK_DISCONNECT, PacketType.Play.Server.CHAT);
+		super(plugin, ListenerPriority.HIGHEST, PacketType.Login.Server.DISCONNECT, PacketType.Play.Server.KICK_DISCONNECT, PacketType.Play.Server.CHAT, PacketType.Play.Server.BOSS);
 	}
 
 	@Override
@@ -93,7 +93,6 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 		}
 		message = packet.getChatComponents().read(0);
 		messageJson = message.getJson();
-		String messageJsonEscaped = messageJson.replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0");
 		if (packet.getType() == PacketType.Play.Server.CHAT) {
 			// 0 and 1 - chat
 			// 2 - action bar
@@ -104,7 +103,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 			if (position != 2) {
 				TextComponent messageToSend = new TextComponent(ComponentSerializer.parse(messageJson));
 				messageToSend.setHoverEvent(COPY_TO_CLIPBOARD_HOVER_EVENT);
-				messageToSend.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, messageJsonEscaped));
+				messageToSend.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, messageJson.replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0")));
 				packet.getChatComponents().write(0, WrappedChatComponent.fromJson(ComponentSerializer.toString(messageToSend)));
 			}
 		}

@@ -10,7 +10,7 @@ Click [here](https://www.spigotmc.org/resources/message-editor.82154/) to get to
 Message Editor supports:
 * [x] Editing chat messages - since 1.0.0
 * [x] Editing action bar messages - since 1.0.0
-* [x] Editing kick/disconnect messages - since 1.0.1
+* [x] Editing kick/disconnect messages - since 1.1.0
 * [ ] Editing boss bar titles
 * [ ] Editing scoreboard titles
 * [ ] Editing scoreboard entries
