@@ -25,11 +25,14 @@
 package dev.jaqobb.messageeditor;
 
 import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -66,8 +69,9 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 	@Override
 	public void onPacketSending(PacketEvent event) {
 		Player player = event.getPlayer();
-		PacketContainer packet = event.getPacket();
-		WrappedChatComponent message = packet.getChatComponents().read(0);
+		PacketContainer oldPacket = event.getPacket();
+		PacketContainer newPacket = this.copyPacketContent(oldPacket, ProtocolLibrary.getProtocolManager().createPacket(oldPacket.getType()));
+		WrappedChatComponent message = newPacket.getChatComponents().read(0);
 		String messageJson = message.getJson();
 		String newMessage = this.getPlugin().getCachedMessage(messageJson);
 		MessageEdit messageEdit = null;
@@ -84,7 +88,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 		}
 		if (newMessage != null || (messageEdit != null && messageEditMatcher != null)) {
 			if (newMessage != null) {
-				packet.getChatComponents().write(0, WrappedChatComponent.fromJson(newMessage));
+				newPacket.getChatComponents().write(0, WrappedChatComponent.fromJson(newMessage));
 			} else {
 				String messageAfter = messageEditMatcher.replaceAll(messageEdit.getMessageAfter());
 				if (this.getPlugin().isPlaceholderApiPresent()) {
@@ -94,24 +98,45 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 					messageAfter = be.maximvdw.placeholderapi.PlaceholderAPI.replacePlaceholders(player, messageAfter);
 				}
 				this.getPlugin().cacheMessage(messageJson, messageAfter);
-				packet.getChatComponents().write(0, WrappedChatComponent.fromJson(messageAfter));
+				newPacket.getChatComponents().write(0, WrappedChatComponent.fromJson(messageAfter));
 			}
 		}
-		message = packet.getChatComponents().read(0);
+		message = newPacket.getChatComponents().read(0);
 		messageJson = message.getJson();
-		if (packet.getType() == PacketType.Play.Server.CHAT) {
+		if (newPacket.getType() == PacketType.Play.Server.CHAT) {
 			// 0 and 1 - chat
 			// 2 - action bar
-			Byte position = packet.getBytes().readSafely(0);
+			Byte position = newPacket.getBytes().readSafely(0);
 			if (position == null) {
-				position = packet.getChatTypes().read(0).getId();
+				position = newPacket.getChatTypes().read(0).getId();
 			}
 			if (position != 2 && player.hasPermission("messageeditor.message.copy")) {
 				TextComponent messageToSend = new TextComponent(ComponentSerializer.parse(messageJson));
 				messageToSend.setHoverEvent(COPY_TO_CLIPBOARD_HOVER_EVENT);
 				messageToSend.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, messageJson.replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0")));
-				packet.getChatComponents().write(0, WrappedChatComponent.fromJson(ComponentSerializer.toString(messageToSend)));
+				newPacket.getChatComponents().write(0, WrappedChatComponent.fromJson(ComponentSerializer.toString(messageToSend)));
 			}
 		}
+		event.setPacket(newPacket);
+	}
+
+	private PacketContainer copyPacketContent(PacketContainer oldPacket, PacketContainer newPacket) {
+		if (newPacket.getType() == PacketType.Play.Server.CHAT) {
+			newPacket.getChatComponents().write(0, oldPacket.getChatComponents().read(0));
+			Byte position = oldPacket.getBytes().readSafely(0);
+			if (position == null) {
+				position = oldPacket.getChatTypes().read(0).getId();
+			}
+			newPacket.getBytes().writeSafely(0, position);
+			if (EnumWrappers.getChatTypeClass() != null) {
+				Byte finalPosition = position;
+				Arrays.stream(EnumWrappers.ChatType.values())
+					.filter(type -> type.getId() == finalPosition)
+					.findAny()
+					.ifPresent(type -> newPacket.getChatTypes().writeSafely(0, type));
+			}
+		}
+		// TODO: Add kick/disconnect support.
+		return newPacket;
 	}
 }
