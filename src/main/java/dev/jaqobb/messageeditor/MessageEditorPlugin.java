@@ -58,7 +58,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
 		this.getLogger().log(Level.INFO, "Checking if copying to clipboard is supported on your server...");
 		try {
 			ClickEvent.Action.valueOf("COPY_TO_CLIPBOARD");
-			this.getLogger().log(Level.INFO, "Copying to clipboard is supported on your server.");
+			this.getLogger().log(Level.INFO, "Copying to clipboard is supported on your server, enabling attaching special hover and click events.");
 			this.attachSpecialHoverAndClickEvents = true;
 		} catch (IllegalArgumentException exception) {
 			this.getLogger().log(Level.INFO, "Copying to clipboard is not supported on your server, disabling attaching special hover and click events...");
