@@ -41,8 +41,6 @@ In this case you should end up with this JSON:
 
 `\{"extra":\[\{"text":"You are 1 version\(s\) behind"\}\],"text":""\}`
 
-You should see the same JSON in your console if you have `log-messages` set to `true`.
-
 This JSON is already ready for additional regex. If your message is static then you are already good to go and edit the message. In this case we are not ready since we can be behind more than 1 version.
 
 We need to make the message more generalized, and we are gonna use regex to achieve that. If you do not know regex then you are probably gonna find this plugin useless.
