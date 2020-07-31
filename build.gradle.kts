@@ -21,6 +21,11 @@ bukkit {
 	description = project.description
 	author = "jaqobb"
 	website = "https://jaqobb.dev"
+	commands {
+		create("message-editor") {
+			description = "Message Editor main command"
+		}
+	}
 }
 
 repositories {

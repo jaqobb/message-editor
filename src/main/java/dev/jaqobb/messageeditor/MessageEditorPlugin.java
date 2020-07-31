@@ -28,6 +28,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -48,6 +49,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
 	private boolean placeholderApiFound;
 	private boolean mvdwPlaceholderApiFound;
 	private Cache<String, String> cachedMessages;
+	private Set<MessageAnalyzePlace> placesToAnalyze;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -74,10 +76,13 @@ public final class MessageEditorPlugin extends JavaPlugin {
 		this.cachedMessages = CacheBuilder.newBuilder()
 			.expireAfterAccess(15L, TimeUnit.MINUTES)
 			.build();
+		this.placesToAnalyze = EnumSet.noneOf(MessageAnalyzePlace.class);
 	}
 
 	@Override
 	public void onEnable() {
+		this.getLogger().log(Level.INFO, "Registering command...");
+		this.getCommand("message-editor").setExecutor(new MessageEditorCommand(this));
 		this.getLogger().log(Level.INFO, "Registering packet listener...");
 		ProtocolLibrary.getProtocolManager().addPacketListener(new MessageEditorPacketListener(this));
 	}
@@ -116,5 +121,25 @@ public final class MessageEditorPlugin extends JavaPlugin {
 
 	public void clearCachedMessages() {
 		this.cachedMessages.invalidateAll();
+	}
+
+	public Set<MessageAnalyzePlace> getPlacesToAnalyze() {
+		return Collections.unmodifiableSet(this.placesToAnalyze);
+	}
+
+	public boolean isPlaceToAnalyze(MessageAnalyzePlace place) {
+		return this.placesToAnalyze.contains(place);
+	}
+
+	public void addPlaceToAnalyze(MessageAnalyzePlace place) {
+		this.placesToAnalyze.add(place);
+	}
+
+	public void removePlaceToAnalyze(MessageAnalyzePlace place) {
+		this.placesToAnalyze.remove(place);
+	}
+
+	public void clearPlacesToAnalyze() {
+		this.placesToAnalyze.clear();
 	}
 }

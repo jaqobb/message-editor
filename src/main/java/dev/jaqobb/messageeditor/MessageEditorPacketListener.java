@@ -33,8 +33,10 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import java.util.Arrays;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -100,6 +102,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 				message.setJson(messageAfter);
 			}
 		}
+		MessageAnalyzePlace place;
 		if (newPacket.getType() == PacketType.Play.Server.CHAT) {
 			// 0 and 1 - chat
 			// 2 - action bar
@@ -107,7 +110,26 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 			if (position == null) {
 				position = newPacket.getChatTypes().read(0).getId();
 			}
-			if (position != 2 && player.hasPermission("messageeditor.message.copy") && this.getPlugin().isAttachingSpecialHoverAndClickEventsEnabled()) {
+			place = MessageAnalyzePlace.fromPacketType(newPacket.getType(), position);
+		} else {
+			place = MessageAnalyzePlace.fromPacketType(newPacket.getType());
+		}
+		if (place != null && this.getPlugin().isPlaceToAnalyze(place)) {
+			String messageClear = "";
+			for (BaseComponent component : ComponentSerializer.parse(message.getJson())) {
+				messageClear += component.toPlainText();
+			}
+			String messageJson = message.getJson().replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0");
+			this.logPacketContent(place, player, messageClear, messageJson);
+		}
+		if (newPacket.getType() == PacketType.Play.Server.CHAT) {
+			// 0 and 1 - chat
+			// 2 - action bar
+			Byte position = newPacket.getBytes().readSafely(0);
+			if (position == null) {
+				position = newPacket.getChatTypes().read(0).getId();
+			}
+			if (position != 2 && player.hasPermission("messageeditor.use") && this.getPlugin().isAttachingSpecialHoverAndClickEventsEnabled()) {
 				TextComponent messageToSend = new TextComponent(ComponentSerializer.parse(message.getJson()));
 				messageToSend.setHoverEvent(COPY_TO_CLIPBOARD_HOVER_EVENT);
 				messageToSend.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, message.getJson().replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0")));
@@ -135,5 +157,12 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 			}
 		}
 		return newPacket;
+	}
+
+	private void logPacketContent(MessageAnalyzePlace place, Player receiver, String messageClear, String messageJson) {
+		this.getPlugin().getLogger().log(Level.INFO, "Place: " + place.name() + ".");
+		this.getPlugin().getLogger().log(Level.INFO, "Receiver: " + receiver.getName() + ".");
+		this.getPlugin().getLogger().log(Level.INFO, "Message clear: " + messageClear);
+		this.getPlugin().getLogger().log(Level.INFO, "Message JSON: " + messageJson);
 	}
 }
