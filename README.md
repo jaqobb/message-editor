@@ -16,6 +16,7 @@ Message Editor supports:
 * [ ] Editing scoreboard entries
 * [ ] Editing message positions
 * [ ] Triggering message editing only on specific positions
+* [ ] Cancelling sending messages
 
 ### Showcase
 
