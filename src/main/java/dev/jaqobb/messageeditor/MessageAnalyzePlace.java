@@ -56,6 +56,13 @@ public enum MessageAnalyzePlace {
 		return Collections.unmodifiableSet(this.chatTypes);
 	}
 
+	public static MessageAnalyzePlace fromName(String name) {
+		return Arrays.stream(values())
+			.filter(place -> place.name().equalsIgnoreCase(name))
+			.findFirst()
+			.orElse(null);
+	}
+
 	public static MessageAnalyzePlace fromPacketType(PacketType packetType) {
 		return fromPacketType(packetType, (byte) -1);
 	}

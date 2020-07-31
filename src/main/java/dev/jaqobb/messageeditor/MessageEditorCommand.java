@@ -56,7 +56,7 @@ public final class MessageEditorCommand implements CommandExecutor {
 			int places = 0;
 			for (int index = 1; index < arguments.length; index++) {
 				try {
-					MessageAnalyzePlace place = MessageAnalyzePlace.valueOf(arguments[index].toUpperCase());
+					MessageAnalyzePlace place = MessageAnalyzePlace.fromName(arguments[index]);
 					if (!this.plugin.isPlaceToAnalyze(place)) {
 						this.plugin.addPlaceToAnalyze(place);
 						places++;
@@ -64,7 +64,7 @@ public final class MessageEditorCommand implements CommandExecutor {
 						sender.sendMessage(ChatColor.RED + "[Message Editor] " + place.name() + " is already added to places to analyze.");
 					}
 				} catch (IllegalArgumentException exception) {
-					sender.sendMessage(ChatColor.RED + "[Message Editor] Could not convert '" + arguments[index].toUpperCase() + "' to place to analyze.");
+					sender.sendMessage(ChatColor.RED + "[Message Editor] Could not convert '" + arguments[index] + "' to place to analyze.");
 				}
 			}
 			sender.sendMessage(ChatColor.GREEN + "[Message Editor] You have added " + places + " place(s) to analyze.");
@@ -79,7 +79,7 @@ public final class MessageEditorCommand implements CommandExecutor {
 			int places = 0;
 			for (int index = 1; index < arguments.length; index++) {
 				try {
-					MessageAnalyzePlace place = MessageAnalyzePlace.valueOf(arguments[index].toUpperCase());
+					MessageAnalyzePlace place = MessageAnalyzePlace.fromName(arguments[index]);
 					if (this.plugin.isPlaceToAnalyze(place)) {
 						this.plugin.removePlaceToAnalyze(place);
 						places++;
@@ -87,7 +87,7 @@ public final class MessageEditorCommand implements CommandExecutor {
 						sender.sendMessage(ChatColor.RED + "[Message Editor] " + place.name() + " is not added to places to analyze.");
 					}
 				} catch (IllegalArgumentException exception) {
-					sender.sendMessage(ChatColor.RED + "[Message Editor] Could not convert '" + arguments[index].toUpperCase() + "' to place to analyze.");
+					sender.sendMessage(ChatColor.RED + "[Message Editor] Could not convert '" + arguments[index] + "' to place to analyze.");
 				}
 			}
 			sender.sendMessage(ChatColor.GREEN + "[Message Editor] You have removed " + places + " place(s) to analyze.");
