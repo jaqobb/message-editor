@@ -72,13 +72,12 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 		PacketContainer oldPacket = event.getPacket();
 		PacketContainer newPacket = this.copyPacketContent(oldPacket, ProtocolLibrary.getProtocolManager().createPacket(oldPacket.getType()));
 		WrappedChatComponent message = newPacket.getChatComponents().read(0);
-		String messageJson = message.getJson();
-		String newMessage = this.getPlugin().getCachedMessage(messageJson);
+		String newMessage = this.getPlugin().getCachedMessage(message.getJson());
 		MessageEdit messageEdit = null;
 		Matcher messageEditMatcher = null;
 		if (newMessage == null) {
 			for (MessageEdit currentMessageEdit : this.getPlugin().getMessageEdits()) {
-				Matcher currentMessageEditMatcher = currentMessageEdit.getMatcher(messageJson);
+				Matcher currentMessageEditMatcher = currentMessageEdit.getMatcher(message.getJson());
 				if (currentMessageEditMatcher != null) {
 					messageEdit = currentMessageEdit;
 					messageEditMatcher = currentMessageEditMatcher;
@@ -88,7 +87,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 		}
 		if (newMessage != null || (messageEdit != null && messageEditMatcher != null)) {
 			if (newMessage != null) {
-				newPacket.getChatComponents().write(0, WrappedChatComponent.fromJson(newMessage));
+				message.setJson(newMessage);
 			} else {
 				String messageAfter = messageEditMatcher.replaceAll(messageEdit.getMessageAfter());
 				if (this.getPlugin().isPlaceholderApiPresent()) {
@@ -97,12 +96,10 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 				if (this.getPlugin().isMvdwPlaceholderApiPresent()) {
 					messageAfter = be.maximvdw.placeholderapi.PlaceholderAPI.replacePlaceholders(player, messageAfter);
 				}
-				this.getPlugin().cacheMessage(messageJson, messageAfter);
-				newPacket.getChatComponents().write(0, WrappedChatComponent.fromJson(messageAfter));
+				this.getPlugin().cacheMessage(message.getJson(), messageAfter);
+				message.setJson(messageAfter);
 			}
 		}
-		message = newPacket.getChatComponents().read(0);
-		messageJson = message.getJson();
 		if (newPacket.getType() == PacketType.Play.Server.CHAT) {
 			// 0 and 1 - chat
 			// 2 - action bar
@@ -111,12 +108,13 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 				position = newPacket.getChatTypes().read(0).getId();
 			}
 			if (position != 2 && player.hasPermission("messageeditor.message.copy")) {
-				TextComponent messageToSend = new TextComponent(ComponentSerializer.parse(messageJson));
+				TextComponent messageToSend = new TextComponent(ComponentSerializer.parse(message.getJson()));
 				messageToSend.setHoverEvent(COPY_TO_CLIPBOARD_HOVER_EVENT);
-				messageToSend.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, messageJson.replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0")));
-				newPacket.getChatComponents().write(0, WrappedChatComponent.fromJson(ComponentSerializer.toString(messageToSend)));
+				messageToSend.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, message.getJson().replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0")));
+				message.setJson(ComponentSerializer.toString(messageToSend));
 			}
 		}
+		newPacket.getChatComponents().write(0, message);
 		event.setPacket(newPacket);
 	}
 
