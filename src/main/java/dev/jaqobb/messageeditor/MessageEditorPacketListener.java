@@ -54,8 +54,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 			ListenerPriority.HIGHEST,
 			PacketType.Login.Server.DISCONNECT,
 			PacketType.Play.Server.KICK_DISCONNECT,
-			PacketType.Play.Server.CHAT,
-			PacketType.Play.Server.BOSS
+			PacketType.Play.Server.CHAT
 		);
 	}
 
