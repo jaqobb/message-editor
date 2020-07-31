@@ -106,7 +106,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 			if (position == null) {
 				position = packet.getChatTypes().read(0).getId();
 			}
-			if (position != 2) {
+			if (position != 2 && player.hasPermission("messageeditor.message.copy")) {
 				TextComponent messageToSend = new TextComponent(ComponentSerializer.parse(messageJson));
 				messageToSend.setHoverEvent(COPY_TO_CLIPBOARD_HOVER_EVENT);
 				messageToSend.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, messageJson.replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0")));
