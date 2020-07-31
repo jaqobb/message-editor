@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import net.md_5.bungee.api.chat.ClickEvent;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -43,6 +44,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
 	}
 
 	private List<MessageEdit> messageEdits;
+	private boolean attachSpecialHoverAndClickEvents;
 	private boolean placeholderApiFound;
 	private boolean mvdwPlaceholderApiFound;
 	private Cache<String, String> cachedMessages;
@@ -53,6 +55,16 @@ public final class MessageEditorPlugin extends JavaPlugin {
 		this.getLogger().log(Level.INFO, "Loading configuration...");
 		this.saveDefaultConfig();
 		this.messageEdits = (List<MessageEdit>) this.getConfig().getList("message-edits");
+		this.getLogger().log(Level.INFO, "Checking if copying to clipboard is supported on your server...");
+		try {
+			ClickEvent.Action.valueOf("COPY_TO_CLIPBOARD");
+			this.getLogger().log(Level.INFO, "Copying to clipboard is supported on your server.");
+			this.attachSpecialHoverAndClickEvents = true;
+		} catch (IllegalArgumentException exception) {
+			this.getLogger().log(Level.INFO, "Copying to clipboard is not supported on your server, disabling attaching special hover and click events...");
+			this.getLogger().log(Level.INFO, "Attaching special hover and click events works only on server version at least 1.15.");
+			this.attachSpecialHoverAndClickEvents = false;
+		}
 		this.getLogger().log(Level.INFO, "Checking for placeholder APIs...");
 		PluginManager pluginManager = this.getServer().getPluginManager();
 		this.placeholderApiFound = pluginManager.isPluginEnabled("PlaceholderAPI");
@@ -72,6 +84,10 @@ public final class MessageEditorPlugin extends JavaPlugin {
 
 	public List<MessageEdit> getMessageEdits() {
 		return Collections.unmodifiableList(this.messageEdits);
+	}
+
+	public boolean isAttachingSpecialHoverAndClickEventsEnabled() {
+		return this.attachSpecialHoverAndClickEvents;
 	}
 
 	public boolean isPlaceholderApiPresent() {
