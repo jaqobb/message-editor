@@ -119,8 +119,8 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 	}
 
 	private PacketContainer copyPacketContent(PacketContainer oldPacket, PacketContainer newPacket) {
+		newPacket.getChatComponents().write(0, oldPacket.getChatComponents().read(0));
 		if (newPacket.getType() == PacketType.Play.Server.CHAT) {
-			newPacket.getChatComponents().write(0, oldPacket.getChatComponents().read(0));
 			Byte position = oldPacket.getBytes().readSafely(0);
 			if (position == null) {
 				position = oldPacket.getChatTypes().read(0).getId();
@@ -134,7 +134,6 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 					.ifPresent(type -> newPacket.getChatTypes().writeSafely(0, type));
 			}
 		}
-		// TODO: Add kick/disconnect support.
 		return newPacket;
 	}
 }
