@@ -64,7 +64,7 @@ public final class MessageEditorCommand implements CommandExecutor {
 						sender.sendMessage(ChatColor.RED + "[Message Editor] " + place.name() + " is already added to places to analyze.");
 					}
 				} catch (IllegalArgumentException exception) {
-					sender.sendMessage(ChatColor.RED + "[Message Editor] Could not convert '" + arguments[index] + "' to place to analyze.");
+					sender.sendMessage(ChatColor.RED + "[Message Editor] Could not convert '" + arguments[index] + "' to analyze place.");
 				}
 			}
 			sender.sendMessage(ChatColor.GREEN + "[Message Editor] You have added " + places + " place(s) to analyze.");
@@ -87,7 +87,7 @@ public final class MessageEditorCommand implements CommandExecutor {
 						sender.sendMessage(ChatColor.RED + "[Message Editor] " + place.name() + " is not added to places to analyze.");
 					}
 				} catch (IllegalArgumentException exception) {
-					sender.sendMessage(ChatColor.RED + "[Message Editor] Could not convert '" + arguments[index] + "' to place to analyze.");
+					sender.sendMessage(ChatColor.RED + "[Message Editor] Could not convert '" + arguments[index] + "' to analyze place.");
 				}
 			}
 			sender.sendMessage(ChatColor.GREEN + "[Message Editor] You have removed " + places + " place(s) to analyze.");
