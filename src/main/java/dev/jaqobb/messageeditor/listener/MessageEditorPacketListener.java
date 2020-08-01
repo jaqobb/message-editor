@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package dev.jaqobb.messageeditor;
+package dev.jaqobb.messageeditor.listener;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -32,6 +32,9 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
+import dev.jaqobb.messageeditor.data.MessageAnalyzePlace;
+import dev.jaqobb.messageeditor.data.MessageEdit;
+import dev.jaqobb.messageeditor.MessageEditorPlugin;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
@@ -102,7 +105,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 				message.setJson(messageAfter);
 			}
 		}
-		MessageAnalyzePlace place;
+		MessageAnalyzePlace messageAnalyzePlace;
 		if (newPacket.getType() == PacketType.Play.Server.CHAT) {
 			// 0 and 1 - chat
 			// 2 - action bar
@@ -110,17 +113,17 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 			if (position == null) {
 				position = newPacket.getChatTypes().read(0).getId();
 			}
-			place = MessageAnalyzePlace.fromPacketType(newPacket.getType(), position);
+			messageAnalyzePlace = MessageAnalyzePlace.fromPacketType(newPacket.getType(), position);
 		} else {
-			place = MessageAnalyzePlace.fromPacketType(newPacket.getType());
+			messageAnalyzePlace = MessageAnalyzePlace.fromPacketType(newPacket.getType());
 		}
-		if (place != null && this.getPlugin().isPlaceToAnalyze(place)) {
+		if (messageAnalyzePlace != null && this.getPlugin().isMessageAnalyzePlaceActive(messageAnalyzePlace)) {
 			String messageClear = "";
 			for (BaseComponent component : ComponentSerializer.parse(message.getJson())) {
 				messageClear += component.toPlainText();
 			}
 			String messageJson = message.getJson().replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0");
-			this.logPacketContent(place, player, messageClear, messageJson);
+			this.logPacketContent(messageAnalyzePlace, player, messageClear, messageJson);
 		}
 		if (newPacket.getType() == PacketType.Play.Server.CHAT) {
 			// 0 and 1 - chat
@@ -159,8 +162,8 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 		return newPacket;
 	}
 
-	private void logPacketContent(MessageAnalyzePlace place, Player receiver, String messageClear, String messageJson) {
-		this.getPlugin().getLogger().log(Level.INFO, "Place: " + place.name() + ".");
+	private void logPacketContent(MessageAnalyzePlace messageAnalyzePlace, Player receiver, String messageClear, String messageJson) {
+		this.getPlugin().getLogger().log(Level.INFO, "Place: " + messageAnalyzePlace.name() + ".");
 		this.getPlugin().getLogger().log(Level.INFO, "Receiver: " + receiver.getName() + ".");
 		this.getPlugin().getLogger().log(Level.INFO, "Message clear: " + messageClear);
 		this.getPlugin().getLogger().log(Level.INFO, "Message JSON: " + messageJson);

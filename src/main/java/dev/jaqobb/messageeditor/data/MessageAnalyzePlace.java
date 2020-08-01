@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package dev.jaqobb.messageeditor;
+package dev.jaqobb.messageeditor.data;
 
 import com.comphenix.protocol.PacketType;
 import java.util.Arrays;

@@ -27,6 +27,10 @@ package dev.jaqobb.messageeditor;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import dev.jaqobb.messageeditor.command.MessageEditorCommand;
+import dev.jaqobb.messageeditor.data.MessageAnalyzePlace;
+import dev.jaqobb.messageeditor.data.MessageEdit;
+import dev.jaqobb.messageeditor.listener.MessageEditorPacketListener;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -49,7 +53,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
 	private boolean placeholderApiFound;
 	private boolean mvdwPlaceholderApiFound;
 	private Cache<String, String> cachedMessages;
-	private Set<MessageAnalyzePlace> placesToAnalyze;
+	private Set<MessageAnalyzePlace> activeMessageAnalyzePlaces;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -76,7 +80,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
 		this.cachedMessages = CacheBuilder.newBuilder()
 			.expireAfterAccess(15L, TimeUnit.MINUTES)
 			.build();
-		this.placesToAnalyze = EnumSet.noneOf(MessageAnalyzePlace.class);
+		this.activeMessageAnalyzePlaces = EnumSet.noneOf(MessageAnalyzePlace.class);
 	}
 
 	@Override
@@ -123,23 +127,23 @@ public final class MessageEditorPlugin extends JavaPlugin {
 		this.cachedMessages.invalidateAll();
 	}
 
-	public Set<MessageAnalyzePlace> getPlacesToAnalyze() {
-		return Collections.unmodifiableSet(this.placesToAnalyze);
+	public Set<MessageAnalyzePlace> getActiveMessageAnalyzePlaces() {
+		return Collections.unmodifiableSet(this.activeMessageAnalyzePlaces);
 	}
 
-	public boolean isPlaceToAnalyze(MessageAnalyzePlace place) {
-		return this.placesToAnalyze.contains(place);
+	public boolean isMessageAnalyzePlaceActive(MessageAnalyzePlace messageAnalyzePlace) {
+		return this.activeMessageAnalyzePlaces.contains(messageAnalyzePlace);
 	}
 
-	public void addPlaceToAnalyze(MessageAnalyzePlace place) {
-		this.placesToAnalyze.add(place);
+	public void activateMessageAnalyzePlace(MessageAnalyzePlace messageAnalyzePlace) {
+		this.activeMessageAnalyzePlaces.add(messageAnalyzePlace);
 	}
 
-	public void removePlaceToAnalyze(MessageAnalyzePlace place) {
-		this.placesToAnalyze.remove(place);
+	public void deactivateMessageAnalyzePlace(MessageAnalyzePlace messageAnalyzePlace) {
+		this.activeMessageAnalyzePlaces.remove(messageAnalyzePlace);
 	}
 
-	public void clearPlacesToAnalyze() {
-		this.placesToAnalyze.clear();
+	public void deactivateAllMessageAnalyzePlaces() {
+		this.activeMessageAnalyzePlaces.clear();
 	}
 }
