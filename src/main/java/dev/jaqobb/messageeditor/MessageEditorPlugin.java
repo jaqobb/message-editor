@@ -28,6 +28,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import dev.jaqobb.messageeditor.command.MessageEditorCommand;
+import dev.jaqobb.messageeditor.command.MessageEditorCommandTabCompleter;
 import dev.jaqobb.messageeditor.data.MessageAnalyzePlace;
 import dev.jaqobb.messageeditor.data.MessageEdit;
 import dev.jaqobb.messageeditor.listener.MessageEditorPacketListener;
@@ -87,6 +88,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
 	public void onEnable() {
 		this.getLogger().log(Level.INFO, "Registering command...");
 		this.getCommand("message-editor").setExecutor(new MessageEditorCommand(this));
+		this.getCommand("message-editor").setTabCompleter(new MessageEditorCommandTabCompleter());
 		this.getLogger().log(Level.INFO, "Registering packet listener...");
 		ProtocolLibrary.getProtocolManager().addPacketListener(new MessageEditorPacketListener(this));
 	}
