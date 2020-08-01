@@ -73,10 +73,17 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 
 	@Override
 	public void onPacketSending(PacketEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
 		Player player = event.getPlayer();
 		PacketContainer oldPacket = event.getPacket();
 		PacketContainer newPacket = this.copyPacketContent(oldPacket, ProtocolLibrary.getProtocolManager().createPacket(oldPacket.getType()));
 		WrappedChatComponent message = newPacket.getChatComponents().read(0);
+		// TODO: Pretty sure 'message' should not be null at any point. /plugins command causes 'message' to be null for some reason.
+		if (message == null) {
+			return;
+		}
 		String newMessage = this.getPlugin().getCachedMessage(message.getJson());
 		MessageEdit messageEdit = null;
 		Matcher messageEditMatcher = null;
