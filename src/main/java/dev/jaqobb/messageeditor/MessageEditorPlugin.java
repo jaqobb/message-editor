@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
@@ -100,6 +101,10 @@ public final class MessageEditorPlugin extends JavaPlugin {
 		this.getCommand("message-editor").setTabCompleter(new MessageEditorCommandTabCompleter());
 		this.getLogger().log(Level.INFO, "Registering packet listener...");
 		ProtocolLibrary.getProtocolManager().addPacketListener(new MessageEditorPacketListener(this));
+	}
+
+	public String getPrefix() {
+		return ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + "Message Editor" + ChatColor.DARK_GRAY + "] ";
 	}
 
 	public Metrics getMetrics() {

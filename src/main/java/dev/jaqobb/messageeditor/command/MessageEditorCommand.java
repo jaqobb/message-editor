@@ -24,16 +24,14 @@
 
 package dev.jaqobb.messageeditor.command;
 
-import dev.jaqobb.messageeditor.data.MessageAnalyzePlace;
 import dev.jaqobb.messageeditor.MessageEditorPlugin;
+import dev.jaqobb.messageeditor.data.MessageAnalyzePlace;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 public final class MessageEditorCommand implements CommandExecutor {
-
-	private static final String PREFIX = ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + "Message Editor" + ChatColor.DARK_GRAY + "] ";
 
 	private final MessageEditorPlugin plugin;
 
@@ -44,7 +42,7 @@ public final class MessageEditorCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] arguments) {
 		if (!sender.hasPermission("messageeditor.use")) {
-			sender.sendMessage(PREFIX + ChatColor.RED + "You do not have the required permissions to do that.");
+			sender.sendMessage(this.plugin.getPrefix() + ChatColor.RED + "You do not have the required permissions to do that.");
 			return true;
 		}
 		if (arguments.length == 0) {
@@ -53,8 +51,8 @@ public final class MessageEditorCommand implements CommandExecutor {
 		}
 		if (arguments[0].equalsIgnoreCase("activate")) {
 			if (arguments.length == 1) {
-				sender.sendMessage(PREFIX + ChatColor.GRAY + "Correct usage: " + ChatColor.YELLOW + "/" + label + " activate <message analyze places>" + ChatColor.GRAY + ".");
-				sender.sendMessage(PREFIX);
+				sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "Correct usage: " + ChatColor.YELLOW + "/" + label + " activate <message analyze places>" + ChatColor.GRAY + ".");
+				sender.sendMessage(this.plugin.getPrefix());
 				this.sendAvailablePlacesToAnalyze(sender);
 				return true;
 			}
@@ -66,19 +64,19 @@ public final class MessageEditorCommand implements CommandExecutor {
 						this.plugin.activateMessageAnalyzePlace(messageAnalyzePlace);
 						activatedMessageAnalyzePlaces++;
 					} else {
-						sender.sendMessage(PREFIX + ChatColor.GRAY + messageAnalyzePlace.name() + ChatColor.RED + " message analyze place is already active.");
+						sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + messageAnalyzePlace.name() + ChatColor.RED + " message analyze place is already active.");
 					}
 				} catch (IllegalArgumentException exception) {
-					sender.sendMessage(PREFIX + ChatColor.RED + "Could not convert '" + ChatColor.GRAY + arguments[index] + ChatColor.RED + "' to message analyze place.");
+					sender.sendMessage(this.plugin.getPrefix() + ChatColor.RED + "Could not convert '" + ChatColor.GRAY + arguments[index] + ChatColor.RED + "' to message analyze place.");
 				}
 			}
-			sender.sendMessage(PREFIX + ChatColor.GRAY + "You have activated " + ChatColor.YELLOW + activatedMessageAnalyzePlaces + ChatColor.GRAY + " message analyze place(s).");
+			sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "You have activated " + ChatColor.YELLOW + activatedMessageAnalyzePlaces + ChatColor.GRAY + " message analyze place(s).");
 			return true;
 		}
 		if (arguments[0].equalsIgnoreCase("deactivate")) {
 			if (arguments.length == 1) {
-				sender.sendMessage(PREFIX + ChatColor.GRAY + "Correct usage: " + ChatColor.YELLOW + "/" + label + " deactivate <message analyze places>" + ChatColor.GRAY + ".");
-				sender.sendMessage(PREFIX);
+				sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "Correct usage: " + ChatColor.YELLOW + "/" + label + " deactivate <message analyze places>" + ChatColor.GRAY + ".");
+				sender.sendMessage(this.plugin.getPrefix());
 				this.sendAvailablePlacesToAnalyze(sender);
 				return true;
 			}
@@ -90,18 +88,18 @@ public final class MessageEditorCommand implements CommandExecutor {
 						this.plugin.deactivateMessageAnalyzePlace(messageAnalyzePlace);
 						deactivatedMessageAnalyzePlaces++;
 					} else {
-						sender.sendMessage(PREFIX + ChatColor.GRAY + messageAnalyzePlace.name() + ChatColor.RED + " message analyze place is not active.");
+						sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + messageAnalyzePlace.name() + ChatColor.RED + " message analyze place is not active.");
 					}
 				} catch (IllegalArgumentException exception) {
-					sender.sendMessage(PREFIX + ChatColor.RED + "Could not convert '" + ChatColor.GRAY + arguments[index] + ChatColor.RED + "' to message analyze place.");
+					sender.sendMessage(this.plugin.getPrefix() + ChatColor.RED + "Could not convert '" + ChatColor.GRAY + arguments[index] + ChatColor.RED + "' to message analyze place.");
 				}
 			}
-			sender.sendMessage(PREFIX + ChatColor.GRAY + "You have deactivated " + ChatColor.YELLOW + deactivatedMessageAnalyzePlaces + ChatColor.GRAY + " message analyze place(s).");
+			sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "You have deactivated " + ChatColor.YELLOW + deactivatedMessageAnalyzePlaces + ChatColor.GRAY + " message analyze place(s).");
 			return true;
 		}
 		if (arguments[0].equalsIgnoreCase("deactivate-all")) {
 			this.plugin.deactivateAllMessageAnalyzePlaces();
-			sender.sendMessage(PREFIX + ChatColor.GRAY + "You have deactivated all message analyze places.");
+			sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "You have deactivated all message analyze places.");
 			return true;
 		}
 		this.sendHelpMessage(sender, label);
@@ -109,18 +107,18 @@ public final class MessageEditorCommand implements CommandExecutor {
 	}
 
 	private void sendHelpMessage(CommandSender sender, String label) {
-		sender.sendMessage(PREFIX + ChatColor.GRAY + "Available commands:");
-		sender.sendMessage(PREFIX + ChatColor.YELLOW + "/" + label + " activate <message analyze places> " + ChatColor.GRAY + "-" + ChatColor.YELLOW + " Activates specified message analyze places.");
-		sender.sendMessage(PREFIX + ChatColor.YELLOW + "/" + label + " deactivate <message analyze places> " + ChatColor.GRAY + "-" + ChatColor.YELLOW + " Deactivates specified message analyze places.");
-		sender.sendMessage(PREFIX + ChatColor.YELLOW + "/" + label + " deactivate-all " + ChatColor.GRAY + "-" + ChatColor.YELLOW + " Deactivates all message analyze places.");
-		sender.sendMessage(PREFIX);
+		sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "Available commands:");
+		sender.sendMessage(this.plugin.getPrefix() + ChatColor.YELLOW + "/" + label + " activate <message analyze places> " + ChatColor.GRAY + "-" + ChatColor.YELLOW + " Activates specified message analyze places.");
+		sender.sendMessage(this.plugin.getPrefix() + ChatColor.YELLOW + "/" + label + " deactivate <message analyze places> " + ChatColor.GRAY + "-" + ChatColor.YELLOW + " Deactivates specified message analyze places.");
+		sender.sendMessage(this.plugin.getPrefix() + ChatColor.YELLOW + "/" + label + " deactivate-all " + ChatColor.GRAY + "-" + ChatColor.YELLOW + " Deactivates all message analyze places.");
+		sender.sendMessage(this.plugin.getPrefix());
 		this.sendAvailablePlacesToAnalyze(sender);
 	}
 
 	private void sendAvailablePlacesToAnalyze(CommandSender sender) {
-		sender.sendMessage(PREFIX + ChatColor.GRAY + "Available message analyze places:");
+		sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "Available message analyze places:");
 		for (MessageAnalyzePlace place : MessageAnalyzePlace.values()) {
-			sender.sendMessage(PREFIX + ChatColor.GRAY + "- " + ChatColor.YELLOW + place.name());
+			sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "- " + ChatColor.YELLOW + place.name());
 		}
 	}
 }
