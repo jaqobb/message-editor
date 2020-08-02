@@ -32,6 +32,7 @@ import dev.jaqobb.messageeditor.command.MessageEditorCommandTabCompleter;
 import dev.jaqobb.messageeditor.data.MessageAnalyzePlace;
 import dev.jaqobb.messageeditor.data.MessageEdit;
 import dev.jaqobb.messageeditor.listener.MessageEditorPacketListener;
+import dev.jaqobb.messageeditor.updater.MessageEditorUpdater;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -51,6 +52,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
 	}
 
 	private Metrics metrics;
+	private MessageEditorUpdater updater;
 	private List<MessageEdit> messageEdits;
 	private boolean attachSpecialHoverAndClickEvents;
 	private boolean placeholderApiFound;
@@ -63,6 +65,9 @@ public final class MessageEditorPlugin extends JavaPlugin {
 	public void onLoad() {
 		this.getLogger().log(Level.INFO, "Starting metrics...");
 		this.metrics = new Metrics(this, 8376);
+		this.getLogger().log(Level.INFO, "Starting updater...");
+		this.updater = new MessageEditorUpdater(this);
+		this.getServer().getScheduler().runTaskTimerAsynchronously(this, this.updater, 0L, 20L * 60L * 30L);
 		this.getLogger().log(Level.INFO, "Loading configuration...");
 		this.saveDefaultConfig();
 		this.messageEdits = (List<MessageEdit>) this.getConfig().getList("message-edits");
@@ -99,6 +104,10 @@ public final class MessageEditorPlugin extends JavaPlugin {
 
 	public Metrics getMetrics() {
 		return this.metrics;
+	}
+
+	public MessageEditorUpdater getUpdater() {
+		return this.updater;
 	}
 
 	public List<MessageEdit> getMessageEdits() {
