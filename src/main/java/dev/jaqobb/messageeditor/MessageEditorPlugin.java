@@ -39,6 +39,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import net.md_5.bungee.api.chat.ClickEvent;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -49,6 +50,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
 		ConfigurationSerialization.registerClass(MessageEdit.class);
 	}
 
+	private Metrics metrics;
 	private List<MessageEdit> messageEdits;
 	private boolean attachSpecialHoverAndClickEvents;
 	private boolean placeholderApiFound;
@@ -59,6 +61,8 @@ public final class MessageEditorPlugin extends JavaPlugin {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onLoad() {
+		this.getLogger().log(Level.INFO, "Starting metrics...");
+		this.metrics = new Metrics(this, 8376);
 		this.getLogger().log(Level.INFO, "Loading configuration...");
 		this.saveDefaultConfig();
 		this.messageEdits = (List<MessageEdit>) this.getConfig().getList("message-edits");
@@ -91,6 +95,10 @@ public final class MessageEditorPlugin extends JavaPlugin {
 		this.getCommand("message-editor").setTabCompleter(new MessageEditorCommandTabCompleter());
 		this.getLogger().log(Level.INFO, "Registering packet listener...");
 		ProtocolLibrary.getProtocolManager().addPacketListener(new MessageEditorPacketListener(this));
+	}
+
+	public Metrics getMetrics() {
+		return this.metrics;
 	}
 
 	public List<MessageEdit> getMessageEdits() {

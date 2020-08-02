@@ -1,10 +1,11 @@
 plugins {
 	java
 	id("net.minecrell.plugin-yml.bukkit") version "0.3.0"
+	id("com.github.johnrengelman.shadow") version "5.2.0"
 }
 
 group = "dev.jaqobb"
-version = "1.2.1"
+version = "1.2.2"
 description = "Spigot plugin that allows editing in-game messages that were previously unmodifiable"
 
 java {
@@ -25,6 +26,12 @@ bukkit {
 		create("message-editor") {
 			description = "Message Editor main command"
 		}
+	}
+}
+
+tasks {
+	shadowJar {
+		relocate("org.bstats.bukkit", "dev.jaqobb.messageeditor.metrics")
 	}
 }
 
@@ -56,6 +63,11 @@ repositories {
 			includeGroup("be.maximvdw")
 		}
 	}
+	maven("https://repo.codemc.org/repository/maven-public/") {
+		content {
+			includeGroup("org.bstats")
+		}
+	}
 }
 
 dependencies {
@@ -65,4 +77,5 @@ dependencies {
 	compileOnly("be.maximvdw:MVdWPlaceholderAPI:3.0.2-SNAPSHOT") {
 		exclude("org.spigotmc")
 	}
+	implementation("org.bstats:bstats-bukkit:1.7")
 }

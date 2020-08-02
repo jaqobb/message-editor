@@ -80,14 +80,14 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 		PacketContainer oldPacket = event.getPacket();
 		PacketContainer newPacket = this.copyPacketContent(oldPacket, ProtocolLibrary.getProtocolManager().createPacket(oldPacket.getType()));
 		WrappedChatComponent message = newPacket.getChatComponents().read(0);
-		// TODO: Pretty sure 'message' should not be null at any point. /plugins command causes 'message' to be null for some reason.
+		// TODO: Pretty sure 'message' should not be null at any point. I.e. /plugins command (and probably more) causes 'message' to be null for some reason.
 		if (message == null) {
 			return;
 		}
-		String newMessage = this.getPlugin().getCachedMessage(message.getJson());
+		String cachedMessage = this.getPlugin().getCachedMessage(message.getJson());
 		MessageEdit messageEdit = null;
 		Matcher messageEditMatcher = null;
-		if (newMessage == null) {
+		if (cachedMessage == null) {
 			for (MessageEdit currentMessageEdit : this.getPlugin().getMessageEdits()) {
 				Matcher currentMessageEditMatcher = currentMessageEdit.getMatcher(message.getJson());
 				if (currentMessageEditMatcher != null) {
@@ -97,9 +97,9 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 				}
 			}
 		}
-		if (newMessage != null || (messageEdit != null && messageEditMatcher != null)) {
-			if (newMessage != null) {
-				message.setJson(newMessage);
+		if (cachedMessage != null || (messageEdit != null && messageEditMatcher != null)) {
+			if (cachedMessage != null) {
+				message.setJson(cachedMessage);
 			} else {
 				String messageAfter = messageEditMatcher.replaceAll(messageEdit.getMessageAfter());
 				if (this.getPlugin().isPlaceholderApiPresent()) {
