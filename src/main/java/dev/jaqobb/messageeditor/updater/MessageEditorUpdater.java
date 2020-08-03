@@ -39,13 +39,13 @@ public final class MessageEditorUpdater implements Runnable {
 	private final MessageEditorPlugin plugin;
 	private final String currentVersion;
 	private String latestVersion;
-	private int versionDifference;
+	private Integer versionDifference;
 
 	public MessageEditorUpdater(MessageEditorPlugin plugin) {
 		this.plugin = plugin;
 		this.currentVersion = this.plugin.getDescription().getVersion();
 		this.latestVersion = null;
-		this.versionDifference = Integer.MIN_VALUE;
+		this.versionDifference = null;
 	}
 
 	public String getCurrentVersion() {
@@ -56,34 +56,22 @@ public final class MessageEditorUpdater implements Runnable {
 		return this.latestVersion;
 	}
 
-	public int getVersionDifference() {
+	public Integer getVersionDifference() {
 		return this.versionDifference;
 	}
 
 	public String getUpdateMessage() {
 		String message = this.plugin.getPrefix() + ChatColor.GRAY;
-		if (this.latestVersion == null || this.versionDifference == Integer.MIN_VALUE) {
+		if (this.latestVersion == null || this.versionDifference == null) {
 			message += "Could not retrieve the latest version data, make sure you have the internet access.";
 		} else if (this.versionDifference > 0) {
-			message += "You are running a newer than the latest version of " + ChatColor.YELLOW + "Message Editor" + ChatColor.GRAY + ", perhaps you are running a development build?";
+			message += "You are running a development version of " + ChatColor.YELLOW + "Message Editor" + ChatColor.GRAY + " - " + ChatColor.YELLOW + this.currentVersion + ChatColor.GRAY + ". The latest version is " + ChatColor.YELLOW + this.latestVersion + ChatColor.GRAY + ". It is not advised to run development versions as they are very likely to not work as intended.";
 		} else if (this.versionDifference < 0) {
-			message += "You are running an outdated version of " + ChatColor.YELLOW + "Message Editor" + ChatColor.GRAY + " (" + ChatColor.YELLOW + this.currentVersion + ChatColor.GRAY + ") while the latest version is: " + ChatColor.YELLOW + this.latestVersion + ChatColor.GRAY + ". Consider updating the plugin.";
+			message += "You are running an outdated version of " + ChatColor.YELLOW + "Message Editor" + ChatColor.GRAY + " - " + ChatColor.YELLOW + this.currentVersion + ChatColor.GRAY + ". The latest version is " + ChatColor.YELLOW + this.latestVersion + ChatColor.GRAY + ". Consider updating the plugin.";
 		} else {
-			message += "You are running the latest version of " + ChatColor.YELLOW + "Message Editor" + ChatColor.GRAY + ".";
+			message += "You are running the latest version of " + ChatColor.YELLOW + "Message Editor" + ChatColor.GRAY + " - " + ChatColor.YELLOW + this.latestVersion + ChatColor.GRAY + ". You have nothing to do.";
 		}
 		return message;
-	}
-
-	public String getClearUpdateMessage() {
-		if (this.latestVersion == null || this.versionDifference == Integer.MIN_VALUE) {
-			return "Could not retrieve the latest version data, make sure you have the internet access.";
-		} else if (this.versionDifference > 0) {
-			return "You are running a newer than the latest version of Message Editor, perhaps you are running a development build?";
-		} else if (this.versionDifference < 0) {
-			return "You are running an outdated version of Message Editor (" + this.currentVersion + ") while the latest version is: " + this.latestVersion + ". Consider updating the plugin.";
-		} else {
-			return "You are running the latest version of Message Editor.";
-		}
 	}
 
 	@Override
