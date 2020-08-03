@@ -65,9 +65,9 @@ public final class MessageEditorUpdater implements Runnable {
 		if (this.latestVersion == null || this.versionDifference == null) {
 			message += "Could not retrieve the latest version data, make sure you have the internet access.";
 		} else if (this.versionDifference > 0) {
-			message += "You are running a development version of " + ChatColor.YELLOW + "Message Editor" + ChatColor.GRAY + " - " + ChatColor.YELLOW + this.currentVersion + ChatColor.GRAY + ". The latest version is " + ChatColor.YELLOW + this.latestVersion + ChatColor.GRAY + ". It is not advised to run development versions as they are very likely to not work as intended.";
+			message += "You are running a development version of " + ChatColor.YELLOW + "Message Editor" + ChatColor.GRAY + " (" + ChatColor.YELLOW + this.currentVersion + ChatColor.GRAY + "). The latest version is " + ChatColor.YELLOW + this.latestVersion + ChatColor.GRAY + ". It is not advised to run development versions as they are very likely to not work as intended.";
 		} else if (this.versionDifference < 0) {
-			message += "You are running an outdated version of " + ChatColor.YELLOW + "Message Editor" + ChatColor.GRAY + " - " + ChatColor.YELLOW + this.currentVersion + ChatColor.GRAY + ". The latest version is " + ChatColor.YELLOW + this.latestVersion + ChatColor.GRAY + ". Consider updating the plugin.";
+			message += "You are running an outdated version of " + ChatColor.YELLOW + "Message Editor" + ChatColor.GRAY + " (" + ChatColor.YELLOW + this.currentVersion + ChatColor.GRAY + "). The latest version is " + ChatColor.YELLOW + this.latestVersion + ChatColor.GRAY + ". Consider updating the plugin.";
 		} else {
 			message += "You are running the latest version of " + ChatColor.YELLOW + "Message Editor" + ChatColor.GRAY + " - " + ChatColor.YELLOW + this.latestVersion + ChatColor.GRAY + ". You have nothing to do.";
 		}
