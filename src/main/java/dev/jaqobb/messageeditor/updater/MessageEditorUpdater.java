@@ -32,6 +32,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import javax.net.ssl.HttpsURLConnection;
+import net.md_5.bungee.api.ChatColor;
 
 public final class MessageEditorUpdater implements Runnable {
 
@@ -44,6 +45,7 @@ public final class MessageEditorUpdater implements Runnable {
 		this.plugin = plugin;
 		this.currentVersion = this.plugin.getDescription().getVersion();
 		this.latestVersion = null;
+		this.versionDifference = Integer.MIN_VALUE;
 	}
 
 	public String getCurrentVersion() {
@@ -56,6 +58,32 @@ public final class MessageEditorUpdater implements Runnable {
 
 	public int getVersionDifference() {
 		return this.versionDifference;
+	}
+
+	public String getUpdateMessage() {
+		String message = this.plugin.getPrefix() + ChatColor.GRAY;
+		if (this.latestVersion == null || this.versionDifference == Integer.MIN_VALUE) {
+			message += "Could not retrieve the latest version data, make sure you have the internet access.";
+		} else if (this.versionDifference > 0) {
+			message += "You are running a newer than the latest version of " + ChatColor.YELLOW + "Message Editor" + ChatColor.GRAY + ", perhaps you are running a development build?";
+		} else if (this.versionDifference < 0) {
+			message += "You are running an outdated version of " + ChatColor.YELLOW + "Message Editor" + ChatColor.GRAY + " (" + ChatColor.YELLOW + this.currentVersion + ChatColor.GRAY + ") while the latest version is: " + ChatColor.YELLOW + this.latestVersion + ChatColor.GRAY + ". Consider updating the plugin.";
+		} else {
+			message += "You are running the latest version of " + ChatColor.YELLOW + "Message Editor" + ChatColor.GRAY + ".";
+		}
+		return message;
+	}
+
+	public String getClearUpdateMessage() {
+		if (this.latestVersion == null || this.versionDifference == Integer.MIN_VALUE) {
+			return "Could not retrieve the latest version data, make sure you have the internet access.";
+		} else if (this.versionDifference > 0) {
+			return "You are running a newer than the latest version of Message Editor, perhaps you are running a development build?";
+		} else if (this.versionDifference < 0) {
+			return "You are running an outdated version of Message Editor (" + this.currentVersion + ") while the latest version is: " + this.latestVersion + ". Consider updating the plugin.";
+		} else {
+			return "You are running the latest version of Message Editor.";
+		}
 	}
 
 	@Override
@@ -83,7 +111,7 @@ public final class MessageEditorUpdater implements Runnable {
 			}
 			connection.disconnect();
 		} catch (Exception exception) {
-			this.plugin.getLogger().log(Level.WARNING, "Could not retrieve the latest version.", exception);
+			this.plugin.getLogger().log(Level.WARNING, "Could not retrieve the latest version data.", exception);
 		}
 	}
 }
