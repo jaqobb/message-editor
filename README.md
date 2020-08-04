@@ -11,12 +11,12 @@ Message Editor supports:
 * [x] Editing chat messages - since 1.0.0
 * [x] Editing action bar messages - since 1.0.0
 * [x] Editing kick/disconnect messages - since 1.1.0
+* [x] Cancelling sending messages - since 1.2.4
 * [ ] Editing boss bar titles
 * [ ] Editing scoreboard titles
 * [ ] Editing scoreboard entries
 * [ ] Editing message positions
 * [ ] Triggering message editing only on specific positions
-* [ ] Cancelling sending messages
 
 ### Showcase
 
