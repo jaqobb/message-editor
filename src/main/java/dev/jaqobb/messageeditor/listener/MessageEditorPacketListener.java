@@ -99,7 +99,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 		}
 		if (cachedMessage != null || (messageEdit != null && messageEditMatcher != null)) {
 			if (cachedMessage != null) {
-				if (cachedMessage.isEmpty()) {
+				if (cachedMessage.isEmpty() && newPacket.getType() == PacketType.Play.Server.CHAT) {
 					event.setCancelled(true);
 					return;
 				}
@@ -113,7 +113,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 					messageAfter = be.maximvdw.placeholderapi.PlaceholderAPI.replacePlaceholders(player, messageAfter);
 				}
 				this.getPlugin().cacheMessage(message.getJson(), messageAfter);
-				if (messageAfter.isEmpty()) {
+				if (messageAfter.isEmpty() && newPacket.getType() == PacketType.Play.Server.CHAT) {
 					event.setCancelled(true);
 					return;
 				}
