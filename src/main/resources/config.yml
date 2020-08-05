@@ -1,3 +1,7 @@
+# Whether special hover and click events should be attached to chat messages.
+# This option does nothing on < 1.15 servers.
+attach-special-hover-and-click-events: true
+
 # Messages that should be edited.
 # For in-depth tutorial check here:
 # https://github.com/jaqobb/message-editor#usage
