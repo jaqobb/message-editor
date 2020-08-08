@@ -173,6 +173,9 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 					.findAny()
 					.ifPresent(type -> newPacket.getChatTypes().writeSafely(0, type));
 			}
+			if (oldPacket.getUUIDs().size() == 1 && newPacket.getUUIDs().size() == 1) {
+				newPacket.getUUIDs().write(0, oldPacket.getUUIDs().read(0));
+			}
 		}
 		return newPacket;
 	}
