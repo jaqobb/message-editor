@@ -99,7 +99,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
 		this.getServer().getScheduler().runTaskTimerAsynchronously(this, this.updater, 0L, 20L * 60L * 30L);
 		this.getLogger().log(Level.INFO, "Registering command...");
 		this.getCommand("message-editor").setExecutor(new MessageEditorCommand(this));
-		this.getCommand("message-editor").setTabCompleter(new MessageEditorCommandTabCompleter());
+		this.getCommand("message-editor").setTabCompleter(new MessageEditorCommandTabCompleter(this));
 		this.getLogger().log(Level.INFO, "Registering listener...");
 		this.getServer().getPluginManager().registerEvents(new MessageEditorListener(this), this);
 		this.getLogger().log(Level.INFO, "Registering packet listener...");

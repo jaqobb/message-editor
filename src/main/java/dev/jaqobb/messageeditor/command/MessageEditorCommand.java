@@ -58,16 +58,16 @@ public final class MessageEditorCommand implements CommandExecutor {
 			}
 			int activatedMessageAnalyzePlaces = 0;
 			for (int index = 1; index < arguments.length; index++) {
-				try {
-					MessageAnalyzePlace messageAnalyzePlace = MessageAnalyzePlace.fromName(arguments[index]);
-					if (!this.plugin.isMessageAnalyzePlaceActive(messageAnalyzePlace)) {
-						this.plugin.activateMessageAnalyzePlace(messageAnalyzePlace);
-						activatedMessageAnalyzePlaces++;
-					} else {
-						sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + messageAnalyzePlace.name() + ChatColor.RED + " message analyze place is already active.");
-					}
-				} catch (IllegalArgumentException exception) {
+				MessageAnalyzePlace messageAnalyzePlace = MessageAnalyzePlace.fromName(arguments[index]);
+				if (messageAnalyzePlace == null) {
 					sender.sendMessage(this.plugin.getPrefix() + ChatColor.RED + "Could not convert '" + ChatColor.GRAY + arguments[index] + ChatColor.RED + "' to message analyze place.");
+					continue;
+				}
+				if (!this.plugin.isMessageAnalyzePlaceActive(messageAnalyzePlace)) {
+					this.plugin.activateMessageAnalyzePlace(messageAnalyzePlace);
+					activatedMessageAnalyzePlaces++;
+				} else {
+					sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + messageAnalyzePlace.name() + ChatColor.RED + " message analyze place is already active.");
 				}
 			}
 			sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "You have activated " + ChatColor.YELLOW + activatedMessageAnalyzePlaces + ChatColor.GRAY + " message analyze place(s).");
@@ -82,16 +82,16 @@ public final class MessageEditorCommand implements CommandExecutor {
 			}
 			int deactivatedMessageAnalyzePlaces = 0;
 			for (int index = 1; index < arguments.length; index++) {
-				try {
-					MessageAnalyzePlace messageAnalyzePlace = MessageAnalyzePlace.fromName(arguments[index]);
-					if (this.plugin.isMessageAnalyzePlaceActive(messageAnalyzePlace)) {
-						this.plugin.deactivateMessageAnalyzePlace(messageAnalyzePlace);
-						deactivatedMessageAnalyzePlaces++;
-					} else {
-						sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + messageAnalyzePlace.name() + ChatColor.RED + " message analyze place is not active.");
-					}
-				} catch (IllegalArgumentException exception) {
+				MessageAnalyzePlace messageAnalyzePlace = MessageAnalyzePlace.fromName(arguments[index]);
+				if (messageAnalyzePlace == null) {
 					sender.sendMessage(this.plugin.getPrefix() + ChatColor.RED + "Could not convert '" + ChatColor.GRAY + arguments[index] + ChatColor.RED + "' to message analyze place.");
+					continue;
+				}
+				if (this.plugin.isMessageAnalyzePlaceActive(messageAnalyzePlace)) {
+					this.plugin.deactivateMessageAnalyzePlace(messageAnalyzePlace);
+					deactivatedMessageAnalyzePlaces++;
+				} else {
+					sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + messageAnalyzePlace.name() + ChatColor.RED + " message analyze place is not active.");
 				}
 			}
 			sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "You have deactivated " + ChatColor.YELLOW + deactivatedMessageAnalyzePlaces + ChatColor.GRAY + " message analyze place(s).");
