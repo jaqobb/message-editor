@@ -24,6 +24,7 @@
 
 package dev.jaqobb.messageeditor.command;
 
+import dev.jaqobb.messageeditor.MessageEditorPlugin;
 import dev.jaqobb.messageeditor.data.MessageAnalyzePlace;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,6 +33,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 
 public final class MessageEditorCommandTabCompleter implements TabCompleter {
+
+	private final MessageEditorPlugin plugin;
+
+	public MessageEditorCommandTabCompleter(MessageEditorPlugin plugin) {
+		this.plugin = plugin;
+	}
 
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] arguments) {
@@ -53,7 +60,9 @@ public final class MessageEditorCommandTabCompleter implements TabCompleter {
 		if (arguments.length > 1 && (arguments[0].equalsIgnoreCase("activate") || (arguments[0].equalsIgnoreCase("deactivate")))) {
 			for (int index = 1; index < arguments.length; index++) {
 				for (MessageAnalyzePlace messageAnalyzePlace : MessageAnalyzePlace.values()) {
-					if (messageAnalyzePlace.name().startsWith(arguments[index].toUpperCase())) {
+					boolean messageAnalyzePlaceActive = this.plugin.isMessageAnalyzePlaceActive(messageAnalyzePlace);
+					boolean canMessageAnalyzePlaceActiveStateBeModified = arguments[0].equalsIgnoreCase("activate") != messageAnalyzePlaceActive;
+					if (canMessageAnalyzePlaceActiveStateBeModified && messageAnalyzePlace.name().startsWith(arguments[index].toUpperCase())) {
 						completion.add(messageAnalyzePlace.name());
 					}
 				}
