@@ -80,16 +80,18 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 		PacketContainer oldPacket = event.getPacket();
 		PacketContainer newPacket = this.copyPacketContent(oldPacket, ProtocolLibrary.getProtocolManager().createPacket(oldPacket.getType()));
 		WrappedChatComponent message = newPacket.getChatComponents().read(0);
-		// TODO: Pretty sure 'message' should not be null at any point. I.e. /plugins command (and probably more) causes 'message' to be null for some reason.
-		if (message == null) {
-			return;
+		String messageJson;
+		if (message != null) {
+			messageJson = message.getJson();
+		} else {
+			messageJson = ComponentSerializer.toString(newPacket.getSpecificModifier(BaseComponent[].class).read(0));
 		}
-		String cachedMessage = this.getPlugin().getCachedMessage(message.getJson());
+		String cachedMessage = this.getPlugin().getCachedMessage(messageJson);
 		MessageEdit messageEdit = null;
 		Matcher messageEditMatcher = null;
 		if (cachedMessage == null) {
 			for (MessageEdit currentMessageEdit : this.getPlugin().getMessageEdits()) {
-				Matcher currentMessageEditMatcher = currentMessageEdit.getMatcher(message.getJson());
+				Matcher currentMessageEditMatcher = currentMessageEdit.getMatcher(messageJson);
 				if (currentMessageEditMatcher != null) {
 					messageEdit = currentMessageEdit;
 					messageEditMatcher = currentMessageEditMatcher;
@@ -103,7 +105,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 					event.setCancelled(true);
 					return;
 				}
-				message.setJson(cachedMessage);
+				messageJson = cachedMessage;
 			} else {
 				String messageAfter = messageEditMatcher.replaceAll(messageEdit.getMessageAfter());
 				if (this.getPlugin().isPlaceholderApiPresent()) {
@@ -112,12 +114,12 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 				if (this.getPlugin().isMvdwPlaceholderApiPresent()) {
 					messageAfter = be.maximvdw.placeholderapi.PlaceholderAPI.replacePlaceholders(player, messageAfter);
 				}
-				this.getPlugin().cacheMessage(message.getJson(), messageAfter);
+				this.getPlugin().cacheMessage(messageJson, messageAfter);
 				if (messageAfter.isEmpty() && newPacket.getType() == PacketType.Play.Server.CHAT) {
 					event.setCancelled(true);
 					return;
 				}
-				message.setJson(messageAfter);
+				messageJson = messageAfter;
 			}
 		}
 		MessageAnalyzePlace messageAnalyzePlace;
@@ -134,11 +136,10 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 		}
 		if (messageAnalyzePlace != null && this.getPlugin().isMessageAnalyzePlaceActive(messageAnalyzePlace)) {
 			String messageClear = "";
-			for (BaseComponent component : ComponentSerializer.parse(message.getJson())) {
+			for (BaseComponent component : ComponentSerializer.parse(messageJson)) {
 				messageClear += component.toPlainText();
 			}
-			String messageJson = message.getJson().replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0");
-			this.logPacketContent(messageAnalyzePlace, player, messageClear, messageJson);
+			this.logPacketContent(messageAnalyzePlace, player, messageClear, messageJson.replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0"));
 		}
 		if (newPacket.getType() == PacketType.Play.Server.CHAT) {
 			// 0 and 1 - chat
@@ -151,16 +152,23 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 				TextComponent messageToSend = new TextComponent(ComponentSerializer.parse(message.getJson()));
 				messageToSend.setHoverEvent(COPY_TO_CLIPBOARD_HOVER_EVENT);
 				messageToSend.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, message.getJson().replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0")));
-				message.setJson(ComponentSerializer.toString(messageToSend));
+				messageJson = ComponentSerializer.toString(messageToSend);
 			}
 		}
-		newPacket.getChatComponents().write(0, message);
+		if (message != null) {
+			newPacket.getChatComponents().write(0, WrappedChatComponent.fromJson(messageJson));
+		} else {
+			newPacket.getSpecificModifier(BaseComponent[].class).write(0, ComponentSerializer.parse(messageJson));
+		}
 		event.setPacket(newPacket);
 	}
 
 	private PacketContainer copyPacketContent(PacketContainer oldPacket, PacketContainer newPacket) {
 		newPacket.getChatComponents().write(0, oldPacket.getChatComponents().read(0));
 		if (newPacket.getType() == PacketType.Play.Server.CHAT) {
+			if (oldPacket.getSpecificModifier(BaseComponent[].class).size() == 1 && newPacket.getSpecificModifier(BaseComponent[].class).size() == 1) {
+				newPacket.getSpecificModifier(BaseComponent[].class).write(0, oldPacket.getSpecificModifier(BaseComponent[].class).read(0));
+			}
 			Byte position = oldPacket.getBytes().readSafely(0);
 			if (position == null) {
 				position = oldPacket.getChatTypes().read(0).getId();
