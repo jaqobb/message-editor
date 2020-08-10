@@ -137,7 +137,10 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 			for (BaseComponent component : ComponentSerializer.parse(messageJson)) {
 				messageClear += component.toPlainText();
 			}
-			this.logPacketContent(messageAnalyzePlace, player, messageClear, messageJson.replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0"));
+			this.getPlugin().getLogger().log(Level.INFO, "Place: " + messageAnalyzePlace.name() + ".");
+			this.getPlugin().getLogger().log(Level.INFO, "Receiver: " + player.getName() + ".");
+			this.getPlugin().getLogger().log(Level.INFO, "Message clear: " + messageClear);
+			this.getPlugin().getLogger().log(Level.INFO, "Message JSON: " + messageJson.replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0"));
 		}
 		if (newPacket.getType() == PacketType.Play.Server.CHAT) {
 			if (messagePosition != 2 && player.hasPermission("messageeditor.use") && this.getPlugin().isAttachingSpecialHoverAndClickEventsEnabled()) {
@@ -185,12 +188,5 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 			}
 		}
 		return newPacket;
-	}
-
-	private void logPacketContent(MessageAnalyzePlace messageAnalyzePlace, Player receiver, String messageClear, String messageJson) {
-		this.getPlugin().getLogger().log(Level.INFO, "Place: " + messageAnalyzePlace.name() + ".");
-		this.getPlugin().getLogger().log(Level.INFO, "Receiver: " + receiver.getName() + ".");
-		this.getPlugin().getLogger().log(Level.INFO, "Message clear: " + messageClear);
-		this.getPlugin().getLogger().log(Level.INFO, "Message JSON: " + messageJson);
 	}
 }
