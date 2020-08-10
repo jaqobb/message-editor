@@ -80,11 +80,14 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 		PacketContainer oldPacket = event.getPacket();
 		PacketContainer newPacket = this.copyPacketContent(oldPacket, ProtocolLibrary.getProtocolManager().createPacket(oldPacket.getType()));
 		WrappedChatComponent message = newPacket.getChatComponents().read(0);
-		String messageJson;
+		String messageJson = null;
 		if (message != null) {
 			messageJson = message.getJson();
-		} else {
+		} else if (newPacket.getType() == PacketType.Play.Server.CHAT) {
 			messageJson = ComponentSerializer.toString(newPacket.getSpecificModifier(BaseComponent[].class).read(0));
+		}
+		if (messageJson == null) {
+			return;
 		}
 		String cachedMessage = this.getPlugin().getCachedMessage(messageJson);
 		MessageEdit messageEdit = null;
