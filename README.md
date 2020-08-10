@@ -60,12 +60,15 @@ I have created a new message that looks like that:
 
 Since we captured the number of versions we are behind, we can now also use it in the new message.
 
-We are pretty much done. The only thing left is adding all we have done to the config.yml file, so it looks like that in the end:
+We are pretty much done. The only thing left is adding all we have done to the `message-edits` section in the config.yml file, so it looks like that in the end:
 ```yml
 # Messages that should be edited.
 # For in-depth tutorial check here:
 # https://github.com/jaqobb/message-editor#usage
 message-edits:
+- ==: MessageEdit
+  message-before-pattern: '\{"extra":\[\{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"yellow","text":"([a-zA-Z0-9_]{3,16}) joined the game"\}\],"text":""\}'
+  message-after: '{"extra":[{"bold":true,"italic":true,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"red","text":"$1 joined the game"}],"text":""}'
 - ==: MessageEdit
   message-before-pattern: '\{"extra":\[\{"text":"You are (\d+) version\(s\) behind"\}\],"text":""\}'
   message-after: '{"extra":[{"color":"green","text":"You are $1 version(s) behind. Consider updating."}],"text":""}'
