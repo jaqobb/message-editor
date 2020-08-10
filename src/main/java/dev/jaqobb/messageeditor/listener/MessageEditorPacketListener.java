@@ -83,7 +83,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 		String messageJson = null;
 		if (message != null) {
 			messageJson = message.getJson();
-		} else if (newPacket.getType() == PacketType.Play.Server.CHAT) {
+		} else if (newPacket.getType() == PacketType.Play.Server.CHAT && newPacket.getSpecificModifier(BaseComponent[].class).size() == 1) {
 			messageJson = ComponentSerializer.toString(newPacket.getSpecificModifier(BaseComponent[].class).read(0));
 		}
 		if (messageJson == null) {
