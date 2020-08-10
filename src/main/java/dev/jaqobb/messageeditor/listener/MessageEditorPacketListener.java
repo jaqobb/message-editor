@@ -125,15 +125,10 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 				messageJson = messageAfter;
 			}
 		}
+		Byte messagePosition = this.getMessagePosition(newPacket);
 		MessageAnalyzePlace messageAnalyzePlace;
 		if (newPacket.getType() == PacketType.Play.Server.CHAT) {
-			// 0 and 1 - chat
-			// 2 - action bar
-			Byte position = newPacket.getBytes().readSafely(0);
-			if (position == null) {
-				position = newPacket.getChatTypes().read(0).getId();
-			}
-			messageAnalyzePlace = MessageAnalyzePlace.fromPacketType(newPacket.getType(), position);
+			messageAnalyzePlace = MessageAnalyzePlace.fromPacketType(newPacket.getType(), messagePosition);
 		} else {
 			messageAnalyzePlace = MessageAnalyzePlace.fromPacketType(newPacket.getType());
 		}
@@ -145,13 +140,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 			this.logPacketContent(messageAnalyzePlace, player, messageClear, messageJson.replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0"));
 		}
 		if (newPacket.getType() == PacketType.Play.Server.CHAT) {
-			// 0 and 1 - chat
-			// 2 - action bar
-			Byte position = newPacket.getBytes().readSafely(0);
-			if (position == null) {
-				position = newPacket.getChatTypes().read(0).getId();
-			}
-			if (position != 2 && player.hasPermission("messageeditor.use") && this.getPlugin().isAttachingSpecialHoverAndClickEventsEnabled()) {
+			if (messagePosition != 2 && player.hasPermission("messageeditor.use") && this.getPlugin().isAttachingSpecialHoverAndClickEventsEnabled()) {
 				TextComponent messageToSend = new TextComponent(ComponentSerializer.parse(message.getJson()));
 				messageToSend.setHoverEvent(COPY_TO_CLIPBOARD_HOVER_EVENT);
 				messageToSend.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, message.getJson().replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0")));
@@ -160,32 +149,39 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 		}
 		if (message != null) {
 			newPacket.getChatComponents().write(0, WrappedChatComponent.fromJson(messageJson));
-		} else {
+		} else if (newPacket.getType() == PacketType.Play.Server.CHAT && newPacket.getSpecificModifier(BaseComponent[].class).size() == 1) {
 			newPacket.getSpecificModifier(BaseComponent[].class).write(0, ComponentSerializer.parse(messageJson));
 		}
 		event.setPacket(newPacket);
 	}
 
+	private Byte getMessagePosition(PacketContainer packet) {
+		if (packet.getType() != PacketType.Play.Server.CHAT) {
+			return null;
+		}
+		// 0 and 1 - chat
+		// 2 - action bar
+		Byte position = packet.getBytes().readSafely(0);
+		if (position == null) {
+			position = packet.getChatTypes().read(0).getId();
+		}
+		return position;
+	}
+
 	private PacketContainer copyPacketContent(PacketContainer oldPacket, PacketContainer newPacket) {
 		newPacket.getChatComponents().write(0, oldPacket.getChatComponents().read(0));
 		if (newPacket.getType() == PacketType.Play.Server.CHAT) {
-			if (oldPacket.getSpecificModifier(BaseComponent[].class).size() == 1 && newPacket.getSpecificModifier(BaseComponent[].class).size() == 1) {
-				newPacket.getSpecificModifier(BaseComponent[].class).write(0, oldPacket.getSpecificModifier(BaseComponent[].class).read(0));
+			BaseComponent[] components = oldPacket.getSpecificModifier(BaseComponent[].class).readSafely(0);
+			if (components != null) {
+				newPacket.getSpecificModifier(BaseComponent[].class).writeSafely(0, components);
 			}
-			Byte position = oldPacket.getBytes().readSafely(0);
-			if (position == null) {
-				position = oldPacket.getChatTypes().read(0).getId();
-			}
+			Byte position = this.getMessagePosition(oldPacket);
 			newPacket.getBytes().writeSafely(0, position);
 			if (EnumWrappers.getChatTypeClass() != null) {
-				Byte finalPosition = position;
 				Arrays.stream(EnumWrappers.ChatType.values())
-					.filter(type -> type.getId() == finalPosition)
+					.filter(type -> type.getId() == position)
 					.findAny()
-					.ifPresent(type -> newPacket.getChatTypes().writeSafely(0, type));
-			}
-			if (oldPacket.getUUIDs().size() == 1 && newPacket.getUUIDs().size() == 1) {
-				newPacket.getUUIDs().write(0, oldPacket.getUUIDs().read(0));
+					.ifPresent(type -> newPacket.getChatTypes().write(0, type));
 			}
 		}
 		return newPacket;
