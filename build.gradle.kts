@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "dev.jaqobb"
-version = "1.2.6"
+version = "1.3.0"
 description = "Spigot plugin that allows editing in-game messages that were previously unmodifiable"
 
 java {
@@ -71,7 +71,7 @@ repositories {
 }
 
 dependencies {
-	compileOnly("org.spigotmc:spigot-api:1.16.1-R0.1-SNAPSHOT")
+	compileOnly("org.spigotmc:spigot-api:1.16.2-R0.1-SNAPSHOT")
 	compileOnly("com.comphenix.protocol:ProtocolLib:4.6.0-SNAPSHOT")
 	compileOnly("me.clip:placeholderapi:2.10.6")
 	compileOnly("be.maximvdw:MVdWPlaceholderAPI:3.0.2-SNAPSHOT") {

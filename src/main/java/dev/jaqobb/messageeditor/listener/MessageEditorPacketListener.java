@@ -35,6 +35,7 @@ import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import dev.jaqobb.messageeditor.MessageEditorPlugin;
 import dev.jaqobb.messageeditor.data.MessageAnalyzePlace;
 import dev.jaqobb.messageeditor.data.MessageEdit;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
@@ -62,7 +63,8 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 			ListenerPriority.HIGHEST,
 			PacketType.Login.Server.DISCONNECT,
 			PacketType.Play.Server.KICK_DISCONNECT,
-			PacketType.Play.Server.CHAT
+			PacketType.Play.Server.CHAT,
+			PacketType.Play.Server.BOSS
 		);
 	}
 
@@ -186,6 +188,11 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 					.findAny()
 					.ifPresent(type -> newPacket.getChatTypes().write(0, type));
 			}
+		} else if (newPacket.getType() == PacketType.Play.Server.BOSS) {
+			for (Field field : oldPacket.getModifier().getFields()) {
+				this.getPlugin().getLogger().log(Level.INFO, field.getName() + ": " + field.getType().getName());
+			}
+			newPacket.getUUIDs().write(0, oldPacket.getUUIDs().read(0));
 		}
 		return newPacket;
 	}
