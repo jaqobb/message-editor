@@ -193,6 +193,14 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 				this.getPlugin().getLogger().log(Level.INFO, field.getName() + ": " + field.getType().getName());
 			}
 			newPacket.getUUIDs().write(0, oldPacket.getUUIDs().read(0));
+			// Health
+			newPacket.getFloat().write(0, oldPacket.getFloat().read(1));
+			// Darken sky
+			newPacket.getBooleans().write(0, oldPacket.getBooleans().read(0));
+			// Play music
+			newPacket.getBooleans().write(1, oldPacket.getBooleans().read(1));
+			// Create fog
+			newPacket.getBooleans().write(2, oldPacket.getBooleans().read(2));
 		}
 		return newPacket;
 	}
