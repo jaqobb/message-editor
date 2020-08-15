@@ -12,7 +12,7 @@ Message Editor supports:
 * [x] Editing action bar messages - since 1.0.0
 * [x] Editing kick/disconnect messages - since 1.1.0
 * [x] Cancelling sending messages - since 1.2.4
-* [ ] Editing boss bar titles
+* [x] Editing boss bar titles - since 1.3.0 (requires server version at least 1.9)
 * [ ] Editing scoreboard titles
 * [ ] Editing scoreboard entries
 * [ ] Editing message positions
