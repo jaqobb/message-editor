@@ -25,7 +25,7 @@
 package dev.jaqobb.messageeditor.command;
 
 import dev.jaqobb.messageeditor.MessageEditorPlugin;
-import dev.jaqobb.messageeditor.data.analyze.MessageAnalyzePlace;
+import dev.jaqobb.messageeditor.data.place.MessagePlace;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -58,7 +58,7 @@ public final class MessageEditorCommand implements CommandExecutor {
 			}
 			int activatedMessageAnalyzePlaces = 0;
 			for (int index = 1; index < arguments.length; index++) {
-				MessageAnalyzePlace messageAnalyzePlace = MessageAnalyzePlace.fromName(arguments[index]);
+				MessagePlace messageAnalyzePlace = MessagePlace.fromName(arguments[index]);
 				if (messageAnalyzePlace == null) {
 					sender.sendMessage(this.plugin.getPrefix() + ChatColor.RED + "Could not convert '" + ChatColor.GRAY + arguments[index] + ChatColor.RED + "' to message analyze place.");
 					continue;
@@ -82,7 +82,7 @@ public final class MessageEditorCommand implements CommandExecutor {
 			}
 			int deactivatedMessageAnalyzePlaces = 0;
 			for (int index = 1; index < arguments.length; index++) {
-				MessageAnalyzePlace messageAnalyzePlace = MessageAnalyzePlace.fromName(arguments[index]);
+				MessagePlace messageAnalyzePlace = MessagePlace.fromName(arguments[index]);
 				if (messageAnalyzePlace == null) {
 					sender.sendMessage(this.plugin.getPrefix() + ChatColor.RED + "Could not convert '" + ChatColor.GRAY + arguments[index] + ChatColor.RED + "' to message analyze place.");
 					continue;
@@ -117,7 +117,7 @@ public final class MessageEditorCommand implements CommandExecutor {
 
 	private void sendAvailablePlacesToAnalyze(CommandSender sender) {
 		sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "Available message analyze places:");
-		for (MessageAnalyzePlace place : MessageAnalyzePlace.values()) {
+		for (MessagePlace place : MessagePlace.values()) {
 			sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "- " + ChatColor.YELLOW + place.name());
 		}
 	}

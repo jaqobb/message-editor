@@ -25,7 +25,7 @@
 package dev.jaqobb.messageeditor.command;
 
 import dev.jaqobb.messageeditor.MessageEditorPlugin;
-import dev.jaqobb.messageeditor.data.analyze.MessageAnalyzePlace;
+import dev.jaqobb.messageeditor.data.place.MessagePlace;
 import java.util.LinkedList;
 import java.util.List;
 import org.bukkit.command.Command;
@@ -59,7 +59,7 @@ public final class MessageEditorCommandTabCompleter implements TabCompleter {
 		}
 		if (arguments.length > 1 && (arguments[0].equalsIgnoreCase("activate") || (arguments[0].equalsIgnoreCase("deactivate")))) {
 			for (int index = 1; index < arguments.length; index++) {
-				for (MessageAnalyzePlace messageAnalyzePlace : MessageAnalyzePlace.values()) {
+				for (MessagePlace messageAnalyzePlace : MessagePlace.values()) {
 					boolean messageAnalyzePlaceActive = this.plugin.isMessageAnalyzePlaceActive(messageAnalyzePlace);
 					boolean canMessageAnalyzePlaceActiveStateBeModified = arguments[0].equalsIgnoreCase("activate") != messageAnalyzePlaceActive;
 					if (canMessageAnalyzePlaceActiveStateBeModified && messageAnalyzePlace.name().startsWith(arguments[index].toUpperCase())) {

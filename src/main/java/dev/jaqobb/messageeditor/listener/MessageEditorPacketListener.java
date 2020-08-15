@@ -33,7 +33,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import dev.jaqobb.messageeditor.MessageEditorPlugin;
-import dev.jaqobb.messageeditor.data.analyze.MessageAnalyzePlace;
+import dev.jaqobb.messageeditor.data.place.MessagePlace;
 import dev.jaqobb.messageeditor.data.bossbar.BossBarMessageAction;
 import dev.jaqobb.messageeditor.data.bossbar.BossBarMessageColor;
 import dev.jaqobb.messageeditor.data.bossbar.BossBarMessageStyle;
@@ -136,11 +136,11 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 			}
 		}
 		Byte messagePosition = this.getMessagePosition(newPacket);
-		MessageAnalyzePlace messageAnalyzePlace;
+		MessagePlace messageAnalyzePlace;
 		if (newPacket.getType() == PacketType.Play.Server.CHAT) {
-			messageAnalyzePlace = MessageAnalyzePlace.fromPacketType(newPacket.getType(), messagePosition);
+			messageAnalyzePlace = MessagePlace.fromPacketType(newPacket.getType(), messagePosition);
 		} else {
-			messageAnalyzePlace = MessageAnalyzePlace.fromPacketType(newPacket.getType());
+			messageAnalyzePlace = MessagePlace.fromPacketType(newPacket.getType());
 		}
 		if (messageAnalyzePlace != null && this.getPlugin().isMessageAnalyzePlaceActive(messageAnalyzePlace)) {
 			String messageClear = "";

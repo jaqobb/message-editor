@@ -22,31 +22,38 @@
  * SOFTWARE.
  */
 
-package dev.jaqobb.messageeditor.data.analyze;
+package dev.jaqobb.messageeditor.data.place;
 
 import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.utility.MinecraftVersion;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public enum MessageAnalyzePlace {
+public enum MessagePlace {
 
-	CHAT(PacketType.Play.Server.CHAT, (byte) 0, (byte) 1),
-	ACTION_BAR(PacketType.Play.Server.CHAT, (byte) 2),
-	KICK(PacketType.Play.Server.KICK_DISCONNECT),
-	DISCONNECT(PacketType.Login.Server.DISCONNECT),
-	BOSS_BAR(PacketType.Play.Server.BOSS);
+	CHAT(MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 0, (byte) 1),
+	ACTION_BAR(MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 2),
+	KICK(MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.KICK_DISCONNECT),
+	DISCONNECT(MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Login.Server.DISCONNECT),
+	BOSS_BAR(MinecraftVersion.COMBAT_UPDATE, PacketType.Play.Server.BOSS);
 
+	private final MinecraftVersion minimumMinecraftVersion;
 	private final PacketType packetType;
 	private final Set<Byte> chatTypes;
 
-	private MessageAnalyzePlace(PacketType packetType, byte... chatTypes) {
+	private MessagePlace(MinecraftVersion minimumMinecraftVersion, PacketType packetType, byte... chatTypes) {
+		this.minimumMinecraftVersion = minimumMinecraftVersion;
 		this.packetType = packetType;
 		this.chatTypes = new HashSet<>(chatTypes.length);
 		for (byte chatType : chatTypes) {
 			this.chatTypes.add(chatType);
 		}
+	}
+
+	public MinecraftVersion getMinimumMinecraftVersion() {
+		return this.minimumMinecraftVersion;
 	}
 
 	public PacketType getPacketType() {
@@ -57,18 +64,18 @@ public enum MessageAnalyzePlace {
 		return Collections.unmodifiableSet(this.chatTypes);
 	}
 
-	public static MessageAnalyzePlace fromName(String name) {
+	public static MessagePlace fromName(String name) {
 		return Arrays.stream(values())
 			.filter(place -> place.name().equalsIgnoreCase(name))
 			.findFirst()
 			.orElse(null);
 	}
 
-	public static MessageAnalyzePlace fromPacketType(PacketType packetType) {
+	public static MessagePlace fromPacketType(PacketType packetType) {
 		return fromPacketType(packetType, (byte) -1);
 	}
 
-	public static MessageAnalyzePlace fromPacketType(PacketType packetType, byte chatType) {
+	public static MessagePlace fromPacketType(PacketType packetType, byte chatType) {
 		return Arrays.stream(values())
 			.filter(place -> place.packetType == packetType)
 			.filter(place -> place.chatTypes.contains(chatType) || chatType == -1)

@@ -29,7 +29,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import dev.jaqobb.messageeditor.command.MessageEditorCommand;
 import dev.jaqobb.messageeditor.command.MessageEditorCommandTabCompleter;
-import dev.jaqobb.messageeditor.data.analyze.MessageAnalyzePlace;
+import dev.jaqobb.messageeditor.data.place.MessagePlace;
 import dev.jaqobb.messageeditor.data.edit.MessageEdit;
 import dev.jaqobb.messageeditor.listener.MessageEditorListener;
 import dev.jaqobb.messageeditor.listener.MessageEditorPacketListener;
@@ -60,7 +60,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
 	private boolean placeholderApiFound;
 	private boolean mvdwPlaceholderApiFound;
 	private Cache<String, String> cachedMessages;
-	private Set<MessageAnalyzePlace> activeMessageAnalyzePlaces;
+	private Set<MessagePlace> activeMessageAnalyzePlaces;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -89,7 +89,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
 		this.cachedMessages = CacheBuilder.newBuilder()
 			.expireAfterAccess(15L, TimeUnit.MINUTES)
 			.build();
-		this.activeMessageAnalyzePlaces = EnumSet.noneOf(MessageAnalyzePlace.class);
+		this.activeMessageAnalyzePlaces = EnumSet.noneOf(MessagePlace.class);
 	}
 
 	@Override
@@ -154,19 +154,19 @@ public final class MessageEditorPlugin extends JavaPlugin {
 		this.cachedMessages.invalidateAll();
 	}
 
-	public Set<MessageAnalyzePlace> getActiveMessageAnalyzePlaces() {
+	public Set<MessagePlace> getActiveMessageAnalyzePlaces() {
 		return Collections.unmodifiableSet(this.activeMessageAnalyzePlaces);
 	}
 
-	public boolean isMessageAnalyzePlaceActive(MessageAnalyzePlace messageAnalyzePlace) {
+	public boolean isMessageAnalyzePlaceActive(MessagePlace messageAnalyzePlace) {
 		return this.activeMessageAnalyzePlaces.contains(messageAnalyzePlace);
 	}
 
-	public void activateMessageAnalyzePlace(MessageAnalyzePlace messageAnalyzePlace) {
+	public void activateMessageAnalyzePlace(MessagePlace messageAnalyzePlace) {
 		this.activeMessageAnalyzePlaces.add(messageAnalyzePlace);
 	}
 
-	public void deactivateMessageAnalyzePlace(MessageAnalyzePlace messageAnalyzePlace) {
+	public void deactivateMessageAnalyzePlace(MessagePlace messageAnalyzePlace) {
 		this.activeMessageAnalyzePlaces.remove(messageAnalyzePlace);
 	}
 
