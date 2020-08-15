@@ -63,7 +63,7 @@ public final class MessageEditorUpdater implements Runnable {
 	public String getUpdateMessage() {
 		String message = this.plugin.getPrefix() + ChatColor.GRAY;
 		if (this.latestVersion == null || this.versionDifference == null) {
-			message += "Could not retrieve the latest version data. Please make sure that you have the internet access.";
+			message += "Could not retrieve the latest version data. Make sure that you have the internet access.";
 		} else if (this.versionDifference > 0) {
 			message += "You are probably running a development version (" + ChatColor.YELLOW + this.currentVersion + ChatColor.GRAY + " > " + ChatColor.YELLOW + this.latestVersion + ChatColor.GRAY + "). It is not advised to run development versions on production servers as they are very likely to not work as intended.";
 		} else if (this.versionDifference < 0) {
