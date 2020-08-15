@@ -64,6 +64,11 @@ public final class MessageEditorCommand implements CommandExecutor {
 					sender.sendMessage(this.plugin.getPrefix() + ChatColor.RED + "Could not convert '" + ChatColor.GRAY + arguments[index] + ChatColor.RED + "' to message analyze place.");
 					continue;
 				}
+				boolean isValidMinecraftVersion = MinecraftVersion.atOrAbove(messageAnalyzePlace.getMinimumMinecraftVersion());
+				if (!isValidMinecraftVersion) {
+					sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + messageAnalyzePlace.name() + ChatColor.RED + " message analyze place is not supported on your server.");
+					continue;
+				}
 				if (!this.plugin.isMessageAnalyzePlaceActive(messageAnalyzePlace)) {
 					this.plugin.activateMessageAnalyzePlace(messageAnalyzePlace);
 					activatedMessageAnalyzePlaces++;
@@ -88,6 +93,11 @@ public final class MessageEditorCommand implements CommandExecutor {
 					sender.sendMessage(this.plugin.getPrefix() + ChatColor.RED + "Could not convert '" + ChatColor.GRAY + arguments[index] + ChatColor.RED + "' to message analyze place.");
 					continue;
 				}
+				boolean isValidMinecraftVersion = MinecraftVersion.atOrAbove(messageAnalyzePlace.getMinimumMinecraftVersion());
+				if (!isValidMinecraftVersion) {
+					sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + messageAnalyzePlace.name() + ChatColor.RED + " message analyze place is not supported on your server.");
+					continue;
+				}
 				if (this.plugin.isMessageAnalyzePlaceActive(messageAnalyzePlace)) {
 					this.plugin.deactivateMessageAnalyzePlace(messageAnalyzePlace);
 					deactivatedMessageAnalyzePlaces++;
@@ -99,8 +109,8 @@ public final class MessageEditorCommand implements CommandExecutor {
 			return true;
 		}
 		if (arguments[0].equalsIgnoreCase("deactivate-all")) {
-			this.plugin.deactivateAllMessageAnalyzePlaces();
-			sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "You have deactivated all message analyze places.");
+			this.plugin.deactivateAllActiveMessageAnalyzePlaces();
+			sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "You have deactivated all active message analyze places.");
 			return true;
 		}
 		this.sendHelpMessage(sender, label);

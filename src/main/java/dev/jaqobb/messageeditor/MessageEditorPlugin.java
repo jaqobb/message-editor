@@ -170,7 +170,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
 		this.activeMessageAnalyzePlaces.remove(messageAnalyzePlace);
 	}
 
-	public void deactivateAllMessageAnalyzePlaces() {
+	public void deactivateAllActiveMessageAnalyzePlaces() {
 		this.activeMessageAnalyzePlaces.clear();
 	}
 }
