@@ -24,6 +24,7 @@
 
 package dev.jaqobb.messageeditor.command;
 
+import com.comphenix.protocol.utility.MinecraftVersion;
 import dev.jaqobb.messageeditor.MessageEditorPlugin;
 import dev.jaqobb.messageeditor.data.place.MessagePlace;
 import net.md_5.bungee.api.ChatColor;
@@ -117,8 +118,11 @@ public final class MessageEditorCommand implements CommandExecutor {
 
 	private void sendAvailablePlacesToAnalyze(CommandSender sender) {
 		sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "Available message analyze places:");
-		for (MessagePlace place : MessagePlace.values()) {
-			sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "- " + ChatColor.YELLOW + place.name());
+		for (MessagePlace messageAnalyzePlace : MessagePlace.values()) {
+			boolean isValidMinecraftVersion = MinecraftVersion.atOrAbove(messageAnalyzePlace.getMinimumMinecraftVersion());
+			if (isValidMinecraftVersion) {
+				sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "- " + ChatColor.YELLOW + messageAnalyzePlace.name());
+			}
 		}
 	}
 }
