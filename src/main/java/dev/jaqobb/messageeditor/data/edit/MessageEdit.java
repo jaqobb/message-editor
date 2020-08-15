@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package dev.jaqobb.messageeditor.data;
+package dev.jaqobb.messageeditor.data.edit;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

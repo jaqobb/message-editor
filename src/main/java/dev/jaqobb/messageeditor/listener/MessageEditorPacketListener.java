@@ -33,9 +33,11 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import dev.jaqobb.messageeditor.MessageEditorPlugin;
-import dev.jaqobb.messageeditor.data.MessageAnalyzePlace;
-import dev.jaqobb.messageeditor.data.MessageEdit;
-import java.lang.reflect.Field;
+import dev.jaqobb.messageeditor.data.analyze.MessageAnalyzePlace;
+import dev.jaqobb.messageeditor.data.bossbar.BossBarMessageAction;
+import dev.jaqobb.messageeditor.data.bossbar.BossBarMessageColor;
+import dev.jaqobb.messageeditor.data.bossbar.BossBarMessageStyle;
+import dev.jaqobb.messageeditor.data.edit.MessageEdit;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
@@ -81,6 +83,12 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 		Player player = event.getPlayer();
 		PacketContainer oldPacket = event.getPacket();
 		PacketContainer newPacket = this.copyPacketContent(oldPacket, ProtocolLibrary.getProtocolManager().createPacket(oldPacket.getType()));
+		if (newPacket.getType() == PacketType.Play.Server.BOSS) {
+			BossBarMessageAction action = newPacket.getEnumModifier(BossBarMessageAction.class, 1).read(0);
+			if (action != BossBarMessageAction.ADD && action != BossBarMessageAction.UPDATE_NAME) {
+				return;
+			}
+		}
 		WrappedChatComponent message = newPacket.getChatComponents().read(0);
 		String messageJson = null;
 		if (message != null) {
@@ -189,12 +197,12 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 					.ifPresent(type -> newPacket.getChatTypes().write(0, type));
 			}
 		} else if (newPacket.getType() == PacketType.Play.Server.BOSS) {
-			for (Field field : oldPacket.getModifier().getFields()) {
-				this.getPlugin().getLogger().log(Level.INFO, field.getName() + ": " + field.getType().getName());
-			}
+			newPacket.getEnumModifier(BossBarMessageAction.class, 1).write(0, oldPacket.getEnumModifier(BossBarMessageAction.class, 1).read(0));
+			newPacket.getEnumModifier(BossBarMessageColor.class, 4).write(0, oldPacket.getEnumModifier(BossBarMessageColor.class, 4).read(0));
+			newPacket.getEnumModifier(BossBarMessageStyle.class, 5).write(0, oldPacket.getEnumModifier(BossBarMessageStyle.class, 5).read(0));
 			newPacket.getUUIDs().write(0, oldPacket.getUUIDs().read(0));
 			// Health
-			newPacket.getFloat().write(0, oldPacket.getFloat().read(1));
+			newPacket.getFloat().write(0, oldPacket.getFloat().read(0));
 			// Darken sky
 			newPacket.getBooleans().write(0, oldPacket.getBooleans().read(0));
 			// Play music

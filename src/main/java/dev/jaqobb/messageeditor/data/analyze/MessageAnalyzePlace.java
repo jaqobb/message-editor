@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package dev.jaqobb.messageeditor.data;
+package dev.jaqobb.messageeditor.data.analyze;
 
 import com.comphenix.protocol.PacketType;
 import java.util.Arrays;
@@ -35,7 +35,8 @@ public enum MessageAnalyzePlace {
 	CHAT(PacketType.Play.Server.CHAT, (byte) 0, (byte) 1),
 	ACTION_BAR(PacketType.Play.Server.CHAT, (byte) 2),
 	KICK(PacketType.Play.Server.KICK_DISCONNECT),
-	DISCONNECT(PacketType.Login.Server.DISCONNECT);
+	DISCONNECT(PacketType.Login.Server.DISCONNECT),
+	BOSS_BAR(PacketType.Play.Server.BOSS);
 
 	private final PacketType packetType;
 	private final Set<Byte> chatTypes;

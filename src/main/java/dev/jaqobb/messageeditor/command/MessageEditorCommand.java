@@ -25,7 +25,7 @@
 package dev.jaqobb.messageeditor.command;
 
 import dev.jaqobb.messageeditor.MessageEditorPlugin;
-import dev.jaqobb.messageeditor.data.MessageAnalyzePlace;
+import dev.jaqobb.messageeditor.data.analyze.MessageAnalyzePlace;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
