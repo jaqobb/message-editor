@@ -25,12 +25,13 @@
 package dev.jaqobb.messageeditor;
 
 import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.utility.MinecraftVersion;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import dev.jaqobb.messageeditor.command.MessageEditorCommand;
 import dev.jaqobb.messageeditor.command.MessageEditorCommandTabCompleter;
-import dev.jaqobb.messageeditor.data.place.MessagePlace;
 import dev.jaqobb.messageeditor.data.edit.MessageEdit;
+import dev.jaqobb.messageeditor.data.place.MessagePlace;
 import dev.jaqobb.messageeditor.listener.MessageEditorListener;
 import dev.jaqobb.messageeditor.listener.MessageEditorPacketListener;
 import dev.jaqobb.messageeditor.updater.MessageEditorUpdater;
@@ -65,20 +66,32 @@ public final class MessageEditorPlugin extends JavaPlugin {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onLoad() {
+		MinecraftVersion minimumRequiredMinecraftVersion = null;
+		for (MessagePlace messagePlace : MessagePlace.values()) {
+			MinecraftVersion messagePlaceMininumRequiredMinecraftVersion = messagePlace.getMinimumRequiredMinecraftVersion();
+			if (minimumRequiredMinecraftVersion == null || minimumRequiredMinecraftVersion.compareTo(messagePlaceMininumRequiredMinecraftVersion) > 0) {
+				minimumRequiredMinecraftVersion = messagePlaceMininumRequiredMinecraftVersion;
+			}
+		}
+		if (!MinecraftVersion.atOrAbove(minimumRequiredMinecraftVersion)) {
+			this.getLogger().log(Level.WARNING, "Your server does not support any message places. The minimum required server version is " + minimumRequiredMinecraftVersion.getVersion() + ". Disabling plugin...");
+			this.setEnabled(false);
+			return;
+		}
 		this.getLogger().log(Level.INFO, "Starting metrics...");
 		this.metrics = new Metrics(this, 8376);
 		this.getLogger().log(Level.INFO, "Loading configuration...");
 		this.saveDefaultConfig();
 		this.messageEdits = (List<MessageEdit>) this.getConfig().getList("message-edits");
-		this.getLogger().log(Level.INFO, "Checking if copying to clipboard is supported on your server...");
+		this.attachSpecialHoverAndClickEvents = this.getConfig().getBoolean("attach-special-hover-and-click-events", true);
 		try {
 			ClickEvent.Action.valueOf("COPY_TO_CLIPBOARD");
-			this.getLogger().log(Level.INFO, "Copying to clipboard is supported on your server.");
-			this.attachSpecialHoverAndClickEvents = this.getConfig().getBoolean("attach-special-hover-and-click-events", true);
 		} catch (IllegalArgumentException exception) {
-			this.getLogger().log(Level.INFO, "Copying to clipboard is not supported on your server.");
-			this.getLogger().log(Level.INFO, "Attaching special hover and click events works only on server version at least 1.15.");
-			this.attachSpecialHoverAndClickEvents = false;
+			if (this.attachSpecialHoverAndClickEvents) {
+				this.attachSpecialHoverAndClickEvents = false;
+				this.getLogger().log(Level.INFO, "Copying to clipboard is not supported on your server.");
+				this.getLogger().log(Level.INFO, "Attaching special hover and click events works only on server version at least 1.15.");
+			}
 		}
 		this.getLogger().log(Level.INFO, "Checking for placeholder APIs...");
 		PluginManager pluginManager = this.getServer().getPluginManager();

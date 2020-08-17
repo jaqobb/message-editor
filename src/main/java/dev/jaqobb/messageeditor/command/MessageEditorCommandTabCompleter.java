@@ -63,7 +63,7 @@ public final class MessageEditorCommandTabCompleter implements TabCompleter {
 				for (MessagePlace messageAnalyzePlace : MessagePlace.values()) {
 					boolean messageAnalyzePlaceActive = this.plugin.isMessageAnalyzePlaceActive(messageAnalyzePlace);
 					boolean canMessageAnalyzePlaceActiveStateBeModified = arguments[0].equalsIgnoreCase("activate") != messageAnalyzePlaceActive;
-					boolean isValidMinecraftVersion = MinecraftVersion.atOrAbove(messageAnalyzePlace.getMinimumMinecraftVersion());
+					boolean isValidMinecraftVersion = MinecraftVersion.atOrAbove(messageAnalyzePlace.getMinimumRequiredMinecraftVersion());
 					if (isValidMinecraftVersion && canMessageAnalyzePlaceActiveStateBeModified && messageAnalyzePlace.name().startsWith(arguments[index].toUpperCase())) {
 						completion.add(messageAnalyzePlace.name());
 					}

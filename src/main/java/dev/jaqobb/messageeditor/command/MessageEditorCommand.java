@@ -64,7 +64,7 @@ public final class MessageEditorCommand implements CommandExecutor {
 					sender.sendMessage(this.plugin.getPrefix() + ChatColor.RED + "Could not convert '" + ChatColor.GRAY + arguments[index] + ChatColor.RED + "' to message analyze place.");
 					continue;
 				}
-				boolean isValidMinecraftVersion = MinecraftVersion.atOrAbove(messageAnalyzePlace.getMinimumMinecraftVersion());
+				boolean isValidMinecraftVersion = MinecraftVersion.atOrAbove(messageAnalyzePlace.getMinimumRequiredMinecraftVersion());
 				if (!isValidMinecraftVersion) {
 					sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + messageAnalyzePlace.name() + ChatColor.RED + " message analyze place is not supported on your server.");
 					continue;
@@ -93,7 +93,7 @@ public final class MessageEditorCommand implements CommandExecutor {
 					sender.sendMessage(this.plugin.getPrefix() + ChatColor.RED + "Could not convert '" + ChatColor.GRAY + arguments[index] + ChatColor.RED + "' to message analyze place.");
 					continue;
 				}
-				boolean isValidMinecraftVersion = MinecraftVersion.atOrAbove(messageAnalyzePlace.getMinimumMinecraftVersion());
+				boolean isValidMinecraftVersion = MinecraftVersion.atOrAbove(messageAnalyzePlace.getMinimumRequiredMinecraftVersion());
 				if (!isValidMinecraftVersion) {
 					sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + messageAnalyzePlace.name() + ChatColor.RED + " message analyze place is not supported on your server.");
 					continue;
@@ -129,7 +129,7 @@ public final class MessageEditorCommand implements CommandExecutor {
 	private void sendAvailablePlacesToAnalyze(CommandSender sender) {
 		sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "Available message analyze places:");
 		for (MessagePlace messageAnalyzePlace : MessagePlace.values()) {
-			boolean isValidMinecraftVersion = MinecraftVersion.atOrAbove(messageAnalyzePlace.getMinimumMinecraftVersion());
+			boolean isValidMinecraftVersion = MinecraftVersion.atOrAbove(messageAnalyzePlace.getMinimumRequiredMinecraftVersion());
 			if (isValidMinecraftVersion) {
 				sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "- " + ChatColor.YELLOW + messageAnalyzePlace.name());
 			}

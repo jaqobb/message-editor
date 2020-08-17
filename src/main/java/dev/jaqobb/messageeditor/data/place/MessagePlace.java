@@ -39,12 +39,12 @@ public enum MessagePlace {
 	DISCONNECT(MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Login.Server.DISCONNECT),
 	BOSS_BAR(MinecraftVersion.COMBAT_UPDATE, PacketType.Play.Server.BOSS);
 
-	private final MinecraftVersion minimumMinecraftVersion;
+	private final MinecraftVersion minimumRequiredMinecraftVersion;
 	private final PacketType packetType;
 	private final Set<Byte> chatTypes;
 
-	private MessagePlace(MinecraftVersion minimumMinecraftVersion, PacketType packetType, byte... chatTypes) {
-		this.minimumMinecraftVersion = minimumMinecraftVersion;
+	private MessagePlace(MinecraftVersion minimumRequiredMinecraftVersion, PacketType packetType, byte... chatTypes) {
+		this.minimumRequiredMinecraftVersion = minimumRequiredMinecraftVersion;
 		this.packetType = packetType;
 		this.chatTypes = new HashSet<>(chatTypes.length);
 		for (byte chatType : chatTypes) {
@@ -52,8 +52,8 @@ public enum MessagePlace {
 		}
 	}
 
-	public MinecraftVersion getMinimumMinecraftVersion() {
-		return this.minimumMinecraftVersion;
+	public MinecraftVersion getMinimumRequiredMinecraftVersion() {
+		return this.minimumRequiredMinecraftVersion;
 	}
 
 	public PacketType getPacketType() {
