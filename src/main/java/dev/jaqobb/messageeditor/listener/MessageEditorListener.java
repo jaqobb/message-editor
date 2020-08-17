@@ -30,6 +30,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.server.PluginDisableEvent;
+import org.bukkit.event.server.PluginEnableEvent;
+import org.bukkit.plugin.Plugin;
 
 public final class MessageEditorListener implements Listener {
 
@@ -44,6 +47,26 @@ public final class MessageEditorListener implements Listener {
 		Player player = event.getPlayer();
 		if (player.hasPermission("messageeditor.use")) {
 			player.sendMessage(this.plugin.getUpdater().getUpdateMessage());
+		}
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onPluginEnable(PluginEnableEvent event) {
+		Plugin plugin = event.getPlugin();
+		if (plugin.getName().equals("PlaceholderAPI")) {
+			this.plugin.setPlaceholderApiPresent(true);
+		} else if (plugin.getName().equals("MVdWPlaceholderAPI")) {
+			this.plugin.setMvdwPlaceholderApiPresent(true);
+		}
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onPluginDisable(PluginDisableEvent event) {
+		Plugin plugin = event.getPlugin();
+		if (plugin.getName().equals("PlaceholderAPI")) {
+			this.plugin.setPlaceholderApiPresent(false);
+		} else if (plugin.getName().equals("MVdWPlaceholderAPI")) {
+			this.plugin.setMvdwPlaceholderApiPresent(false);
 		}
 	}
 }

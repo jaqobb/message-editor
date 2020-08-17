@@ -58,8 +58,8 @@ public final class MessageEditorPlugin extends JavaPlugin {
 	private MessageEditorUpdater updater;
 	private List<MessageEdit> messageEdits;
 	private boolean attachSpecialHoverAndClickEvents;
-	private boolean placeholderApiFound;
-	private boolean mvdwPlaceholderApiFound;
+	private boolean placeholderApiPresent;
+	private boolean mvdwPlaceholderApiPresent;
 	private Cache<String, String> cachedMessages;
 	private Set<MessagePlace> activeMessageAnalyzePlaces;
 
@@ -95,10 +95,10 @@ public final class MessageEditorPlugin extends JavaPlugin {
 		}
 		this.getLogger().log(Level.INFO, "Checking for placeholder APIs...");
 		PluginManager pluginManager = this.getServer().getPluginManager();
-		this.placeholderApiFound = pluginManager.isPluginEnabled("PlaceholderAPI");
-		this.mvdwPlaceholderApiFound = pluginManager.isPluginEnabled("MVdWPlaceholderAPI");
-		this.getLogger().log(Level.INFO, "PlaceholderAPI: " + (this.placeholderApiFound ? "found" : "not found") + ".");
-		this.getLogger().log(Level.INFO, "MVdWPlaceholderAPI: " + (this.mvdwPlaceholderApiFound ? "found" : "not found") + ".");
+		this.placeholderApiPresent = pluginManager.isPluginEnabled("PlaceholderAPI");
+		this.mvdwPlaceholderApiPresent = pluginManager.isPluginEnabled("MVdWPlaceholderAPI");
+		this.getLogger().log(Level.INFO, "PlaceholderAPI: " + (this.placeholderApiPresent ? "present" : "not present") + ".");
+		this.getLogger().log(Level.INFO, "MVdWPlaceholderAPI: " + (this.mvdwPlaceholderApiPresent ? "present" : "not present") + ".");
 		this.cachedMessages = CacheBuilder.newBuilder()
 			.expireAfterAccess(15L, TimeUnit.MINUTES)
 			.build();
@@ -140,11 +140,19 @@ public final class MessageEditorPlugin extends JavaPlugin {
 	}
 
 	public boolean isPlaceholderApiPresent() {
-		return this.placeholderApiFound;
+		return this.placeholderApiPresent;
+	}
+
+	public void setPlaceholderApiPresent(boolean present) {
+		this.placeholderApiPresent = present;
 	}
 
 	public boolean isMvdwPlaceholderApiPresent() {
-		return this.mvdwPlaceholderApiFound;
+		return this.mvdwPlaceholderApiPresent;
+	}
+
+	public void setMvdwPlaceholderApiPresent(boolean present) {
+		this.mvdwPlaceholderApiPresent = present;
 	}
 
 	public Set<String> getCachedMessages() {
