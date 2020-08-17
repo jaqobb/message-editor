@@ -34,43 +34,43 @@ import org.bukkit.configuration.serialization.SerializableAs;
 @SerializableAs("MessageEdit")
 public final class MessageEdit implements ConfigurationSerializable {
 
-	private final Pattern messageBeforePattern;
-	private final String messageAfter;
+    private final Pattern messageBeforePattern;
+    private final String messageAfter;
 
-	public MessageEdit(String messageBeforePattern, String messageAfter) {
-		this.messageBeforePattern = Pattern.compile(messageBeforePattern);
-		this.messageAfter = messageAfter;
-	}
+    public MessageEdit(String messageBeforePattern, String messageAfter) {
+        this.messageBeforePattern = Pattern.compile(messageBeforePattern);
+        this.messageAfter = messageAfter;
+    }
 
-	public Pattern getMessageBeforePattern() {
-		return this.messageBeforePattern;
-	}
+    public Pattern getMessageBeforePattern() {
+        return this.messageBeforePattern;
+    }
 
-	public String getMessageBefore() {
-		return this.messageBeforePattern.pattern();
-	}
+    public String getMessageBefore() {
+        return this.messageBeforePattern.pattern();
+    }
 
-	public String getMessageAfter() {
-		return this.messageAfter;
-	}
+    public String getMessageAfter() {
+        return this.messageAfter;
+    }
 
-	public Matcher getMatcher(String messageBefore) {
-		Matcher matcher = this.messageBeforePattern.matcher(messageBefore);
-		if (!matcher.matches()) {
-			return null;
-		}
-		return matcher;
-	}
+    public Matcher getMatcher(String messageBefore) {
+        Matcher matcher = this.messageBeforePattern.matcher(messageBefore);
+        if (!matcher.matches()) {
+            return null;
+        }
+        return matcher;
+    }
 
-	@Override
-	public Map<String, Object> serialize() {
-		Map<String, Object> data = new LinkedHashMap<>(2, 1.0F);
-		data.put("message-before-pattern", this.messageBeforePattern.pattern());
-		data.put("message-after", this.messageAfter);
-		return data;
-	}
+    @Override
+    public Map<String, Object> serialize() {
+        Map<String, Object> data = new LinkedHashMap<>(2, 1.0F);
+        data.put("message-before-pattern", this.messageBeforePattern.pattern());
+        data.put("message-after", this.messageAfter);
+        return data;
+    }
 
-	public static MessageEdit deserialize(Map<String, Object> data) {
-		return new MessageEdit((String) data.get("message-before-pattern"), (String) data.get("message-after"));
-	}
+    public static MessageEdit deserialize(Map<String, Object> data) {
+        return new MessageEdit((String) data.get("message-before-pattern"), (String) data.get("message-after"));
+    }
 }

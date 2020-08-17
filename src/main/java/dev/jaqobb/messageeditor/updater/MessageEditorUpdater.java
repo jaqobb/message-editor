@@ -36,70 +36,70 @@ import net.md_5.bungee.api.ChatColor;
 
 public final class MessageEditorUpdater implements Runnable {
 
-	private final MessageEditorPlugin plugin;
-	private final String currentVersion;
-	private String latestVersion;
-	private Integer versionDifference;
+    private final MessageEditorPlugin plugin;
+    private final String currentVersion;
+    private String latestVersion;
+    private Integer versionDifference;
 
-	public MessageEditorUpdater(MessageEditorPlugin plugin) {
-		this.plugin = plugin;
-		this.currentVersion = this.plugin.getDescription().getVersion();
-		this.latestVersion = null;
-		this.versionDifference = null;
-	}
+    public MessageEditorUpdater(MessageEditorPlugin plugin) {
+        this.plugin = plugin;
+        this.currentVersion = this.plugin.getDescription().getVersion();
+        this.latestVersion = null;
+        this.versionDifference = null;
+    }
 
-	public String getCurrentVersion() {
-		return this.currentVersion;
-	}
+    public String getCurrentVersion() {
+        return this.currentVersion;
+    }
 
-	public String getLatestVersion() {
-		return this.latestVersion;
-	}
+    public String getLatestVersion() {
+        return this.latestVersion;
+    }
 
-	public Integer getVersionDifference() {
-		return this.versionDifference;
-	}
+    public Integer getVersionDifference() {
+        return this.versionDifference;
+    }
 
-	public String getUpdateMessage() {
-		String message = this.plugin.getPrefix() + ChatColor.GRAY;
-		if (this.latestVersion == null || this.versionDifference == null) {
-			message += "Could not retrieve the latest version data. Make sure that you have the internet access.";
-		} else if (this.versionDifference > 0) {
-			message += "You are probably running a development version (" + ChatColor.YELLOW + this.currentVersion + ChatColor.GRAY + " > " + ChatColor.YELLOW + this.latestVersion + ChatColor.GRAY + "). It is not advised to run development versions on production servers as they are very likely to not work as intended.";
-		} else if (this.versionDifference < 0) {
-			message += "You are running an outdated version (" + ChatColor.YELLOW + this.currentVersion + ChatColor.GRAY + " < " + ChatColor.YELLOW + this.latestVersion + ChatColor.GRAY + "). Consider updating the plugin.";
-		} else {
-			message += "You are running the latest version (" + ChatColor.YELLOW + this.latestVersion + ChatColor.GRAY + "). You have nothing to do.";
-		}
-		return message;
-	}
+    public String getUpdateMessage() {
+        String message = this.plugin.getPrefix() + ChatColor.GRAY;
+        if (this.latestVersion == null || this.versionDifference == null) {
+            message += "Could not retrieve the latest version data. Make sure that you have the internet access.";
+        } else if (this.versionDifference > 0) {
+            message += "You are probably running a development version (" + ChatColor.YELLOW + this.currentVersion + ChatColor.GRAY + " > " + ChatColor.YELLOW + this.latestVersion + ChatColor.GRAY + "). It is not advised to run development versions on production servers as they are very likely to not work as intended.";
+        } else if (this.versionDifference < 0) {
+            message += "You are running an outdated version (" + ChatColor.YELLOW + this.currentVersion + ChatColor.GRAY + " < " + ChatColor.YELLOW + this.latestVersion + ChatColor.GRAY + "). Consider updating the plugin.";
+        } else {
+            message += "You are running the latest version (" + ChatColor.YELLOW + this.latestVersion + ChatColor.GRAY + "). You have nothing to do.";
+        }
+        return message;
+    }
 
-	@Override
-	public void run() {
-		try {
-			HttpsURLConnection connection = (HttpsURLConnection) new URL("https://api.spigotmc.org/legacy/update.php?resource=82154").openConnection();
-			connection.setRequestMethod("GET");
-			try (InputStream input = connection.getInputStream(); BufferedReader reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8))) {
-				this.latestVersion = reader.readLine();
-				String[] currentVersionData = this.currentVersion.split("\\.");
-				String[] latestVersionData = this.latestVersion.split("\\.");
-				if (currentVersionData.length == 3 && latestVersionData.length == 3) {
-					int majorVersionDifference = Integer.compare(Integer.parseInt(currentVersionData[0]), Integer.parseInt(latestVersionData[0]));
-					if (majorVersionDifference != 0) {
-						this.versionDifference = majorVersionDifference;
-					} else {
-						int minorVersionDifference = Integer.compare(Integer.parseInt(currentVersionData[1]), Integer.parseInt(latestVersionData[1]));
-						if (minorVersionDifference != 0) {
-							this.versionDifference = minorVersionDifference;
-						} else {
-							this.versionDifference = Integer.compare(Integer.parseInt(currentVersionData[2]), Integer.parseInt(latestVersionData[2]));
-						}
-					}
-				}
-			}
-			connection.disconnect();
-		} catch (Exception exception) {
-			this.plugin.getLogger().log(Level.WARNING, "Could not retrieve the latest version data.", exception);
-		}
-	}
+    @Override
+    public void run() {
+        try {
+            HttpsURLConnection connection = (HttpsURLConnection) new URL("https://api.spigotmc.org/legacy/update.php?resource=82154").openConnection();
+            connection.setRequestMethod("GET");
+            try (InputStream input = connection.getInputStream(); BufferedReader reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8))) {
+                this.latestVersion = reader.readLine();
+                String[] currentVersionData = this.currentVersion.split("\\.");
+                String[] latestVersionData = this.latestVersion.split("\\.");
+                if (currentVersionData.length == 3 && latestVersionData.length == 3) {
+                    int majorVersionDifference = Integer.compare(Integer.parseInt(currentVersionData[0]), Integer.parseInt(latestVersionData[0]));
+                    if (majorVersionDifference != 0) {
+                        this.versionDifference = majorVersionDifference;
+                    } else {
+                        int minorVersionDifference = Integer.compare(Integer.parseInt(currentVersionData[1]), Integer.parseInt(latestVersionData[1]));
+                        if (minorVersionDifference != 0) {
+                            this.versionDifference = minorVersionDifference;
+                        } else {
+                            this.versionDifference = Integer.compare(Integer.parseInt(currentVersionData[2]), Integer.parseInt(latestVersionData[2]));
+                        }
+                    }
+                }
+            }
+            connection.disconnect();
+        } catch (Exception exception) {
+            this.plugin.getLogger().log(Level.WARNING, "Could not retrieve the latest version data.", exception);
+        }
+    }
 }

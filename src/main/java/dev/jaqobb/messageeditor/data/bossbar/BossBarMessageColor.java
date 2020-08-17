@@ -26,11 +26,11 @@ package dev.jaqobb.messageeditor.data.bossbar;
 
 public enum BossBarMessageColor {
 
-	PINK,
-	BLUE,
-	RED,
-	GREEN,
-	YELLOW,
-	PURPLE,
-	WHITE
+    PINK,
+    BLUE,
+    RED,
+    GREEN,
+    YELLOW,
+    PURPLE,
+    WHITE
 }

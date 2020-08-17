@@ -50,148 +50,148 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class MessageEditorPlugin extends JavaPlugin {
 
-	static {
-		ConfigurationSerialization.registerClass(MessageEdit.class);
-	}
+    static {
+        ConfigurationSerialization.registerClass(MessageEdit.class);
+    }
 
-	private Metrics metrics;
-	private MessageEditorUpdater updater;
-	private List<MessageEdit> messageEdits;
-	private boolean attachSpecialHoverAndClickEvents;
-	private boolean placeholderApiPresent;
-	private boolean mvdwPlaceholderApiPresent;
-	private Cache<String, String> cachedMessages;
-	private Set<MessagePlace> activeMessageAnalyzePlaces;
+    private Metrics metrics;
+    private MessageEditorUpdater updater;
+    private List<MessageEdit> messageEdits;
+    private boolean attachSpecialHoverAndClickEvents;
+    private boolean placeholderApiPresent;
+    private boolean mvdwPlaceholderApiPresent;
+    private Cache<String, String> cachedMessages;
+    private Set<MessagePlace> activeMessageAnalyzePlaces;
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public void onLoad() {
-		MinecraftVersion minimumRequiredMinecraftVersion = null;
-		for (MessagePlace messagePlace : MessagePlace.values()) {
-			MinecraftVersion messagePlaceMininumRequiredMinecraftVersion = messagePlace.getMinimumRequiredMinecraftVersion();
-			if (minimumRequiredMinecraftVersion == null || minimumRequiredMinecraftVersion.compareTo(messagePlaceMininumRequiredMinecraftVersion) > 0) {
-				minimumRequiredMinecraftVersion = messagePlaceMininumRequiredMinecraftVersion;
-			}
-		}
-		if (!MinecraftVersion.atOrAbove(minimumRequiredMinecraftVersion)) {
-			this.getLogger().log(Level.WARNING, "Your server does not support any message places. The minimum required server version is " + minimumRequiredMinecraftVersion.getVersion() + ". Disabling plugin...");
-			this.setEnabled(false);
-			return;
-		}
-		this.getLogger().log(Level.INFO, "Starting metrics...");
-		this.metrics = new Metrics(this, 8376);
-		this.getLogger().log(Level.INFO, "Loading configuration...");
-		this.saveDefaultConfig();
-		this.messageEdits = (List<MessageEdit>) this.getConfig().getList("message-edits");
-		this.attachSpecialHoverAndClickEvents = this.getConfig().getBoolean("attach-special-hover-and-click-events", true);
-		try {
-			ClickEvent.Action.valueOf("COPY_TO_CLIPBOARD");
-		} catch (IllegalArgumentException exception) {
-			if (this.attachSpecialHoverAndClickEvents) {
-				this.attachSpecialHoverAndClickEvents = false;
-				this.getLogger().log(Level.INFO, "Copying to clipboard is not supported on your server.");
-				this.getLogger().log(Level.INFO, "Attaching special hover and click events works only on server version at least 1.15.");
-			}
-		}
-		this.getLogger().log(Level.INFO, "Checking for placeholder APIs...");
-		PluginManager pluginManager = this.getServer().getPluginManager();
-		this.placeholderApiPresent = pluginManager.isPluginEnabled("PlaceholderAPI");
-		this.mvdwPlaceholderApiPresent = pluginManager.isPluginEnabled("MVdWPlaceholderAPI");
-		this.getLogger().log(Level.INFO, "PlaceholderAPI: " + (this.placeholderApiPresent ? "present" : "not present") + ".");
-		this.getLogger().log(Level.INFO, "MVdWPlaceholderAPI: " + (this.mvdwPlaceholderApiPresent ? "present" : "not present") + ".");
-		this.cachedMessages = CacheBuilder.newBuilder()
-			.expireAfterAccess(15L, TimeUnit.MINUTES)
-			.build();
-		this.activeMessageAnalyzePlaces = EnumSet.noneOf(MessagePlace.class);
-	}
+    @SuppressWarnings("unchecked")
+    @Override
+    public void onLoad() {
+        MinecraftVersion minimumRequiredMinecraftVersion = null;
+        for (MessagePlace messagePlace : MessagePlace.values()) {
+            MinecraftVersion messagePlaceMininumRequiredMinecraftVersion = messagePlace.getMinimumRequiredMinecraftVersion();
+            if (minimumRequiredMinecraftVersion == null || minimumRequiredMinecraftVersion.compareTo(messagePlaceMininumRequiredMinecraftVersion) > 0) {
+                minimumRequiredMinecraftVersion = messagePlaceMininumRequiredMinecraftVersion;
+            }
+        }
+        if (!MinecraftVersion.atOrAbove(minimumRequiredMinecraftVersion)) {
+            this.getLogger().log(Level.WARNING, "Your server does not support any message places. The minimum required server version is " + minimumRequiredMinecraftVersion.getVersion() + ". Disabling plugin...");
+            this.setEnabled(false);
+            return;
+        }
+        this.getLogger().log(Level.INFO, "Starting metrics...");
+        this.metrics = new Metrics(this, 8376);
+        this.getLogger().log(Level.INFO, "Loading configuration...");
+        this.saveDefaultConfig();
+        this.messageEdits = (List<MessageEdit>) this.getConfig().getList("message-edits");
+        this.attachSpecialHoverAndClickEvents = this.getConfig().getBoolean("attach-special-hover-and-click-events", true);
+        try {
+            ClickEvent.Action.valueOf("COPY_TO_CLIPBOARD");
+        } catch (IllegalArgumentException exception) {
+            if (this.attachSpecialHoverAndClickEvents) {
+                this.attachSpecialHoverAndClickEvents = false;
+                this.getLogger().log(Level.INFO, "Copying to clipboard is not supported on your server.");
+                this.getLogger().log(Level.INFO, "Attaching special hover and click events works only on server version at least 1.15.");
+            }
+        }
+        this.getLogger().log(Level.INFO, "Checking for placeholder APIs...");
+        PluginManager pluginManager = this.getServer().getPluginManager();
+        this.placeholderApiPresent = pluginManager.isPluginEnabled("PlaceholderAPI");
+        this.mvdwPlaceholderApiPresent = pluginManager.isPluginEnabled("MVdWPlaceholderAPI");
+        this.getLogger().log(Level.INFO, "PlaceholderAPI: " + (this.placeholderApiPresent ? "present" : "not present") + ".");
+        this.getLogger().log(Level.INFO, "MVdWPlaceholderAPI: " + (this.mvdwPlaceholderApiPresent ? "present" : "not present") + ".");
+        this.cachedMessages = CacheBuilder.newBuilder()
+            .expireAfterAccess(15L, TimeUnit.MINUTES)
+            .build();
+        this.activeMessageAnalyzePlaces = EnumSet.noneOf(MessagePlace.class);
+    }
 
-	@Override
-	public void onEnable() {
-		this.getLogger().log(Level.INFO, "Starting updater...");
-		this.updater = new MessageEditorUpdater(this);
-		this.getServer().getScheduler().runTaskTimerAsynchronously(this, this.updater, 0L, 20L * 60L * 30L);
-		this.getLogger().log(Level.INFO, "Registering command...");
-		this.getCommand("message-editor").setExecutor(new MessageEditorCommand(this));
-		this.getCommand("message-editor").setTabCompleter(new MessageEditorCommandTabCompleter(this));
-		this.getLogger().log(Level.INFO, "Registering listener...");
-		this.getServer().getPluginManager().registerEvents(new MessageEditorListener(this), this);
-		this.getLogger().log(Level.INFO, "Registering packet listener...");
-		ProtocolLibrary.getProtocolManager().addPacketListener(new MessageEditorPacketListener(this));
-	}
+    @Override
+    public void onEnable() {
+        this.getLogger().log(Level.INFO, "Starting updater...");
+        this.updater = new MessageEditorUpdater(this);
+        this.getServer().getScheduler().runTaskTimerAsynchronously(this, this.updater, 0L, 20L * 60L * 30L);
+        this.getLogger().log(Level.INFO, "Registering command...");
+        this.getCommand("message-editor").setExecutor(new MessageEditorCommand(this));
+        this.getCommand("message-editor").setTabCompleter(new MessageEditorCommandTabCompleter(this));
+        this.getLogger().log(Level.INFO, "Registering listener...");
+        this.getServer().getPluginManager().registerEvents(new MessageEditorListener(this), this);
+        this.getLogger().log(Level.INFO, "Registering packet listener...");
+        ProtocolLibrary.getProtocolManager().addPacketListener(new MessageEditorPacketListener(this));
+    }
 
-	public String getPrefix() {
-		return ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + "Message Editor" + ChatColor.DARK_GRAY + "] ";
-	}
+    public String getPrefix() {
+        return ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + "Message Editor" + ChatColor.DARK_GRAY + "] ";
+    }
 
-	public Metrics getMetrics() {
-		return this.metrics;
-	}
+    public Metrics getMetrics() {
+        return this.metrics;
+    }
 
-	public MessageEditorUpdater getUpdater() {
-		return this.updater;
-	}
+    public MessageEditorUpdater getUpdater() {
+        return this.updater;
+    }
 
-	public List<MessageEdit> getMessageEdits() {
-		return Collections.unmodifiableList(this.messageEdits);
-	}
+    public List<MessageEdit> getMessageEdits() {
+        return Collections.unmodifiableList(this.messageEdits);
+    }
 
-	public boolean isAttachingSpecialHoverAndClickEventsEnabled() {
-		return this.attachSpecialHoverAndClickEvents;
-	}
+    public boolean isAttachingSpecialHoverAndClickEventsEnabled() {
+        return this.attachSpecialHoverAndClickEvents;
+    }
 
-	public boolean isPlaceholderApiPresent() {
-		return this.placeholderApiPresent;
-	}
+    public boolean isPlaceholderApiPresent() {
+        return this.placeholderApiPresent;
+    }
 
-	public void setPlaceholderApiPresent(boolean present) {
-		this.placeholderApiPresent = present;
-	}
+    public void setPlaceholderApiPresent(boolean present) {
+        this.placeholderApiPresent = present;
+    }
 
-	public boolean isMvdwPlaceholderApiPresent() {
-		return this.mvdwPlaceholderApiPresent;
-	}
+    public boolean isMvdwPlaceholderApiPresent() {
+        return this.mvdwPlaceholderApiPresent;
+    }
 
-	public void setMvdwPlaceholderApiPresent(boolean present) {
-		this.mvdwPlaceholderApiPresent = present;
-	}
+    public void setMvdwPlaceholderApiPresent(boolean present) {
+        this.mvdwPlaceholderApiPresent = present;
+    }
 
-	public Set<String> getCachedMessages() {
-		return Collections.unmodifiableSet(this.cachedMessages.asMap().keySet());
-	}
+    public Set<String> getCachedMessages() {
+        return Collections.unmodifiableSet(this.cachedMessages.asMap().keySet());
+    }
 
-	public String getCachedMessage(String messageBefore) {
-		return this.cachedMessages.getIfPresent(messageBefore);
-	}
+    public String getCachedMessage(String messageBefore) {
+        return this.cachedMessages.getIfPresent(messageBefore);
+    }
 
-	public void cacheMessage(String messageBefore, String messageAfter) {
-		this.cachedMessages.put(messageBefore, messageAfter);
-	}
+    public void cacheMessage(String messageBefore, String messageAfter) {
+        this.cachedMessages.put(messageBefore, messageAfter);
+    }
 
-	public void uncacheMessage(String messageBefore) {
-		this.cachedMessages.invalidate(messageBefore);
-	}
+    public void uncacheMessage(String messageBefore) {
+        this.cachedMessages.invalidate(messageBefore);
+    }
 
-	public void clearCachedMessages() {
-		this.cachedMessages.invalidateAll();
-	}
+    public void clearCachedMessages() {
+        this.cachedMessages.invalidateAll();
+    }
 
-	public Set<MessagePlace> getActiveMessageAnalyzePlaces() {
-		return Collections.unmodifiableSet(this.activeMessageAnalyzePlaces);
-	}
+    public Set<MessagePlace> getActiveMessageAnalyzePlaces() {
+        return Collections.unmodifiableSet(this.activeMessageAnalyzePlaces);
+    }
 
-	public boolean isMessageAnalyzePlaceActive(MessagePlace messageAnalyzePlace) {
-		return this.activeMessageAnalyzePlaces.contains(messageAnalyzePlace);
-	}
+    public boolean isMessageAnalyzePlaceActive(MessagePlace messageAnalyzePlace) {
+        return this.activeMessageAnalyzePlaces.contains(messageAnalyzePlace);
+    }
 
-	public void activateMessageAnalyzePlace(MessagePlace messageAnalyzePlace) {
-		this.activeMessageAnalyzePlaces.add(messageAnalyzePlace);
-	}
+    public void activateMessageAnalyzePlace(MessagePlace messageAnalyzePlace) {
+        this.activeMessageAnalyzePlaces.add(messageAnalyzePlace);
+    }
 
-	public void deactivateMessageAnalyzePlace(MessagePlace messageAnalyzePlace) {
-		this.activeMessageAnalyzePlaces.remove(messageAnalyzePlace);
-	}
+    public void deactivateMessageAnalyzePlace(MessagePlace messageAnalyzePlace) {
+        this.activeMessageAnalyzePlaces.remove(messageAnalyzePlace);
+    }
 
-	public void deactivateAllActiveMessageAnalyzePlaces() {
-		this.activeMessageAnalyzePlaces.clear();
-	}
+    public void deactivateAllActiveMessageAnalyzePlaces() {
+        this.activeMessageAnalyzePlaces.clear();
+    }
 }

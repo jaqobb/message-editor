@@ -26,9 +26,9 @@ package dev.jaqobb.messageeditor.data.bossbar;
 
 public enum BossBarMessageStyle {
 
-	PROGRESS,
-	NOTCHED_6,
-	NOTCHED_10,
-	NOTCHED_12,
-	NOTCHED_20
+    PROGRESS,
+    NOTCHED_6,
+    NOTCHED_10,
+    NOTCHED_12,
+    NOTCHED_20
 }

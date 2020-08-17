@@ -26,10 +26,10 @@ package dev.jaqobb.messageeditor.data.bossbar;
 
 public enum BossBarMessageAction {
 
-	ADD,
-	REMOVE,
-	UPDATE_PCT,
-	UPDATE_NAME,
-	UPDATE_STYLE,
-	UPDATE_PROPERTIES
+   	ADD,
+    REMOVE,
+    UPDATE_PCT,
+    UPDATE_NAME,
+    UPDATE_STYLE,
+    UPDATE_PROPERTIES
 }

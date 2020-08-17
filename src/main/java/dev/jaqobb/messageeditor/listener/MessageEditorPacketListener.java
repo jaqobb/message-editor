@@ -51,165 +51,165 @@ import org.bukkit.entity.Player;
 
 public final class MessageEditorPacketListener extends PacketAdapter {
 
-	private static final String SPECIAL_REGEX_CHARACTERS = "[{}()\\[\\].+*?^$\\\\|]";
+    private static final String SPECIAL_REGEX_CHARACTERS = "[{}()\\[\\].+*?^$\\\\|]";
 
-	@SuppressWarnings("deprecation")
-	private static final HoverEvent COPY_TO_CLIPBOARD_HOVER_EVENT = new HoverEvent(
-		HoverEvent.Action.SHOW_TEXT,
-		TextComponent.fromLegacyText(ChatColor.GRAY + "Click to copy this message's JSON to your clipboard.")
-	);
+    @SuppressWarnings("deprecation")
+    private static final HoverEvent COPY_TO_CLIPBOARD_HOVER_EVENT = new HoverEvent(
+        HoverEvent.Action.SHOW_TEXT,
+        TextComponent.fromLegacyText(ChatColor.GRAY + "Click to copy this message's JSON to your clipboard.")
+    );
 
-	public MessageEditorPacketListener(MessageEditorPlugin plugin) {
-		super(
-			plugin,
-			ListenerPriority.HIGHEST,
-			PacketType.Login.Server.DISCONNECT,
-			PacketType.Play.Server.KICK_DISCONNECT,
-			PacketType.Play.Server.CHAT,
-			PacketType.Play.Server.BOSS
-		);
-	}
+    public MessageEditorPacketListener(MessageEditorPlugin plugin) {
+        super(
+            plugin,
+            ListenerPriority.HIGHEST,
+            PacketType.Login.Server.DISCONNECT,
+            PacketType.Play.Server.KICK_DISCONNECT,
+            PacketType.Play.Server.CHAT,
+            PacketType.Play.Server.BOSS
+        );
+    }
 
-	@Override
-	public MessageEditorPlugin getPlugin() {
-		return (MessageEditorPlugin) super.getPlugin();
-	}
+    @Override
+    public MessageEditorPlugin getPlugin() {
+        return (MessageEditorPlugin) super.getPlugin();
+    }
 
-	@Override
-	public void onPacketSending(PacketEvent event) {
-		if (event.isCancelled()) {
-			return;
-		}
-		Player player = event.getPlayer();
-		PacketContainer oldPacket = event.getPacket();
-		PacketContainer newPacket = this.copyPacketContent(oldPacket, ProtocolLibrary.getProtocolManager().createPacket(oldPacket.getType()));
-		if (newPacket.getType() == PacketType.Play.Server.BOSS) {
-			BossBarMessageAction action = newPacket.getEnumModifier(BossBarMessageAction.class, 1).read(0);
-			if (action != BossBarMessageAction.ADD && action != BossBarMessageAction.UPDATE_NAME) {
-				return;
-			}
-		}
-		WrappedChatComponent message = newPacket.getChatComponents().read(0);
-		String messageJson = null;
-		if (message != null) {
-			messageJson = message.getJson();
-		} else if (newPacket.getType() == PacketType.Play.Server.CHAT && newPacket.getSpecificModifier(BaseComponent[].class).size() == 1) {
-			messageJson = ComponentSerializer.toString(newPacket.getSpecificModifier(BaseComponent[].class).read(0));
-		}
-		if (messageJson == null) {
-			return;
-		}
-		String cachedMessage = this.getPlugin().getCachedMessage(messageJson);
-		MessageEdit messageEdit = null;
-		Matcher messageEditMatcher = null;
-		if (cachedMessage == null) {
-			for (MessageEdit currentMessageEdit : this.getPlugin().getMessageEdits()) {
-				Matcher currentMessageEditMatcher = currentMessageEdit.getMatcher(messageJson);
-				if (currentMessageEditMatcher != null) {
-					messageEdit = currentMessageEdit;
-					messageEditMatcher = currentMessageEditMatcher;
-					break;
-				}
-			}
-		}
-		if (cachedMessage != null || (messageEdit != null && messageEditMatcher != null)) {
-			if (cachedMessage != null) {
-				if (cachedMessage.isEmpty() && newPacket.getType() == PacketType.Play.Server.CHAT) {
-					event.setCancelled(true);
-					return;
-				}
-				messageJson = cachedMessage;
-			} else {
-				String messageAfter = messageEditMatcher.replaceAll(messageEdit.getMessageAfter());
-				if (this.getPlugin().isPlaceholderApiPresent()) {
-					messageAfter = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, messageAfter);
-				}
-				if (this.getPlugin().isMvdwPlaceholderApiPresent()) {
-					messageAfter = be.maximvdw.placeholderapi.PlaceholderAPI.replacePlaceholders(player, messageAfter);
-				}
-				this.getPlugin().cacheMessage(messageJson, messageAfter);
-				if (messageAfter.isEmpty() && newPacket.getType() == PacketType.Play.Server.CHAT) {
-					event.setCancelled(true);
-					return;
-				}
-				messageJson = messageAfter;
-			}
-		}
-		Byte messagePosition = this.getMessagePosition(newPacket);
-		MessagePlace messageAnalyzePlace;
-		if (newPacket.getType() == PacketType.Play.Server.CHAT) {
-			messageAnalyzePlace = MessagePlace.fromPacketType(newPacket.getType(), messagePosition);
-		} else {
-			messageAnalyzePlace = MessagePlace.fromPacketType(newPacket.getType());
-		}
-		if (messageAnalyzePlace != null && this.getPlugin().isMessageAnalyzePlaceActive(messageAnalyzePlace)) {
-			String messageClear = "";
-			for (BaseComponent component : ComponentSerializer.parse(messageJson)) {
-				messageClear += component.toPlainText();
-			}
-			this.getPlugin().getLogger().log(Level.INFO, "Place: " + messageAnalyzePlace.name() + ".");
-			this.getPlugin().getLogger().log(Level.INFO, "Receiver: " + player.getName() + ".");
-			this.getPlugin().getLogger().log(Level.INFO, "Message clear: " + messageClear);
-			this.getPlugin().getLogger().log(Level.INFO, "Message JSON: " + messageJson.replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0"));
-		}
-		if (newPacket.getType() == PacketType.Play.Server.CHAT) {
-			if (messagePosition != 2 && player.hasPermission("messageeditor.use") && this.getPlugin().isAttachingSpecialHoverAndClickEventsEnabled()) {
-				TextComponent messageToSend = new TextComponent(ComponentSerializer.parse(message.getJson()));
-				messageToSend.setHoverEvent(COPY_TO_CLIPBOARD_HOVER_EVENT);
-				messageToSend.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, message.getJson().replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0")));
-				messageJson = ComponentSerializer.toString(messageToSend);
-			}
-		}
-		if (message != null) {
-			newPacket.getChatComponents().write(0, WrappedChatComponent.fromJson(messageJson));
-		} else if (newPacket.getType() == PacketType.Play.Server.CHAT && newPacket.getSpecificModifier(BaseComponent[].class).size() == 1) {
-			newPacket.getSpecificModifier(BaseComponent[].class).write(0, ComponentSerializer.parse(messageJson));
-		}
-		event.setPacket(newPacket);
-	}
+    @Override
+    public void onPacketSending(PacketEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+        Player player = event.getPlayer();
+        PacketContainer oldPacket = event.getPacket();
+        PacketContainer newPacket = this.copyPacketContent(oldPacket, ProtocolLibrary.getProtocolManager().createPacket(oldPacket.getType()));
+        if (newPacket.getType() == PacketType.Play.Server.BOSS) {
+            BossBarMessageAction action = newPacket.getEnumModifier(BossBarMessageAction.class, 1).read(0);
+            if (action != BossBarMessageAction.ADD && action != BossBarMessageAction.UPDATE_NAME) {
+                return;
+            }
+        }
+        WrappedChatComponent message = newPacket.getChatComponents().read(0);
+        String messageJson = null;
+        if (message != null) {
+            messageJson = message.getJson();
+        } else if (newPacket.getType() == PacketType.Play.Server.CHAT && newPacket.getSpecificModifier(BaseComponent[].class).size() == 1) {
+            messageJson = ComponentSerializer.toString(newPacket.getSpecificModifier(BaseComponent[].class).read(0));
+        }
+        if (messageJson == null) {
+            return;
+        }
+        String cachedMessage = this.getPlugin().getCachedMessage(messageJson);
+        MessageEdit messageEdit = null;
+        Matcher messageEditMatcher = null;
+        if (cachedMessage == null) {
+            for (MessageEdit currentMessageEdit : this.getPlugin().getMessageEdits()) {
+                Matcher currentMessageEditMatcher = currentMessageEdit.getMatcher(messageJson);
+                if (currentMessageEditMatcher != null) {
+                    messageEdit = currentMessageEdit;
+                    messageEditMatcher = currentMessageEditMatcher;
+                    break;
+                }
+            }
+        }
+        if (cachedMessage != null || (messageEdit != null && messageEditMatcher != null)) {
+            if (cachedMessage != null) {
+                if (cachedMessage.isEmpty() && newPacket.getType() == PacketType.Play.Server.CHAT) {
+                    event.setCancelled(true);
+                    return;
+                }
+                messageJson = cachedMessage;
+            } else {
+                String messageAfter = messageEditMatcher.replaceAll(messageEdit.getMessageAfter());
+                if (this.getPlugin().isPlaceholderApiPresent()) {
+                    messageAfter = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, messageAfter);
+                }
+                if (this.getPlugin().isMvdwPlaceholderApiPresent()) {
+                    messageAfter = be.maximvdw.placeholderapi.PlaceholderAPI.replacePlaceholders(player, messageAfter);
+                }
+                this.getPlugin().cacheMessage(messageJson, messageAfter);
+                if (messageAfter.isEmpty() && newPacket.getType() == PacketType.Play.Server.CHAT) {
+                    event.setCancelled(true);
+                    return;
+                }
+                messageJson = messageAfter;
+            }
+        }
+        Byte messagePosition = this.getMessagePosition(newPacket);
+        MessagePlace messageAnalyzePlace;
+        if (newPacket.getType() == PacketType.Play.Server.CHAT) {
+            messageAnalyzePlace = MessagePlace.fromPacketType(newPacket.getType(), messagePosition);
+        } else {
+            messageAnalyzePlace = MessagePlace.fromPacketType(newPacket.getType());
+        }
+        if (messageAnalyzePlace != null && this.getPlugin().isMessageAnalyzePlaceActive(messageAnalyzePlace)) {
+            String messageClear = "";
+            for (BaseComponent component : ComponentSerializer.parse(messageJson)) {
+                messageClear += component.toPlainText();
+            }
+            this.getPlugin().getLogger().log(Level.INFO, "Place: " + messageAnalyzePlace.name() + ".");
+            this.getPlugin().getLogger().log(Level.INFO, "Receiver: " + player.getName() + ".");
+            this.getPlugin().getLogger().log(Level.INFO, "Message clear: " + messageClear);
+            this.getPlugin().getLogger().log(Level.INFO, "Message JSON: " + messageJson.replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0"));
+        }
+        if (newPacket.getType() == PacketType.Play.Server.CHAT) {
+            if (messagePosition != 2 && player.hasPermission("messageeditor.use") && this.getPlugin().isAttachingSpecialHoverAndClickEventsEnabled()) {
+                TextComponent messageToSend = new TextComponent(ComponentSerializer.parse(message.getJson()));
+                messageToSend.setHoverEvent(COPY_TO_CLIPBOARD_HOVER_EVENT);
+                messageToSend.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, message.getJson().replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0")));
+                messageJson = ComponentSerializer.toString(messageToSend);
+            }
+        }
+        if (message != null) {
+            newPacket.getChatComponents().write(0, WrappedChatComponent.fromJson(messageJson));
+        } else if (newPacket.getType() == PacketType.Play.Server.CHAT && newPacket.getSpecificModifier(BaseComponent[].class).size() == 1) {
+            newPacket.getSpecificModifier(BaseComponent[].class).write(0, ComponentSerializer.parse(messageJson));
+        }
+        event.setPacket(newPacket);
+    }
 
-	private Byte getMessagePosition(PacketContainer packet) {
-		if (packet.getType() != PacketType.Play.Server.CHAT) {
-			return null;
-		}
-		// 0 and 1 - chat
-		// 2 - action bar
-		Byte position = packet.getBytes().readSafely(0);
-		if (position == null) {
-			position = packet.getChatTypes().read(0).getId();
-		}
-		return position;
-	}
+    private Byte getMessagePosition(PacketContainer packet) {
+        if (packet.getType() != PacketType.Play.Server.CHAT) {
+            return null;
+        }
+        // 0 and 1 - chat
+        // 2 - action bar
+        Byte position = packet.getBytes().readSafely(0);
+        if (position == null) {
+            position = packet.getChatTypes().read(0).getId();
+        }
+        return position;
+    }
 
-	private PacketContainer copyPacketContent(PacketContainer oldPacket, PacketContainer newPacket) {
-		newPacket.getChatComponents().write(0, oldPacket.getChatComponents().read(0));
-		if (newPacket.getType() == PacketType.Play.Server.CHAT) {
-			BaseComponent[] components = oldPacket.getSpecificModifier(BaseComponent[].class).readSafely(0);
-			if (components != null) {
-				newPacket.getSpecificModifier(BaseComponent[].class).writeSafely(0, components);
-			}
-			Byte position = this.getMessagePosition(oldPacket);
-			newPacket.getBytes().writeSafely(0, position);
-			if (EnumWrappers.getChatTypeClass() != null) {
-				Arrays.stream(EnumWrappers.ChatType.values())
-					.filter(type -> type.getId() == position)
-					.findAny()
-					.ifPresent(type -> newPacket.getChatTypes().write(0, type));
-			}
-		} else if (newPacket.getType() == PacketType.Play.Server.BOSS) {
-			newPacket.getEnumModifier(BossBarMessageAction.class, 1).write(0, oldPacket.getEnumModifier(BossBarMessageAction.class, 1).read(0));
-			newPacket.getEnumModifier(BossBarMessageColor.class, 4).write(0, oldPacket.getEnumModifier(BossBarMessageColor.class, 4).read(0));
-			newPacket.getEnumModifier(BossBarMessageStyle.class, 5).write(0, oldPacket.getEnumModifier(BossBarMessageStyle.class, 5).read(0));
-			newPacket.getUUIDs().write(0, oldPacket.getUUIDs().read(0));
-			// Health
-			newPacket.getFloat().write(0, oldPacket.getFloat().read(0));
-			// Darken sky
-			newPacket.getBooleans().write(0, oldPacket.getBooleans().read(0));
-			// Play music
-			newPacket.getBooleans().write(1, oldPacket.getBooleans().read(1));
-			// Create fog
-			newPacket.getBooleans().write(2, oldPacket.getBooleans().read(2));
-		}
-		return newPacket;
-	}
+    private PacketContainer copyPacketContent(PacketContainer oldPacket, PacketContainer newPacket) {
+        newPacket.getChatComponents().write(0, oldPacket.getChatComponents().read(0));
+        if (newPacket.getType() == PacketType.Play.Server.CHAT) {
+            BaseComponent[] components = oldPacket.getSpecificModifier(BaseComponent[].class).readSafely(0);
+            if (components != null) {
+                newPacket.getSpecificModifier(BaseComponent[].class).writeSafely(0, components);
+            }
+            Byte position = this.getMessagePosition(oldPacket);
+            newPacket.getBytes().writeSafely(0, position);
+            if (EnumWrappers.getChatTypeClass() != null) {
+                Arrays.stream(EnumWrappers.ChatType.values())
+                    .filter(type -> type.getId() == position)
+                    .findAny()
+                    .ifPresent(type -> newPacket.getChatTypes().write(0, type));
+            }
+        } else if (newPacket.getType() == PacketType.Play.Server.BOSS) {
+            newPacket.getEnumModifier(BossBarMessageAction.class, 1).write(0, oldPacket.getEnumModifier(BossBarMessageAction.class, 1).read(0));
+            newPacket.getEnumModifier(BossBarMessageColor.class, 4).write(0, oldPacket.getEnumModifier(BossBarMessageColor.class, 4).read(0));
+            newPacket.getEnumModifier(BossBarMessageStyle.class, 5).write(0, oldPacket.getEnumModifier(BossBarMessageStyle.class, 5).read(0));
+            newPacket.getUUIDs().write(0, oldPacket.getUUIDs().read(0));
+            // Health
+            newPacket.getFloat().write(0, oldPacket.getFloat().read(0));
+            // Darken sky
+            newPacket.getBooleans().write(0, oldPacket.getBooleans().read(0));
+            // Play music
+            newPacket.getBooleans().write(1, oldPacket.getBooleans().read(1));
+            // Create fog
+            newPacket.getBooleans().write(2, oldPacket.getBooleans().read(2));
+        }
+        return newPacket;
+    }
 }

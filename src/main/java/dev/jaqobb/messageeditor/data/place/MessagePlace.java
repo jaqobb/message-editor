@@ -33,53 +33,53 @@ import java.util.Set;
 
 public enum MessagePlace {
 
-	CHAT(MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 0, (byte) 1),
-	ACTION_BAR(MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 2),
-	KICK(MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.KICK_DISCONNECT),
-	DISCONNECT(MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Login.Server.DISCONNECT),
-	BOSS_BAR(MinecraftVersion.COMBAT_UPDATE, PacketType.Play.Server.BOSS);
+    CHAT(MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 0, (byte) 1),
+    ACTION_BAR(MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 2),
+    KICK(MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.KICK_DISCONNECT),
+    DISCONNECT(MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Login.Server.DISCONNECT),
+    BOSS_BAR(MinecraftVersion.COMBAT_UPDATE, PacketType.Play.Server.BOSS);
 
-	private final MinecraftVersion minimumRequiredMinecraftVersion;
-	private final PacketType packetType;
-	private final Set<Byte> chatTypes;
+    private final MinecraftVersion minimumRequiredMinecraftVersion;
+    private final PacketType packetType;
+    private final Set<Byte> chatTypes;
 
-	private MessagePlace(MinecraftVersion minimumRequiredMinecraftVersion, PacketType packetType, byte... chatTypes) {
-		this.minimumRequiredMinecraftVersion = minimumRequiredMinecraftVersion;
-		this.packetType = packetType;
-		this.chatTypes = new HashSet<>(chatTypes.length);
-		for (byte chatType : chatTypes) {
-			this.chatTypes.add(chatType);
-		}
-	}
+    private MessagePlace(MinecraftVersion minimumRequiredMinecraftVersion, PacketType packetType, byte... chatTypes) {
+        this.minimumRequiredMinecraftVersion = minimumRequiredMinecraftVersion;
+        this.packetType = packetType;
+        this.chatTypes = new HashSet<>(chatTypes.length);
+        for (byte chatType : chatTypes) {
+            this.chatTypes.add(chatType);
+        }
+    }
 
-	public MinecraftVersion getMinimumRequiredMinecraftVersion() {
-		return this.minimumRequiredMinecraftVersion;
-	}
+    public MinecraftVersion getMinimumRequiredMinecraftVersion() {
+        return this.minimumRequiredMinecraftVersion;
+    }
 
-	public PacketType getPacketType() {
-		return this.packetType;
-	}
+    public PacketType getPacketType() {
+        return this.packetType;
+    }
 
-	public Set<Byte> getChatTypes() {
-		return Collections.unmodifiableSet(this.chatTypes);
-	}
+    public Set<Byte> getChatTypes() {
+        return Collections.unmodifiableSet(this.chatTypes);
+    }
 
-	public static MessagePlace fromName(String name) {
-		return Arrays.stream(values())
-			.filter(place -> place.name().equalsIgnoreCase(name))
-			.findFirst()
-			.orElse(null);
-	}
+    public static MessagePlace fromName(String name) {
+        return Arrays.stream(values())
+            .filter(place -> place.name().equalsIgnoreCase(name))
+            .findFirst()
+            .orElse(null);
+    }
 
-	public static MessagePlace fromPacketType(PacketType packetType) {
-		return fromPacketType(packetType, (byte) -1);
-	}
+    public static MessagePlace fromPacketType(PacketType packetType) {
+        return fromPacketType(packetType, (byte) -1);
+    }
 
-	public static MessagePlace fromPacketType(PacketType packetType, byte chatType) {
-		return Arrays.stream(values())
-			.filter(place -> place.packetType == packetType)
-			.filter(place -> place.chatTypes.contains(chatType) || chatType == -1)
-			.findFirst()
-			.orElse(null);
-	}
+    public static MessagePlace fromPacketType(PacketType packetType, byte chatType) {
+        return Arrays.stream(values())
+            .filter(place -> place.packetType == packetType)
+            .filter(place -> place.chatTypes.contains(chatType) || chatType == -1)
+            .findFirst()
+            .orElse(null);
+    }
 }
