@@ -25,6 +25,7 @@
 package dev.jaqobb.messageeditor.data.place;
 
 import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.utility.MinecraftVersion;
 import java.util.Arrays;
 import java.util.Collections;
@@ -69,6 +70,17 @@ public enum MessagePlace {
             .filter(place -> place.name().equalsIgnoreCase(name))
             .findFirst()
             .orElse(null);
+    }
+
+    public static MessagePlace fromPacket(PacketContainer packet) {
+        Byte chatType = -1;
+        if (packet.getType() == PacketType.Play.Server.CHAT) {
+            chatType = packet.getBytes().readSafely(0);
+            if (chatType == null) {
+                chatType = packet.getChatTypes().read(0).getId();
+            }
+        }
+        return fromPacketType(packet.getType(), chatType);
     }
 
     public static MessagePlace fromPacketType(PacketType packetType) {

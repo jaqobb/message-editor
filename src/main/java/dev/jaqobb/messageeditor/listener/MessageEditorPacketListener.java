@@ -83,7 +83,8 @@ public final class MessageEditorPacketListener extends PacketAdapter {
         Player player = event.getPlayer();
         PacketContainer oldPacket = event.getPacket();
         PacketContainer newPacket = this.copyPacketContent(oldPacket, ProtocolLibrary.getProtocolManager().createPacket(oldPacket.getType()));
-        if (newPacket.getType() == PacketType.Play.Server.BOSS) {
+        MessagePlace messagePlace = MessagePlace.fromPacket(newPacket);
+        if (messagePlace == MessagePlace.BOSS_BAR) {
             BossBarMessageAction action = newPacket.getEnumModifier(BossBarMessageAction.class, 1).read(0);
             if (action != BossBarMessageAction.ADD && action != BossBarMessageAction.UPDATE_NAME) {
                 return;
@@ -135,30 +136,21 @@ public final class MessageEditorPacketListener extends PacketAdapter {
                 messageJson = messageAfter;
             }
         }
-        Byte messagePosition = this.getMessagePosition(newPacket);
-        MessagePlace messageAnalyzePlace;
-        if (newPacket.getType() == PacketType.Play.Server.CHAT) {
-            messageAnalyzePlace = MessagePlace.fromPacketType(newPacket.getType(), messagePosition);
-        } else {
-            messageAnalyzePlace = MessagePlace.fromPacketType(newPacket.getType());
-        }
-        if (messageAnalyzePlace != null && this.getPlugin().isMessageAnalyzePlaceActive(messageAnalyzePlace)) {
+        if (this.getPlugin().isMessageAnalyzePlaceActive(messagePlace)) {
             String messageClear = "";
             for (BaseComponent component : ComponentSerializer.parse(messageJson)) {
                 messageClear += component.toPlainText();
             }
-            this.getPlugin().getLogger().log(Level.INFO, "Place: " + messageAnalyzePlace.name() + ".");
+            this.getPlugin().getLogger().log(Level.INFO, "Place: " + messagePlace.name() + ".");
             this.getPlugin().getLogger().log(Level.INFO, "Receiver: " + player.getName() + ".");
             this.getPlugin().getLogger().log(Level.INFO, "Message clear: " + messageClear);
             this.getPlugin().getLogger().log(Level.INFO, "Message JSON: " + messageJson.replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0"));
         }
-        if (newPacket.getType() == PacketType.Play.Server.CHAT) {
-            if (messagePosition != 2 && player.hasPermission("messageeditor.use") && this.getPlugin().isAttachingSpecialHoverAndClickEventsEnabled()) {
-                TextComponent messageToSend = new TextComponent(ComponentSerializer.parse(message.getJson()));
-                messageToSend.setHoverEvent(COPY_TO_CLIPBOARD_HOVER_EVENT);
-                messageToSend.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, message.getJson().replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0")));
-                messageJson = ComponentSerializer.toString(messageToSend);
-            }
+        if (messagePlace == MessagePlace.CHAT && player.hasPermission("messageeditor.use") && this.getPlugin().isAttachingSpecialHoverAndClickEventsEnabled()) {
+            TextComponent messageToSend = new TextComponent(ComponentSerializer.parse(message.getJson()));
+            messageToSend.setHoverEvent(COPY_TO_CLIPBOARD_HOVER_EVENT);
+            messageToSend.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, message.getJson().replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0")));
+            messageJson = ComponentSerializer.toString(messageToSend);
         }
         if (message != null) {
             newPacket.getChatComponents().write(0, WrappedChatComponent.fromJson(messageJson));
