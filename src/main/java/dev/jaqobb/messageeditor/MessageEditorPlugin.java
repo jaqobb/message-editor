@@ -115,7 +115,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
         } catch (IllegalArgumentException exception) {
             if (this.attachSpecialHoverAndClickEvents) {
                 this.attachSpecialHoverAndClickEvents = false;
-                this.getLogger().log(Level.INFO, "Attaching special hover and click events has been disabled because copying to clipboard is not supported on your server. Copying to clipboard works only on version 1.15 and above.");
+                this.getLogger().log(Level.WARNING, "Attaching special hover and click events has been disabled because copying to clipboard is not supported on your server. Copying to clipboard works only on 1.15 and above.");
             }
         }
         this.messageEdits = (List<MessageEdit>) this.getConfig().getList("message-edits");
