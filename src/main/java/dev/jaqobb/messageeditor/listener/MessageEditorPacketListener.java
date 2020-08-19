@@ -101,11 +101,20 @@ public final class MessageEditorPacketListener extends PacketAdapter {
         if (messageJson == null) {
             return;
         }
+        // TODO: Cache message depending on their JSON and message place.
+        // TODO: Needs to be fixed before release.
+        // TODO: Right now this prevents message with the same JSON but different message place from being edited.
         Map.Entry<MessageEdit, String> cachedMessage = this.getPlugin().getCachedMessage(messageJson);
+        if (cachedMessage != null && cachedMessage.getKey().getMessageBeforePlace() != null && cachedMessage.getKey().getMessageBeforePlace() != messagePlace) {
+            return;
+        }
         MessageEdit messageEdit = null;
         Matcher messageEditMatcher = null;
         if (cachedMessage == null) {
             for (MessageEdit currentMessageEdit : this.getPlugin().getMessageEdits()) {
+                if (currentMessageEdit.getMessageBeforePlace() != null && currentMessageEdit.getMessageBeforePlace() != messagePlace) {
+                    continue;
+                }
                 Matcher currentMessageEditMatcher = currentMessageEdit.getMatcher(messageJson);
                 if (currentMessageEditMatcher != null) {
                     messageEdit = currentMessageEdit;
