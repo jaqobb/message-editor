@@ -24,6 +24,7 @@
 
 package dev.jaqobb.messageeditor.data.edit;
 
+import dev.jaqobb.messageeditor.data.place.MessagePlace;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -35,15 +36,21 @@ import org.bukkit.configuration.serialization.SerializableAs;
 public final class MessageEdit implements ConfigurationSerializable {
 
     private final Pattern messageBeforePattern;
+    private final MessagePlace messageBeforePlace;
     private final String messageAfter;
 
-    public MessageEdit(String messageBeforePattern, String messageAfter) {
+    public MessageEdit(String messageBeforePattern, MessagePlace messageBeforePlace, String messageAfter) {
         this.messageBeforePattern = Pattern.compile(messageBeforePattern);
+        this.messageBeforePlace = messageBeforePlace;
         this.messageAfter = messageAfter;
     }
 
     public Pattern getMessageBeforePattern() {
         return this.messageBeforePattern;
+    }
+
+    public MessagePlace getMessageBeforePlace() {
+        return this.messageBeforePlace;
     }
 
     public String getMessageBefore() {
@@ -64,13 +71,22 @@ public final class MessageEdit implements ConfigurationSerializable {
 
     @Override
     public Map<String, Object> serialize() {
-        Map<String, Object> data = new LinkedHashMap<>(2, 1.0F);
+        Map<String, Object> data = new LinkedHashMap<>(3, 1.0F);
         data.put("message-before-pattern", this.messageBeforePattern.pattern());
+        if (this.messageBeforePlace != null) {
+            data.put("message-before-place", this.messageBeforePlace.name());
+        }
         data.put("message-after", this.messageAfter);
         return data;
     }
 
     public static MessageEdit deserialize(Map<String, Object> data) {
-        return new MessageEdit((String) data.get("message-before-pattern"), (String) data.get("message-after"));
+        String messageBeforePattern = (String) data.get("message-before-pattern");
+        MessagePlace messageBeforePlace = null;
+        if (data.containsKey("message-before-place")) {
+            messageBeforePlace = MessagePlace.fromName((String) data.get("message-before-place"));
+        }
+        String messageAfter = (String) data.get("message-after");
+        return new MessageEdit(messageBeforePattern, messageBeforePlace, messageAfter);
     }
 }
