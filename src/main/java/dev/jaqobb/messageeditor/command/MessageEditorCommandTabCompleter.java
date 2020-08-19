@@ -60,12 +60,17 @@ public final class MessageEditorCommandTabCompleter implements TabCompleter {
         }
         if (arguments.length > 1 && (arguments[0].equalsIgnoreCase("activate") || (arguments[0].equalsIgnoreCase("deactivate")))) {
             for (int index = 1; index < arguments.length; index++) {
-                for (MessagePlace messageAnalyzePlace : MessagePlace.values()) {
-                    boolean messageAnalyzePlaceActive = this.plugin.isMessageAnalyzePlaceActive(messageAnalyzePlace);
-                    boolean canMessageAnalyzePlaceActiveStateBeModified = arguments[0].equalsIgnoreCase("activate") != messageAnalyzePlaceActive;
-                    boolean isValidMinecraftVersion = MinecraftVersion.atOrAbove(messageAnalyzePlace.getMinimumRequiredMinecraftVersion());
-                    if (isValidMinecraftVersion && canMessageAnalyzePlaceActiveStateBeModified && messageAnalyzePlace.name().startsWith(arguments[index].toUpperCase())) {
-                        completion.add(messageAnalyzePlace.name());
+                for (MessagePlace messagePlace : MessagePlace.values()) {
+                    if (!messagePlace.name().startsWith(arguments[index].toUpperCase())) {
+                        continue;
+                    }
+                    boolean isValidMinecraftVersion = MinecraftVersion.atOrAbove(messagePlace.getMinimumRequiredMinecraftVersion());
+                    if (!isValidMinecraftVersion) {
+                        continue;
+                    }
+                    boolean canMessagePlaceAnalyzingStateBeModified = arguments[0].equalsIgnoreCase("activate") != messagePlace.isAnalyzingActivated();
+                    if (canMessagePlaceAnalyzingStateBeModified) {
+                        completion.add(messagePlace.name());
                     }
                 }
             }

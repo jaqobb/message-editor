@@ -136,7 +136,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
                 messageJson = messageAfter;
             }
         }
-        if (this.getPlugin().isMessageAnalyzePlaceActive(messagePlace)) {
+        if (messagePlace.isAnalyzingActivated()) {
             String messageClear = "";
             for (BaseComponent component : ComponentSerializer.parse(messageJson)) {
                 messageClear += component.toPlainText();

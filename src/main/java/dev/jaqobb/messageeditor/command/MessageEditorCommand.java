@@ -52,65 +52,67 @@ public final class MessageEditorCommand implements CommandExecutor {
         }
         if (arguments[0].equalsIgnoreCase("activate")) {
             if (arguments.length == 1) {
-                sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "Correct usage: " + ChatColor.YELLOW + "/" + label + " activate <message analyze places>" + ChatColor.GRAY + ".");
+                sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "Correct usage: " + ChatColor.YELLOW + "/" + label + " activate <message places>" + ChatColor.GRAY + ".");
                 sender.sendMessage(this.plugin.getPrefix());
-                this.sendAvailablePlacesToAnalyze(sender);
+                this.sendAvailableMessagePlaces(sender);
                 return true;
             }
-            int activatedMessageAnalyzePlaces = 0;
+            int affectedMessagePlaces = 0;
             for (int index = 1; index < arguments.length; index++) {
-                MessagePlace messageAnalyzePlace = MessagePlace.fromName(arguments[index]);
-                if (messageAnalyzePlace == null) {
-                    sender.sendMessage(this.plugin.getPrefix() + ChatColor.RED + "Could not convert '" + ChatColor.GRAY + arguments[index] + ChatColor.RED + "' to message analyze place.");
+                MessagePlace messagePlace = MessagePlace.fromName(arguments[index]);
+                if (messagePlace == null) {
+                    sender.sendMessage(this.plugin.getPrefix() + ChatColor.RED + "Could not convert '" + ChatColor.GRAY + arguments[index] + ChatColor.RED + "' to message place.");
                     continue;
                 }
-                boolean isValidMinecraftVersion = MinecraftVersion.atOrAbove(messageAnalyzePlace.getMinimumRequiredMinecraftVersion());
+                boolean isValidMinecraftVersion = MinecraftVersion.atOrAbove(messagePlace.getMinimumRequiredMinecraftVersion());
                 if (!isValidMinecraftVersion) {
-                    sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + messageAnalyzePlace.name() + ChatColor.RED + " message analyze place is not supported on your server.");
+                    sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + messagePlace.name() + ChatColor.RED + " message place is not supported on your server.");
                     continue;
                 }
-                if (!this.plugin.isMessageAnalyzePlaceActive(messageAnalyzePlace)) {
-                    this.plugin.activateMessageAnalyzePlace(messageAnalyzePlace);
-                    activatedMessageAnalyzePlaces++;
+                if (!messagePlace.isAnalyzingActivated()) {
+                    messagePlace.setAnalyzingActivated(true);
+                    affectedMessagePlaces++;
                 } else {
-                    sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + messageAnalyzePlace.name() + ChatColor.RED + " message analyze place is already active.");
+                    sender.sendMessage(this.plugin.getPrefix() + ChatColor.RED + "Analyzing " + ChatColor.GRAY + messagePlace.name() + ChatColor.RED + " message place is already activated.");
                 }
             }
-            sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "You have activated " + ChatColor.YELLOW + activatedMessageAnalyzePlaces + ChatColor.GRAY + " message analyze place(s).");
+            sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "You have activated analyzing " + ChatColor.YELLOW + affectedMessagePlaces + ChatColor.GRAY + " message place(s).");
             return true;
         }
         if (arguments[0].equalsIgnoreCase("deactivate")) {
             if (arguments.length == 1) {
-                sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "Correct usage: " + ChatColor.YELLOW + "/" + label + " deactivate <message analyze places>" + ChatColor.GRAY + ".");
+                sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "Correct usage: " + ChatColor.YELLOW + "/" + label + " deactivate <message places>" + ChatColor.GRAY + ".");
                 sender.sendMessage(this.plugin.getPrefix());
-                this.sendAvailablePlacesToAnalyze(sender);
+                this.sendAvailableMessagePlaces(sender);
                 return true;
             }
-            int deactivatedMessageAnalyzePlaces = 0;
+            int affectedMessagePlaces = 0;
             for (int index = 1; index < arguments.length; index++) {
-                MessagePlace messageAnalyzePlace = MessagePlace.fromName(arguments[index]);
-                if (messageAnalyzePlace == null) {
-                    sender.sendMessage(this.plugin.getPrefix() + ChatColor.RED + "Could not convert '" + ChatColor.GRAY + arguments[index] + ChatColor.RED + "' to message analyze place.");
+                MessagePlace messagePlace = MessagePlace.fromName(arguments[index]);
+                if (messagePlace == null) {
+                    sender.sendMessage(this.plugin.getPrefix() + ChatColor.RED + "Could not convert '" + ChatColor.GRAY + arguments[index] + ChatColor.RED + "' to message place.");
                     continue;
                 }
-                boolean isValidMinecraftVersion = MinecraftVersion.atOrAbove(messageAnalyzePlace.getMinimumRequiredMinecraftVersion());
+                boolean isValidMinecraftVersion = MinecraftVersion.atOrAbove(messagePlace.getMinimumRequiredMinecraftVersion());
                 if (!isValidMinecraftVersion) {
-                    sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + messageAnalyzePlace.name() + ChatColor.RED + " message analyze place is not supported on your server.");
+                    sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + messagePlace.name() + ChatColor.RED + " message place is not supported on your server.");
                     continue;
                 }
-                if (this.plugin.isMessageAnalyzePlaceActive(messageAnalyzePlace)) {
-                    this.plugin.deactivateMessageAnalyzePlace(messageAnalyzePlace);
-                    deactivatedMessageAnalyzePlaces++;
+                if (messagePlace.isAnalyzingActivated()) {
+                    messagePlace.setAnalyzingActivated(false);
+                    affectedMessagePlaces++;
                 } else {
-                    sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + messageAnalyzePlace.name() + ChatColor.RED + " message analyze place is not active.");
+                    sender.sendMessage(this.plugin.getPrefix() + ChatColor.RED + "Analyzing " + ChatColor.GRAY + messagePlace.name() + ChatColor.RED + " message place is already deactivated.");
                 }
             }
-            sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "You have deactivated " + ChatColor.YELLOW + deactivatedMessageAnalyzePlaces + ChatColor.GRAY + " message analyze place(s).");
+            sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "You have deactivated analyzing " + ChatColor.YELLOW + affectedMessagePlaces + ChatColor.GRAY + " message place(s).");
             return true;
         }
         if (arguments[0].equalsIgnoreCase("deactivate-all")) {
-            this.plugin.deactivateAllActiveMessageAnalyzePlaces();
-            sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "You have deactivated all active message analyze places.");
+            for (MessagePlace messagePlace : MessagePlace.values()) {
+                messagePlace.setAnalyzingActivated(false);
+            }
+            sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "You have deactivated analyzing all message places.");
             return true;
         }
         this.sendHelpMessage(sender, label);
@@ -119,19 +121,19 @@ public final class MessageEditorCommand implements CommandExecutor {
 
     private void sendHelpMessage(CommandSender sender, String label) {
         sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "Available commands:");
-        sender.sendMessage(this.plugin.getPrefix() + ChatColor.YELLOW + "/" + label + " activate <message analyze places> " + ChatColor.GRAY + "-" + ChatColor.YELLOW + " Activates specified message analyze places.");
-        sender.sendMessage(this.plugin.getPrefix() + ChatColor.YELLOW + "/" + label + " deactivate <message analyze places> " + ChatColor.GRAY + "-" + ChatColor.YELLOW + " Deactivates specified message analyze places.");
-        sender.sendMessage(this.plugin.getPrefix() + ChatColor.YELLOW + "/" + label + " deactivate-all " + ChatColor.GRAY + "-" + ChatColor.YELLOW + " Deactivates all message analyze places.");
+        sender.sendMessage(this.plugin.getPrefix() + ChatColor.YELLOW + "/" + label + " activate <message places> " + ChatColor.GRAY + "-" + ChatColor.YELLOW + " Activates analyzing specified message place.");
+        sender.sendMessage(this.plugin.getPrefix() + ChatColor.YELLOW + "/" + label + " deactivate <message places> " + ChatColor.GRAY + "-" + ChatColor.YELLOW + " Deactivates analyzing specified message place.");
+        sender.sendMessage(this.plugin.getPrefix() + ChatColor.YELLOW + "/" + label + " deactivate-all " + ChatColor.GRAY + "-" + ChatColor.YELLOW + " Deactivates analyzing all message places.");
         sender.sendMessage(this.plugin.getPrefix());
-        this.sendAvailablePlacesToAnalyze(sender);
+        this.sendAvailableMessagePlaces(sender);
     }
 
-    private void sendAvailablePlacesToAnalyze(CommandSender sender) {
-        sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "Available message analyze places:");
-        for (MessagePlace messageAnalyzePlace : MessagePlace.values()) {
-            boolean isValidMinecraftVersion = MinecraftVersion.atOrAbove(messageAnalyzePlace.getMinimumRequiredMinecraftVersion());
+    private void sendAvailableMessagePlaces(CommandSender sender) {
+        sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "Available message places:");
+        for (MessagePlace messagePlace : MessagePlace.values()) {
+            boolean isValidMinecraftVersion = MinecraftVersion.atOrAbove(messagePlace.getMinimumRequiredMinecraftVersion());
             if (isValidMinecraftVersion) {
-                sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "- " + ChatColor.YELLOW + messageAnalyzePlace.name());
+                sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "- " + ChatColor.YELLOW + messagePlace.name());
             }
         }
     }

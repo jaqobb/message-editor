@@ -36,7 +36,6 @@ import dev.jaqobb.messageeditor.listener.MessageEditorListener;
 import dev.jaqobb.messageeditor.listener.MessageEditorPacketListener;
 import dev.jaqobb.messageeditor.updater.MessageEditorUpdater;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -61,7 +60,6 @@ public final class MessageEditorPlugin extends JavaPlugin {
     private boolean placeholderApiPresent;
     private boolean mvdwPlaceholderApiPresent;
     private Cache<String, String> cachedMessages;
-    private Set<MessagePlace> activeMessageAnalyzePlaces;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -82,7 +80,6 @@ public final class MessageEditorPlugin extends JavaPlugin {
         this.metrics = new Metrics(this, 8376);
         this.getLogger().log(Level.INFO, "Loading configuration...");
         this.saveDefaultConfig();
-        this.messageEdits = (List<MessageEdit>) this.getConfig().getList("message-edits");
         this.attachSpecialHoverAndClickEvents = this.getConfig().getBoolean("attach-special-hover-and-click-events", true);
         try {
             ClickEvent.Action.valueOf("COPY_TO_CLIPBOARD");
@@ -93,6 +90,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
                 this.getLogger().log(Level.INFO, "Attaching special hover and click events works only on server version at least 1.15.");
             }
         }
+        this.messageEdits = (List<MessageEdit>) this.getConfig().getList("message-edits");
         this.getLogger().log(Level.INFO, "Checking for placeholder APIs...");
         PluginManager pluginManager = this.getServer().getPluginManager();
         this.placeholderApiPresent = pluginManager.isPluginEnabled("PlaceholderAPI");
@@ -102,7 +100,6 @@ public final class MessageEditorPlugin extends JavaPlugin {
         this.cachedMessages = CacheBuilder.newBuilder()
             .expireAfterAccess(15L, TimeUnit.MINUTES)
             .build();
-        this.activeMessageAnalyzePlaces = EnumSet.noneOf(MessagePlace.class);
     }
 
     @Override
@@ -173,25 +170,5 @@ public final class MessageEditorPlugin extends JavaPlugin {
 
     public void clearCachedMessages() {
         this.cachedMessages.invalidateAll();
-    }
-
-    public Set<MessagePlace> getActiveMessageAnalyzePlaces() {
-        return Collections.unmodifiableSet(this.activeMessageAnalyzePlaces);
-    }
-
-    public boolean isMessageAnalyzePlaceActive(MessagePlace messageAnalyzePlace) {
-        return this.activeMessageAnalyzePlaces.contains(messageAnalyzePlace);
-    }
-
-    public void activateMessageAnalyzePlace(MessagePlace messageAnalyzePlace) {
-        this.activeMessageAnalyzePlaces.add(messageAnalyzePlace);
-    }
-
-    public void deactivateMessageAnalyzePlace(MessagePlace messageAnalyzePlace) {
-        this.activeMessageAnalyzePlaces.remove(messageAnalyzePlace);
-    }
-
-    public void deactivateAllActiveMessageAnalyzePlaces() {
-        this.activeMessageAnalyzePlaces.clear();
     }
 }

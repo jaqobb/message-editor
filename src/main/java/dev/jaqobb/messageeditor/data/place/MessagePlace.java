@@ -43,6 +43,7 @@ public enum MessagePlace {
     private final MinecraftVersion minimumRequiredMinecraftVersion;
     private final PacketType packetType;
     private final Set<Byte> chatTypes;
+    private boolean analyzingActivated;
 
     private MessagePlace(MinecraftVersion minimumRequiredMinecraftVersion, PacketType packetType, byte... chatTypes) {
         this.minimumRequiredMinecraftVersion = minimumRequiredMinecraftVersion;
@@ -51,6 +52,7 @@ public enum MessagePlace {
         for (byte chatType : chatTypes) {
             this.chatTypes.add(chatType);
         }
+        this.analyzingActivated = false;
     }
 
     public MinecraftVersion getMinimumRequiredMinecraftVersion() {
@@ -63,6 +65,14 @@ public enum MessagePlace {
 
     public Set<Byte> getChatTypes() {
         return Collections.unmodifiableSet(this.chatTypes);
+    }
+
+    public boolean isAnalyzingActivated() {
+        return this.analyzingActivated;
+    }
+
+    public void setAnalyzingActivated(boolean activated) {
+        this.analyzingActivated = activated;
     }
 
     public static MessagePlace fromName(String name) {
