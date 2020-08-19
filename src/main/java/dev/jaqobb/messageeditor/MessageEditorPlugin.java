@@ -61,7 +61,6 @@ public final class MessageEditorPlugin extends JavaPlugin {
     private boolean mvdwPlaceholderApiPresent;
     private Cache<String, String> cachedMessages;
 
-    @SuppressWarnings("unchecked")
     @Override
     public void onLoad() {
         MinecraftVersion minimumRequiredMinecraftVersion = null;
@@ -80,17 +79,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
         this.metrics = new Metrics(this, 8376);
         this.getLogger().log(Level.INFO, "Loading configuration...");
         this.saveDefaultConfig();
-        this.attachSpecialHoverAndClickEvents = this.getConfig().getBoolean("attach-special-hover-and-click-events", true);
-        try {
-            ClickEvent.Action.valueOf("COPY_TO_CLIPBOARD");
-        } catch (IllegalArgumentException exception) {
-            if (this.attachSpecialHoverAndClickEvents) {
-                this.attachSpecialHoverAndClickEvents = false;
-                this.getLogger().log(Level.INFO, "Copying to clipboard is not supported on your server.");
-                this.getLogger().log(Level.INFO, "Attaching special hover and click events works only on server version at least 1.15.");
-            }
-        }
-        this.messageEdits = (List<MessageEdit>) this.getConfig().getList("message-edits");
+        this.reloadConfig();
         this.getLogger().log(Level.INFO, "Checking for placeholder APIs...");
         PluginManager pluginManager = this.getServer().getPluginManager();
         this.placeholderApiPresent = pluginManager.isPluginEnabled("PlaceholderAPI");
@@ -114,6 +103,22 @@ public final class MessageEditorPlugin extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(new MessageEditorListener(this), this);
         this.getLogger().log(Level.INFO, "Registering packet listener...");
         ProtocolLibrary.getProtocolManager().addPacketListener(new MessageEditorPacketListener(this));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void reloadConfig() {
+        super.reloadConfig();
+        this.attachSpecialHoverAndClickEvents = this.getConfig().getBoolean("attach-special-hover-and-click-events", true);
+        try {
+            ClickEvent.Action.valueOf("COPY_TO_CLIPBOARD");
+        } catch (IllegalArgumentException exception) {
+            if (this.attachSpecialHoverAndClickEvents) {
+                this.attachSpecialHoverAndClickEvents = false;
+                this.getLogger().log(Level.INFO, "Attaching special hover and click events has been disabled because copying to clipboard is not supported on your server. Copying to clipboard works only on version 1.15 and above.");
+            }
+        }
+        this.messageEdits = (List<MessageEdit>) this.getConfig().getList("message-edits");
     }
 
     public String getPrefix() {
