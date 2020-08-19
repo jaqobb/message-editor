@@ -25,7 +25,6 @@
 package dev.jaqobb.messageeditor.command;
 
 import com.comphenix.protocol.utility.MinecraftVersion;
-import dev.jaqobb.messageeditor.MessageEditorPlugin;
 import dev.jaqobb.messageeditor.data.place.MessagePlace;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,12 +33,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 
 public final class MessageEditorCommandTabCompleter implements TabCompleter {
-
-    private final MessageEditorPlugin plugin;
-
-    public MessageEditorCommandTabCompleter(MessageEditorPlugin plugin) {
-        this.plugin = plugin;
-    }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] arguments) {
