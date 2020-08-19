@@ -39,6 +39,7 @@ import dev.jaqobb.messageeditor.data.bossbar.BossBarMessageStyle;
 import dev.jaqobb.messageeditor.data.edit.MessageEdit;
 import dev.jaqobb.messageeditor.data.place.MessagePlace;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import net.md_5.bungee.api.ChatColor;
@@ -94,13 +95,13 @@ public final class MessageEditorPacketListener extends PacketAdapter {
         String messageJson = null;
         if (message != null) {
             messageJson = message.getJson();
-        } else if (newPacket.getType() == PacketType.Play.Server.CHAT && newPacket.getSpecificModifier(BaseComponent[].class).size() == 1) {
+        } else if ((messagePlace == MessagePlace.CHAT || messagePlace == MessagePlace.ACTION_BAR) && newPacket.getSpecificModifier(BaseComponent[].class).size() == 1) {
             messageJson = ComponentSerializer.toString(newPacket.getSpecificModifier(BaseComponent[].class).read(0));
         }
         if (messageJson == null) {
             return;
         }
-        String cachedMessage = this.getPlugin().getCachedMessage(messageJson);
+        Map.Entry<MessageEdit, String> cachedMessage = this.getPlugin().getCachedMessage(messageJson);
         MessageEdit messageEdit = null;
         Matcher messageEditMatcher = null;
         if (cachedMessage == null) {
@@ -115,11 +116,11 @@ public final class MessageEditorPacketListener extends PacketAdapter {
         }
         if (cachedMessage != null || (messageEdit != null && messageEditMatcher != null)) {
             if (cachedMessage != null) {
-                if (cachedMessage.isEmpty() && newPacket.getType() == PacketType.Play.Server.CHAT) {
+                if (cachedMessage.getValue().isEmpty() && (messagePlace == MessagePlace.CHAT || messagePlace == MessagePlace.ACTION_BAR)) {
                     event.setCancelled(true);
                     return;
                 }
-                messageJson = cachedMessage;
+                messageJson = cachedMessage.getValue();
             } else {
                 String messageAfter = messageEditMatcher.replaceAll(messageEdit.getMessageAfter());
                 if (this.getPlugin().isPlaceholderApiPresent()) {
@@ -128,8 +129,8 @@ public final class MessageEditorPacketListener extends PacketAdapter {
                 if (this.getPlugin().isMvdwPlaceholderApiPresent()) {
                     messageAfter = be.maximvdw.placeholderapi.PlaceholderAPI.replacePlaceholders(player, messageAfter);
                 }
-                this.getPlugin().cacheMessage(messageJson, messageAfter);
-                if (messageAfter.isEmpty() && newPacket.getType() == PacketType.Play.Server.CHAT) {
+                this.getPlugin().cacheMessage(messageJson, messageEdit, messageAfter);
+                if (messageAfter.isEmpty() && (messagePlace == MessagePlace.CHAT || messagePlace == MessagePlace.ACTION_BAR)) {
                     event.setCancelled(true);
                     return;
                 }
@@ -154,7 +155,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
         }
         if (message != null) {
             newPacket.getChatComponents().write(0, WrappedChatComponent.fromJson(messageJson));
-        } else if (newPacket.getType() == PacketType.Play.Server.CHAT && newPacket.getSpecificModifier(BaseComponent[].class).size() == 1) {
+        } else if ((messagePlace == MessagePlace.CHAT || messagePlace == MessagePlace.ACTION_BAR) && newPacket.getSpecificModifier(BaseComponent[].class).size() == 1) {
             newPacket.getSpecificModifier(BaseComponent[].class).write(0, ComponentSerializer.parse(messageJson));
         }
         event.setPacket(newPacket);

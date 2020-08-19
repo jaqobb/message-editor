@@ -35,8 +35,10 @@ import dev.jaqobb.messageeditor.data.place.MessagePlace;
 import dev.jaqobb.messageeditor.listener.MessageEditorListener;
 import dev.jaqobb.messageeditor.listener.MessageEditorPacketListener;
 import dev.jaqobb.messageeditor.updater.MessageEditorUpdater;
+import java.util.AbstractMap;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -59,7 +61,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
     private boolean attachSpecialHoverAndClickEvents;
     private boolean placeholderApiPresent;
     private boolean mvdwPlaceholderApiPresent;
-    private Cache<String, String> cachedMessages;
+    private Cache<String, Map.Entry<MessageEdit, String>> cachedMessages;
 
     @Override
     public void onLoad() {
@@ -161,12 +163,12 @@ public final class MessageEditorPlugin extends JavaPlugin {
         return Collections.unmodifiableSet(this.cachedMessages.asMap().keySet());
     }
 
-    public String getCachedMessage(String messageBefore) {
+    public Map.Entry<MessageEdit, String> getCachedMessage(String messageBefore) {
         return this.cachedMessages.getIfPresent(messageBefore);
     }
 
-    public void cacheMessage(String messageBefore, String messageAfter) {
-        this.cachedMessages.put(messageBefore, messageAfter);
+    public void cacheMessage(String messageBefore, MessageEdit messageEdit, String messageAfter) {
+        this.cachedMessages.put(messageBefore, new AbstractMap.SimpleEntry<>(messageEdit, messageAfter));
     }
 
     public void uncacheMessage(String messageBefore) {
