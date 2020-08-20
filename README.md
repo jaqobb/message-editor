@@ -1,5 +1,5 @@
 # Message Editor 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT) ![build](https://github.com/jaqobb/message-editor/workflows/build/badge.svg)
+![Workflow: build](https://github.com/jaqobb/message-editor/workflows/build/badge.svg) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 Message Editor is a Spigot plugin that allows editing in-game messages that were previously unmodifiable, in easy and fast way.
 
@@ -13,10 +13,10 @@ Message Editor supports:
 * [x] Editing kick/disconnect messages - since 1.1.0
 * [x] Cancelling sending messages - since 1.2.4
 * [x] Editing boss bar titles - since 1.3.0 (requires server version at least 1.9)
+* [x] Triggering message editing only on specific positions - since 1.3.2
 * [ ] Editing scoreboard titles
 * [ ] Editing scoreboard entries
 * [ ] Editing message positions
-* [ ] Triggering message editing only on specific positions
 
 ### Showcase
 
