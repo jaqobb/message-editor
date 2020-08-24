@@ -68,15 +68,19 @@ We are pretty much done. The only thing left is adding all we have done to the `
 message-edits:
 - ==: MessageEdit
   message-before-pattern: '\{"extra":\[\{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"yellow","text":"([a-zA-Z0-9_]{3,16}) joined the game"\}\],"text":""\}'
+  message-place-before: CHAT
   message-after: '{"extra":[{"bold":true,"italic":true,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"red","text":"$1 joined the game"}],"text":""}'
 - ==: MessageEdit
   message-before-pattern: '\{"extra":\[\{"text":"You are (\d+) version\(s\) behind"\}\],"text":""\}'
+  message-place-before: CHAT
   message-after: '{"extra":[{"color":"green","text":"You are $1 version(s) behind. Consider updating."}],"text":""}'
 ```
 
 `==: MessageEdit` is for serialization purposes only.
 
 `message-before-pattern` is a pattern to make sure we are editing the right message.
+
+`message-place-before` is a place that the original message has to be sent from to be edited.
 
 `message-after` is a new message you will see.
 
