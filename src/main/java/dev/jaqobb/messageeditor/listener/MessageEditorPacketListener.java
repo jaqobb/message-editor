@@ -52,7 +52,7 @@ import org.bukkit.entity.Player;
 
 public final class MessageEditorPacketListener extends PacketAdapter {
 
-    private static final String SPECIAL_REGEX_CHARACTERS = "[{}()\\[\\].+*?^$\\\\|]";
+    private static final String SPECIAL_REGEX_CHARACTERS = "[<>{}()\\[\\].+\\-*?^$\\\\|]";
 
     @SuppressWarnings("deprecation")
     private static final HoverEvent COPY_TO_CLIPBOARD_HOVER_EVENT = new HoverEvent(
@@ -102,9 +102,6 @@ public final class MessageEditorPacketListener extends PacketAdapter {
             return;
         }
         Map.Entry<MessageEdit, String> cachedMessage = this.getPlugin().getCachedMessage(messageJson, messagePlace);
-        if (cachedMessage != null && cachedMessage.getKey().getMessageBeforePlace() != null && cachedMessage.getKey().getMessageBeforePlace() != messagePlace) {
-            return;
-        }
         MessageEdit messageEdit = null;
         Matcher messageEditMatcher = null;
         if (cachedMessage == null) {
