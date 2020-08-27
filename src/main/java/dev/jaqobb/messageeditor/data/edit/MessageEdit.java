@@ -38,11 +38,13 @@ public final class MessageEdit implements ConfigurationSerializable {
     private final Pattern messageBeforePattern;
     private final MessagePlace messageBeforePlace;
     private final String messageAfter;
+    private final MessagePlace messageAfterPlace;
 
-    public MessageEdit(String messageBeforePattern, MessagePlace messageBeforePlace, String messageAfter) {
+    public MessageEdit(String messageBeforePattern, MessagePlace messageBeforePlace, String messageAfter, MessagePlace messageAfterPlace) {
         this.messageBeforePattern = Pattern.compile(messageBeforePattern);
         this.messageBeforePlace = messageBeforePlace;
         this.messageAfter = messageAfter;
+        this.messageAfterPlace = messageAfterPlace;
     }
 
     public Pattern getMessageBeforePattern() {
@@ -59,6 +61,10 @@ public final class MessageEdit implements ConfigurationSerializable {
 
     public String getMessageAfter() {
         return this.messageAfter;
+    }
+
+    public MessagePlace getMessageAfterPlace() {
+        return this.messageAfterPlace;
     }
 
     public Matcher getMatcher(String messageBefore) {
@@ -87,6 +93,10 @@ public final class MessageEdit implements ConfigurationSerializable {
             messageBeforePlace = MessagePlace.fromName((String) data.get("message-before-place"));
         }
         String messageAfter = (String) data.get("message-after");
-        return new MessageEdit(messageBeforePattern, messageBeforePlace, messageAfter);
+        MessagePlace messageAfterPlace = null;
+        if (data.containsKey("message-after-place")) {
+            messageBeforePlace = MessagePlace.fromName((String) data.get("message-after-place"));
+        }
+        return new MessageEdit(messageBeforePattern, messageBeforePlace, messageAfter, messageAfterPlace);
     }
 }
