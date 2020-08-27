@@ -83,6 +83,9 @@ public final class MessageEdit implements ConfigurationSerializable {
             data.put("message-before-place", this.messageBeforePlace.name());
         }
         data.put("message-after", this.messageAfter);
+        if (this.messageAfterPlace != null) {
+            data.put("message-after-place", this.messageAfterPlace.name());
+        }
         return data;
     }
 
@@ -95,7 +98,7 @@ public final class MessageEdit implements ConfigurationSerializable {
         String messageAfter = (String) data.get("message-after");
         MessagePlace messageAfterPlace = null;
         if (data.containsKey("message-after-place")) {
-            messageBeforePlace = MessagePlace.fromName((String) data.get("message-after-place"));
+            messageAfterPlace = MessagePlace.fromName((String) data.get("message-after-place"));
         }
         return new MessageEdit(messageBeforePattern, messageBeforePlace, messageAfter, messageAfterPlace);
     }
