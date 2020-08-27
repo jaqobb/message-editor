@@ -124,7 +124,6 @@ public final class MessageEditorPacketListener extends PacketAdapter {
                     // Currently only chat and action bar new positions are supported.
                     MessagePlace newMessagePlace = cachedMessage.getKey().getMessageAfterPlace();
                     if (newMessagePlace != messagePlace && (newMessagePlace == MessagePlace.CHAT || newMessagePlace == MessagePlace.ACTION_BAR)) {
-                        // TODO: Support for both chat chat types.
                         newPacket.getBytes().writeSafely(0, newMessagePlace.getChatTypes()[0]);
                         if (EnumWrappers.getChatTypeClass() != null) {
                             Arrays.stream(EnumWrappers.ChatType.values())
@@ -154,7 +153,6 @@ public final class MessageEditorPacketListener extends PacketAdapter {
                     // Currently only chat and action bar new positions are supported.
                     MessagePlace newMessagePlace = messageEdit.getMessageAfterPlace();
                     if (newMessagePlace != messagePlace && (newMessagePlace == MessagePlace.CHAT || newMessagePlace == MessagePlace.ACTION_BAR)) {
-                        // TODO: Support for both chat chat types.
                         newPacket.getBytes().writeSafely(0, newMessagePlace.getChatTypes()[0]);
                         if (EnumWrappers.getChatTypeClass() != null) {
                             Arrays.stream(EnumWrappers.ChatType.values())
