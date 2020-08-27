@@ -101,10 +101,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
         if (messageJson == null) {
             return;
         }
-        // TODO: Cache message depending on their JSON and message place.
-        // TODO: Needs to be fixed before release.
-        // TODO: Right now this prevents message with the same JSON but different message place from being edited if there is already a message with the same JSON cached.
-        Map.Entry<MessageEdit, String> cachedMessage = this.getPlugin().getCachedMessage(messageJson);
+        Map.Entry<MessageEdit, String> cachedMessage = this.getPlugin().getCachedMessage(messageJson, messagePlace);
         if (cachedMessage != null && cachedMessage.getKey().getMessageBeforePlace() != null && cachedMessage.getKey().getMessageBeforePlace() != messagePlace) {
             return;
         }
@@ -138,7 +135,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
                 if (this.getPlugin().isMvdwPlaceholderApiPresent()) {
                     messageAfter = be.maximvdw.placeholderapi.PlaceholderAPI.replacePlaceholders(player, messageAfter);
                 }
-                this.getPlugin().cacheMessage(messageJson, messageEdit, messageAfter);
+                this.getPlugin().cacheMessage(messageJson, messagePlace, messageEdit, messageAfter);
                 if (messageAfter.isEmpty() && (messagePlace == MessagePlace.CHAT || messagePlace == MessagePlace.ACTION_BAR)) {
                     event.setCancelled(true);
                     return;

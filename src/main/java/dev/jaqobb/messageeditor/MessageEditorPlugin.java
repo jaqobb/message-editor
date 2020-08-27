@@ -61,7 +61,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
     private boolean attachSpecialHoverAndClickEvents;
     private boolean placeholderApiPresent;
     private boolean mvdwPlaceholderApiPresent;
-    private Cache<String, Map.Entry<MessageEdit, String>> cachedMessages;
+    private Cache<Map.Entry<String, MessagePlace>, Map.Entry<MessageEdit, String>> cachedMessages;
 
     @Override
     public void onLoad() {
@@ -159,20 +159,20 @@ public final class MessageEditorPlugin extends JavaPlugin {
         this.mvdwPlaceholderApiPresent = present;
     }
 
-    public Set<String> getCachedMessages() {
+    public Set<Map.Entry<String, MessagePlace>> getCachedMessages() {
         return Collections.unmodifiableSet(this.cachedMessages.asMap().keySet());
     }
 
-    public Map.Entry<MessageEdit, String> getCachedMessage(String messageBefore) {
-        return this.cachedMessages.getIfPresent(messageBefore);
+    public Map.Entry<MessageEdit, String> getCachedMessage(String messageBefore, MessagePlace messageBeforePlace) {
+        return this.cachedMessages.getIfPresent(new AbstractMap.SimpleEntry<>(messageBefore, messageBeforePlace));
     }
 
-    public void cacheMessage(String messageBefore, MessageEdit messageEdit, String messageAfter) {
-        this.cachedMessages.put(messageBefore, new AbstractMap.SimpleEntry<>(messageEdit, messageAfter));
+    public void cacheMessage(String messageBefore, MessagePlace messageBeforePlace, MessageEdit messageEdit, String messageAfter) {
+        this.cachedMessages.put(new AbstractMap.SimpleEntry<>(messageBefore, messageBeforePlace), new AbstractMap.SimpleEntry<>(messageEdit, messageAfter));
     }
 
-    public void uncacheMessage(String messageBefore) {
-        this.cachedMessages.invalidate(messageBefore);
+    public void uncacheMessage(String messageBefore, MessagePlace messageBeforePlace) {
+        this.cachedMessages.invalidate(new AbstractMap.SimpleEntry<>(messageBefore, messageBeforePlace));
     }
 
     public void clearCachedMessages() {
