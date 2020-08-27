@@ -28,9 +28,6 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.utility.MinecraftVersion;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 public enum MessagePlace {
 
@@ -42,16 +39,13 @@ public enum MessagePlace {
 
     private final MinecraftVersion minimumRequiredMinecraftVersion;
     private final PacketType packetType;
-    private final Set<Byte> chatTypes;
+    private final byte[] chatTypes;
     private boolean analyzingActivated;
 
     private MessagePlace(MinecraftVersion minimumRequiredMinecraftVersion, PacketType packetType, byte... chatTypes) {
         this.minimumRequiredMinecraftVersion = minimumRequiredMinecraftVersion;
         this.packetType = packetType;
-        this.chatTypes = new HashSet<>(chatTypes.length);
-        for (byte chatType : chatTypes) {
-            this.chatTypes.add(chatType);
-        }
+        this.chatTypes = chatTypes;
         this.analyzingActivated = false;
     }
 
@@ -63,8 +57,8 @@ public enum MessagePlace {
         return this.packetType;
     }
 
-    public Set<Byte> getChatTypes() {
-        return Collections.unmodifiableSet(this.chatTypes);
+    public byte[] getChatTypes() {
+        return Arrays.copyOf(this.chatTypes, this.chatTypes.length);
     }
 
     public boolean isAnalyzingActivated() {
@@ -100,7 +94,14 @@ public enum MessagePlace {
     public static MessagePlace fromPacketType(PacketType packetType, byte chatType) {
         return Arrays.stream(values())
             .filter(place -> place.packetType == packetType)
-            .filter(place -> place.chatTypes.contains(chatType) || chatType == -1)
+            .filter(place -> {
+                for (byte placeChatType : place.chatTypes) {
+                    if (placeChatType == chatType) {
+                        return true;
+                    }
+                }
+                return chatType == -1;
+            })
             .findFirst()
             .orElse(null);
     }

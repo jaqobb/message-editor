@@ -101,7 +101,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
         if (messageJson == null) {
             return;
         }
-        Map.Entry<MessageEdit, String> cachedMessage = this.getPlugin().getCachedMessage(messageJson, messagePlace);
+        Map.Entry<MessageEdit, String> cachedMessage = this.getPlugin().getCachedMessage(messageJson);
         MessageEdit messageEdit = null;
         Matcher messageEditMatcher = null;
         if (cachedMessage == null) {
@@ -119,6 +119,22 @@ public final class MessageEditorPacketListener extends PacketAdapter {
         }
         if (cachedMessage != null || (messageEdit != null && messageEditMatcher != null)) {
             if (cachedMessage != null) {
+                // Currently only chat and action bar messages can have their new position changed.
+                if (messagePlace == MessagePlace.CHAT || messagePlace == MessagePlace.ACTION_BAR) {
+                    // Currently only chat and action bar new positions are supported.
+                    MessagePlace newMessagePlace = cachedMessage.getKey().getMessageAfterPlace();
+                    if (newMessagePlace != messagePlace && (newMessagePlace == MessagePlace.CHAT || newMessagePlace == MessagePlace.ACTION_BAR)) {
+                        // TODO: Support for both chat chat types.
+                        newPacket.getBytes().writeSafely(0, newMessagePlace.getChatTypes()[0]);
+                        if (EnumWrappers.getChatTypeClass() != null) {
+                            Arrays.stream(EnumWrappers.ChatType.values())
+                                .filter(type -> type.getId() == newMessagePlace.getChatTypes()[0])
+                                .findAny()
+                                .ifPresent(type -> newPacket.getChatTypes().write(0, type));
+                        }
+                        messagePlace = newMessagePlace;
+                    }
+                }
                 if (cachedMessage.getValue().isEmpty() && (messagePlace == MessagePlace.CHAT || messagePlace == MessagePlace.ACTION_BAR)) {
                     event.setCancelled(true);
                     return;
@@ -132,7 +148,23 @@ public final class MessageEditorPacketListener extends PacketAdapter {
                 if (this.getPlugin().isMvdwPlaceholderApiPresent()) {
                     messageAfter = be.maximvdw.placeholderapi.PlaceholderAPI.replacePlaceholders(player, messageAfter);
                 }
-                this.getPlugin().cacheMessage(messageJson, messagePlace, messageEdit, messageAfter);
+                this.getPlugin().cacheMessage(messageJson, messageEdit, messageAfter);
+                // Currently only chat and action bar messages can have their new position changed.
+                if (messagePlace == MessagePlace.CHAT || messagePlace == MessagePlace.ACTION_BAR) {
+                    // Currently only chat and action bar new positions are supported.
+                    MessagePlace newMessagePlace = messageEdit.getMessageAfterPlace();
+                    if (newMessagePlace != messagePlace && (newMessagePlace == MessagePlace.CHAT || newMessagePlace == MessagePlace.ACTION_BAR)) {
+                        // TODO: Support for both chat chat types.
+                        newPacket.getBytes().writeSafely(0, newMessagePlace.getChatTypes()[0]);
+                        if (EnumWrappers.getChatTypeClass() != null) {
+                            Arrays.stream(EnumWrappers.ChatType.values())
+                                .filter(type -> type.getId() == newMessagePlace.getChatTypes()[0])
+                                .findAny()
+                                .ifPresent(type -> newPacket.getChatTypes().write(0, type));
+                        }
+                        messagePlace = newMessagePlace;
+                    }
+                }
                 if (messageAfter.isEmpty() && (messagePlace == MessagePlace.CHAT || messagePlace == MessagePlace.ACTION_BAR)) {
                     event.setCancelled(true);
                     return;
@@ -164,19 +196,6 @@ public final class MessageEditorPacketListener extends PacketAdapter {
         event.setPacket(newPacket);
     }
 
-    private Byte getMessagePosition(PacketContainer packet) {
-        if (packet.getType() != PacketType.Play.Server.CHAT) {
-            return null;
-        }
-        // 0 and 1 - chat
-        // 2 - action bar
-        Byte position = packet.getBytes().readSafely(0);
-        if (position == null) {
-            position = packet.getChatTypes().read(0).getId();
-        }
-        return position;
-    }
-
     private PacketContainer copyPacketContent(PacketContainer oldPacket, PacketContainer newPacket) {
         newPacket.getChatComponents().write(0, oldPacket.getChatComponents().read(0));
         if (newPacket.getType() == PacketType.Play.Server.CHAT) {
@@ -184,11 +203,15 @@ public final class MessageEditorPacketListener extends PacketAdapter {
             if (components != null) {
                 newPacket.getSpecificModifier(BaseComponent[].class).writeSafely(0, components);
             }
-            Byte position = this.getMessagePosition(oldPacket);
-            newPacket.getBytes().writeSafely(0, position);
+            Byte position = oldPacket.getBytes().readSafely(0);
+            if (position == null) {
+                position = oldPacket.getChatTypes().read(0).getId();
+            }
+            Byte positionFinal = position;
+            newPacket.getBytes().writeSafely(0, positionFinal);
             if (EnumWrappers.getChatTypeClass() != null) {
                 Arrays.stream(EnumWrappers.ChatType.values())
-                    .filter(type -> type.getId() == position)
+                    .filter(type -> type.getId() == positionFinal)
                     .findAny()
                     .ifPresent(type -> newPacket.getChatTypes().write(0, type));
             }

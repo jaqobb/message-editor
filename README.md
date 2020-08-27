@@ -14,9 +14,9 @@ Message Editor supports:
 * [x] Cancelling sending messages - since 1.2.4
 * [x] Editing boss bar titles - since 1.3.0 (requires server version at least 1.9)
 * [x] Triggering message editing only on specific positions - since 1.3.2
+* [x] Editing message positions - since 1.4.0
 * [ ] Editing scoreboard titles
 * [ ] Editing scoreboard entries
-* [ ] Editing message positions
 
 ### Showcase
 
