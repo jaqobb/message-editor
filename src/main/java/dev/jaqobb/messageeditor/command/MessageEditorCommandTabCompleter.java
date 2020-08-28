@@ -41,13 +41,17 @@ public final class MessageEditorCommandTabCompleter implements TabCompleter {
         }
         List<String> completion = new LinkedList<>();
         if (arguments.length == 1) {
-            if ("activate".startsWith(arguments[0].toLowerCase())) {
+            String argument = arguments[0].toLowerCase();
+            if ("reload".startsWith(argument)) {
+                completion.add("reload");
+            }
+            if ("activate".startsWith(argument)) {
                 completion.add("activate");
             }
-            if ("deactivate".startsWith(arguments[0].toLowerCase())) {
+            if ("deactivate".startsWith(argument)) {
                 completion.add("deactivate");
             }
-            if ("deactivate-all".startsWith(arguments[0].toLowerCase())) {
+            if ("deactivate-all".startsWith(argument)) {
                 completion.add("deactivate-all");
             }
         }
