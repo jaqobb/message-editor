@@ -50,6 +50,8 @@ public final class MessageEditorCommand implements CommandExecutor {
             this.sendHelpMessage(sender, label);
             return true;
         }
+        if (arguments[0].equalsIgnoreCase("reload")) {
+        }
         if (arguments[0].equalsIgnoreCase("activate")) {
             if (arguments.length == 1) {
                 sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "Correct usage: " + ChatColor.YELLOW + "/" + label + " activate <message places>" + ChatColor.GRAY + ".");
@@ -109,6 +111,10 @@ public final class MessageEditorCommand implements CommandExecutor {
             return true;
         }
         if (arguments[0].equalsIgnoreCase("deactivate-all")) {
+            if (arguments.length != 1) {
+                sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "Correct usage: " + ChatColor.YELLOW + "/" + label + " deactivate-all" + ChatColor.GRAY + ".");
+                return true;
+            }
             for (MessagePlace messagePlace : MessagePlace.values()) {
                 messagePlace.setAnalyzingActivated(false);
             }
@@ -121,9 +127,10 @@ public final class MessageEditorCommand implements CommandExecutor {
 
     private void sendHelpMessage(CommandSender sender, String label) {
         sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "Available commands:");
-        sender.sendMessage(this.plugin.getPrefix() + ChatColor.YELLOW + "/" + label + " activate <message places> " + ChatColor.GRAY + "-" + ChatColor.YELLOW + " Activates analyzing specified message place.");
-        sender.sendMessage(this.plugin.getPrefix() + ChatColor.YELLOW + "/" + label + " deactivate <message places> " + ChatColor.GRAY + "-" + ChatColor.YELLOW + " Deactivates analyzing specified message place.");
-        sender.sendMessage(this.plugin.getPrefix() + ChatColor.YELLOW + "/" + label + " deactivate-all " + ChatColor.GRAY + "-" + ChatColor.YELLOW + " Deactivates analyzing all message places.");
+        sender.sendMessage(this.plugin.getPrefix() + ChatColor.YELLOW + "/" + label + " reload" + ChatColor.GRAY + " - " + ChatColor.YELLOW + "Reloads plugin's configuration.");
+        sender.sendMessage(this.plugin.getPrefix() + ChatColor.YELLOW + "/" + label + " activate <message places>" + ChatColor.GRAY + " - " + ChatColor.YELLOW + "Activates analyzing specified message place.");
+        sender.sendMessage(this.plugin.getPrefix() + ChatColor.YELLOW + "/" + label + " deactivate <message places>" + ChatColor.GRAY + " - " + ChatColor.YELLOW + "Deactivates analyzing specified message place.");
+        sender.sendMessage(this.plugin.getPrefix() + ChatColor.YELLOW + "/" + label + " deactivate-all" + ChatColor.GRAY + " - " + ChatColor.YELLOW + "Deactivates analyzing all message places.");
         sender.sendMessage(this.plugin.getPrefix());
         this.sendAvailableMessagePlaces(sender);
     }
