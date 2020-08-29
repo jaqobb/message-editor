@@ -51,6 +51,10 @@ public final class MessageEditorCommand implements CommandExecutor {
             return true;
         }
         if (arguments[0].equalsIgnoreCase("reload")) {
+            if (arguments.length != 1) {
+                sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "Correct usage: " + ChatColor.YELLOW + "/" + label + " reload" + ChatColor.GRAY + ".");
+                return true;
+            }
             this.plugin.reloadConfig();
             this.plugin.clearCachedMessages();
             sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "Plugin has been reloaded.");
