@@ -95,7 +95,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
         String messageJson = null;
         if (message != null) {
             messageJson = message.getJson();
-        } else if ((messagePlace == MessagePlace.CHAT || messagePlace == MessagePlace.ACTION_BAR) && newPacket.getSpecificModifier(BaseComponent[].class).size() == 1) {
+        } else if ((messagePlace == MessagePlace.GAME_CHAT || messagePlace == MessagePlace.SYSTEM_CHAT || messagePlace == MessagePlace.ACTION_BAR) && newPacket.getSpecificModifier(BaseComponent[].class).size() == 1) {
             messageJson = ComponentSerializer.toString(newPacket.getSpecificModifier(BaseComponent[].class).read(0));
         }
         if (messageJson == null) {
@@ -120,21 +120,21 @@ public final class MessageEditorPacketListener extends PacketAdapter {
         if (cachedMessage != null || (messageEdit != null && messageEditMatcher != null)) {
             if (cachedMessage != null) {
                 // Currently only chat and action bar messages can have their new position changed.
-                if (messagePlace == MessagePlace.CHAT || messagePlace == MessagePlace.ACTION_BAR) {
+                if (messagePlace == MessagePlace.GAME_CHAT || messagePlace == MessagePlace.SYSTEM_CHAT || messagePlace == MessagePlace.ACTION_BAR) {
                     // Currently only chat and action bar new positions are supported.
                     MessagePlace newMessagePlace = cachedMessage.getKey().getMessageAfterPlace();
-                    if (newMessagePlace != messagePlace && (newMessagePlace == MessagePlace.CHAT || newMessagePlace == MessagePlace.ACTION_BAR)) {
-                        newPacket.getBytes().writeSafely(0, newMessagePlace.getChatTypes()[0]);
+                    if (newMessagePlace != messagePlace && (newMessagePlace == MessagePlace.GAME_CHAT || newMessagePlace == MessagePlace.SYSTEM_CHAT || newMessagePlace == MessagePlace.ACTION_BAR)) {
+                        newPacket.getBytes().writeSafely(0, newMessagePlace.getChatType());
                         if (EnumWrappers.getChatTypeClass() != null) {
                             Arrays.stream(EnumWrappers.ChatType.values())
-                                .filter(type -> type.getId() == newMessagePlace.getChatTypes()[0])
+                                .filter(type -> type.getId() == newMessagePlace.getChatType())
                                 .findAny()
                                 .ifPresent(type -> newPacket.getChatTypes().write(0, type));
                         }
                         messagePlace = newMessagePlace;
                     }
                 }
-                if (cachedMessage.getValue().isEmpty() && (messagePlace == MessagePlace.CHAT || messagePlace == MessagePlace.ACTION_BAR)) {
+                if (cachedMessage.getValue().isEmpty() && (messagePlace == MessagePlace.GAME_CHAT || messagePlace == MessagePlace.SYSTEM_CHAT || messagePlace == MessagePlace.ACTION_BAR)) {
                     event.setCancelled(true);
                     return;
                 }
@@ -149,21 +149,21 @@ public final class MessageEditorPacketListener extends PacketAdapter {
                 }
                 this.getPlugin().cacheMessage(messageJson, messageEdit, messageAfter);
                 // Currently only chat and action bar messages can have their new position changed.
-                if (messagePlace == MessagePlace.CHAT || messagePlace == MessagePlace.ACTION_BAR) {
+                if (messagePlace == MessagePlace.GAME_CHAT || messagePlace == MessagePlace.SYSTEM_CHAT || messagePlace == MessagePlace.ACTION_BAR) {
                     // Currently only chat and action bar new positions are supported.
                     MessagePlace newMessagePlace = messageEdit.getMessageAfterPlace();
-                    if (newMessagePlace != messagePlace && (newMessagePlace == MessagePlace.CHAT || newMessagePlace == MessagePlace.ACTION_BAR)) {
-                        newPacket.getBytes().writeSafely(0, newMessagePlace.getChatTypes()[0]);
+                    if (newMessagePlace != messagePlace && (newMessagePlace == MessagePlace.GAME_CHAT || newMessagePlace == MessagePlace.SYSTEM_CHAT || newMessagePlace == MessagePlace.ACTION_BAR)) {
+                        newPacket.getBytes().writeSafely(0, newMessagePlace.getChatType());
                         if (EnumWrappers.getChatTypeClass() != null) {
                             Arrays.stream(EnumWrappers.ChatType.values())
-                                .filter(type -> type.getId() == newMessagePlace.getChatTypes()[0])
+                                .filter(type -> type.getId() == newMessagePlace.getChatType())
                                 .findAny()
                                 .ifPresent(type -> newPacket.getChatTypes().write(0, type));
                         }
                         messagePlace = newMessagePlace;
                     }
                 }
-                if (messageAfter.isEmpty() && (messagePlace == MessagePlace.CHAT || messagePlace == MessagePlace.ACTION_BAR)) {
+                if (messageAfter.isEmpty() && (messagePlace == MessagePlace.GAME_CHAT || messagePlace == MessagePlace.SYSTEM_CHAT || messagePlace == MessagePlace.ACTION_BAR)) {
                     event.setCancelled(true);
                     return;
                 }
@@ -180,7 +180,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
             this.getPlugin().getLogger().log(Level.INFO, "Message clear: " + messageClear);
             this.getPlugin().getLogger().log(Level.INFO, "Message JSON: " + messageJson.replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0"));
         }
-        if (messagePlace == MessagePlace.CHAT && player.hasPermission("messageeditor.use") && this.getPlugin().isAttachingSpecialHoverAndClickEventsEnabled()) {
+        if ((messagePlace == MessagePlace.GAME_CHAT || messagePlace == MessagePlace.SYSTEM_CHAT) && player.hasPermission("messageeditor.use") && this.getPlugin().isAttachingSpecialHoverAndClickEventsEnabled()) {
             TextComponent messageToSend = new TextComponent(ComponentSerializer.parse(message.getJson()));
             messageToSend.setHoverEvent(COPY_TO_CLIPBOARD_HOVER_EVENT);
             messageToSend.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, message.getJson().replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0")));
@@ -188,7 +188,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
         }
         if (message != null) {
             newPacket.getChatComponents().write(0, WrappedChatComponent.fromJson(messageJson));
-        } else if ((messagePlace == MessagePlace.CHAT || messagePlace == MessagePlace.ACTION_BAR) && newPacket.getSpecificModifier(BaseComponent[].class).size() == 1) {
+        } else if ((messagePlace == MessagePlace.GAME_CHAT || messagePlace == MessagePlace.SYSTEM_CHAT || messagePlace == MessagePlace.ACTION_BAR) && newPacket.getSpecificModifier(BaseComponent[].class).size() == 1) {
             newPacket.getSpecificModifier(BaseComponent[].class).write(0, ComponentSerializer.parse(messageJson));
         }
         event.setPacket(newPacket);

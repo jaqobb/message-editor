@@ -28,10 +28,12 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.utility.MinecraftVersion;
 import java.util.Arrays;
+import java.util.Objects;
 
 public enum MessagePlace {
 
-    CHAT(MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 0, (byte) 1),
+    GAME_CHAT(MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 0),
+    SYSTEM_CHAT(MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 1),
     ACTION_BAR(MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 2),
     KICK(MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.KICK_DISCONNECT),
     DISCONNECT(MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Login.Server.DISCONNECT),
@@ -39,13 +41,17 @@ public enum MessagePlace {
 
     private final MinecraftVersion minimumRequiredMinecraftVersion;
     private final PacketType packetType;
-    private final byte[] chatTypes;
+    private final Byte chatType;
     private boolean analyzingActivated;
 
-    private MessagePlace(MinecraftVersion minimumRequiredMinecraftVersion, PacketType packetType, byte... chatTypes) {
+    private MessagePlace(MinecraftVersion minimumRequiredMinecraftVersion, PacketType packetType) {
+        this(minimumRequiredMinecraftVersion, packetType, null);
+    }
+
+    private MessagePlace(MinecraftVersion minimumRequiredMinecraftVersion, PacketType packetType, Byte chatType) {
         this.minimumRequiredMinecraftVersion = minimumRequiredMinecraftVersion;
         this.packetType = packetType;
-        this.chatTypes = chatTypes;
+        this.chatType = chatType;
         this.analyzingActivated = false;
     }
 
@@ -57,8 +63,8 @@ public enum MessagePlace {
         return this.packetType;
     }
 
-    public byte[] getChatTypes() {
-        return Arrays.copyOf(this.chatTypes, this.chatTypes.length);
+    public Byte getChatType() {
+        return this.chatType;
     }
 
     public boolean isAnalyzingActivated() {
@@ -77,7 +83,7 @@ public enum MessagePlace {
     }
 
     public static MessagePlace fromPacket(PacketContainer packet) {
-        Byte chatType = -1;
+        Byte chatType = null;
         if (packet.getType() == PacketType.Play.Server.CHAT) {
             chatType = packet.getBytes().readSafely(0);
             if (chatType == null) {
@@ -88,20 +94,13 @@ public enum MessagePlace {
     }
 
     public static MessagePlace fromPacketType(PacketType packetType) {
-        return fromPacketType(packetType, (byte) -1);
+        return fromPacketType(packetType, null);
     }
 
-    public static MessagePlace fromPacketType(PacketType packetType, byte chatType) {
+    public static MessagePlace fromPacketType(PacketType packetType, Byte chatType) {
         return Arrays.stream(values())
             .filter(place -> place.packetType == packetType)
-            .filter(place -> {
-                for (byte placeChatType : place.chatTypes) {
-                    if (placeChatType == chatType) {
-                        return true;
-                    }
-                }
-                return chatType == -1;
-            })
+            .filter(place -> place.chatType == null || Objects.equals(place.chatType, chatType))
             .findFirst()
             .orElse(null);
     }
