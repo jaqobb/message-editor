@@ -68,11 +68,12 @@ We are pretty much done. The only thing left is adding all we have done to the `
 message-edits:
 - ==: MessageEdit
   message-before-pattern: '\{"extra":\[\{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"yellow","text":"([a-zA-Z0-9_]{3,16}) joined the game"\}\],"text":""\}'
-  message-place-before: CHAT
+  message-before-place: SYSTEM_CHAT
   message-after: '{"extra":[{"bold":true,"italic":true,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"red","text":"$1 joined the game"}],"text":""}'
+  message-after-place: ACTION_BAR
 - ==: MessageEdit
   message-before-pattern: '\{"extra":\[\{"text":"You are (\d+) version\(s\) behind"\}\],"text":""\}'
-  message-place-before: CHAT
+  message-before-place: GAME_CHAT
   message-after: '{"extra":[{"color":"green","text":"You are $1 version(s) behind. Consider updating."}],"text":""}'
 ```
 
@@ -80,9 +81,11 @@ message-edits:
 
 `message-before-pattern` is a pattern to make sure we are editing the right message.
 
-`message-place-before` is a place that the original message has to be sent from to be edited.
+`message-before-place` is a place that the original message has to be sent from to be edited.
 
 `message-after` is a new message you will see.
+
+`message-after-place` is the place that the edited message will be sent to.
 
 After this is done you should be able to see the new message after running /version command:
 
