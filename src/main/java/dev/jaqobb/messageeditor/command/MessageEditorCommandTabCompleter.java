@@ -35,7 +35,12 @@ import org.bukkit.command.TabCompleter;
 public final class MessageEditorCommandTabCompleter implements TabCompleter {
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] arguments) {
+    public List<String> onTabComplete(
+        final CommandSender sender,
+        final Command command,
+        final String label,
+        final String[] arguments
+    ) {
         if (!sender.hasPermission("messageeditor.use")) {
             return null;
         }

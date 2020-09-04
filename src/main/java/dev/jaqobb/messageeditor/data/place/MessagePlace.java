@@ -44,11 +44,18 @@ public enum MessagePlace {
     private final Byte chatType;
     private boolean analyzingActivated;
 
-    private MessagePlace(MinecraftVersion minimumRequiredMinecraftVersion, PacketType packetType) {
+    private MessagePlace(
+        final MinecraftVersion minimumRequiredMinecraftVersion,
+        final PacketType packetType
+    ) {
         this(minimumRequiredMinecraftVersion, packetType, null);
     }
 
-    private MessagePlace(MinecraftVersion minimumRequiredMinecraftVersion, PacketType packetType, Byte chatType) {
+    private MessagePlace(
+        final MinecraftVersion minimumRequiredMinecraftVersion,
+        final PacketType packetType,
+        final Byte chatType
+    ) {
         this.minimumRequiredMinecraftVersion = minimumRequiredMinecraftVersion;
         this.packetType = packetType;
         this.chatType = chatType;
@@ -71,18 +78,18 @@ public enum MessagePlace {
         return this.analyzingActivated;
     }
 
-    public void setAnalyzingActivated(boolean activated) {
+    public void setAnalyzingActivated(final boolean activated) {
         this.analyzingActivated = activated;
     }
 
-    public static MessagePlace fromName(String name) {
+    public static MessagePlace fromName(final String name) {
         return Arrays.stream(values())
             .filter(place -> place.name().equalsIgnoreCase(name))
             .findFirst()
             .orElse(null);
     }
 
-    public static MessagePlace fromPacket(PacketContainer packet) {
+    public static MessagePlace fromPacket(final PacketContainer packet) {
         Byte chatType = null;
         if (packet.getType() == PacketType.Play.Server.CHAT) {
             chatType = packet.getBytes().readSafely(0);
@@ -93,11 +100,14 @@ public enum MessagePlace {
         return fromPacketType(packet.getType(), chatType);
     }
 
-    public static MessagePlace fromPacketType(PacketType packetType) {
+    public static MessagePlace fromPacketType(final PacketType packetType) {
         return fromPacketType(packetType, null);
     }
 
-    public static MessagePlace fromPacketType(PacketType packetType, Byte chatType) {
+    public static MessagePlace fromPacketType(
+        final PacketType packetType,
+        final Byte chatType
+    ) {
         return Arrays.stream(values())
             .filter(place -> place.packetType == packetType)
             .filter(place -> place.chatType == null || Objects.equals(place.chatType, chatType))

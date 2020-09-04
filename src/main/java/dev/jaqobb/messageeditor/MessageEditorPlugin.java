@@ -73,7 +73,9 @@ public final class MessageEditorPlugin extends JavaPlugin {
             }
         }
         if (!MinecraftVersion.atOrAbove(minimumRequiredMinecraftVersion)) {
-            this.getLogger().log(Level.WARNING, "Your server does not support any message places. The minimum required server version is " + minimumRequiredMinecraftVersion.getVersion() + ". Disabling plugin...");
+            this.getLogger().log(Level.WARNING, "Your server does not support any message places.");
+            this.getLogger().log(Level.WARNING, "The minimum required server version is " + minimumRequiredMinecraftVersion.getVersion() + ".");
+            this.getLogger().log(Level.WARNING, "Disabling plugin...");
             this.setEnabled(false);
             return;
         }
@@ -117,7 +119,8 @@ public final class MessageEditorPlugin extends JavaPlugin {
         } catch (IllegalArgumentException exception) {
             if (this.attachSpecialHoverAndClickEvents) {
                 this.attachSpecialHoverAndClickEvents = false;
-                this.getLogger().log(Level.WARNING, "Attaching special hover and click events has been disabled because copying to clipboard is not supported on your server. Copying to clipboard works only on 1.15 and above.");
+                this.getLogger().log(Level.WARNING, "Attaching special hover and click events has been disabled: copying to clipboard is not supported on your server.");
+                this.getLogger().log(Level.WARNING, "The minimum required server version is " + MinecraftVersion.BEE_UPDATE.getVersion() + ".");
             }
         }
         this.messageEdits = (List<MessageEdit>) this.getConfig().getList("message-edits");
@@ -147,7 +150,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
         return this.placeholderApiPresent;
     }
 
-    public void setPlaceholderApiPresent(boolean present) {
+    public void setPlaceholderApiPresent(final boolean present) {
         this.placeholderApiPresent = present;
     }
 
@@ -155,7 +158,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
         return this.mvdwPlaceholderApiPresent;
     }
 
-    public void setMvdwPlaceholderApiPresent(boolean present) {
+    public void setMvdwPlaceholderApiPresent(final boolean present) {
         this.mvdwPlaceholderApiPresent = present;
     }
 
@@ -163,15 +166,19 @@ public final class MessageEditorPlugin extends JavaPlugin {
         return Collections.unmodifiableSet(this.cachedMessages.asMap().keySet());
     }
 
-    public Map.Entry<MessageEdit, String> getCachedMessage(String messageBefore) {
+    public Map.Entry<MessageEdit, String> getCachedMessage(final String messageBefore) {
         return this.cachedMessages.getIfPresent(messageBefore);
     }
 
-    public void cacheMessage(String messageBefore, MessageEdit messageEdit, String messageAfter) {
+    public void cacheMessage(
+        final String messageBefore,
+        final MessageEdit messageEdit,
+        final String messageAfter
+    ) {
         this.cachedMessages.put(messageBefore, new AbstractMap.SimpleEntry<>(messageEdit, messageAfter));
     }
 
-    public void uncacheMessage(String messageBefore) {
+    public void uncacheMessage(final String messageBefore) {
         this.cachedMessages.invalidate(messageBefore);
     }
 

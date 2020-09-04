@@ -40,7 +40,12 @@ public final class MessageEdit implements ConfigurationSerializable {
     private final String messageAfter;
     private final MessagePlace messageAfterPlace;
 
-    public MessageEdit(String messageBeforePattern, MessagePlace messageBeforePlace, String messageAfter, MessagePlace messageAfterPlace) {
+    public MessageEdit(
+        final String messageBeforePattern,
+        final MessagePlace messageBeforePlace,
+        final String messageAfter,
+        final MessagePlace messageAfterPlace
+    ) {
         this.messageBeforePattern = Pattern.compile(messageBeforePattern);
         this.messageBeforePlace = messageBeforePlace;
         this.messageAfter = messageAfter;
@@ -67,7 +72,7 @@ public final class MessageEdit implements ConfigurationSerializable {
         return this.messageAfterPlace;
     }
 
-    public Matcher getMatcher(String messageBefore) {
+    public Matcher getMatcher(final String messageBefore) {
         Matcher matcher = this.messageBeforePattern.matcher(messageBefore);
         if (!matcher.matches()) {
             return null;
@@ -89,7 +94,7 @@ public final class MessageEdit implements ConfigurationSerializable {
         return data;
     }
 
-    public static MessageEdit deserialize(Map<String, Object> data) {
+    public static MessageEdit deserialize(final Map<String, Object> data) {
         String messageBeforePattern = (String) data.get("message-before-pattern");
         MessagePlace messageBeforePlace = null;
         if (data.containsKey("message-before-place")) {
@@ -100,6 +105,11 @@ public final class MessageEdit implements ConfigurationSerializable {
         if (data.containsKey("message-after-place")) {
             messageAfterPlace = MessagePlace.fromName((String) data.get("message-after-place"));
         }
-        return new MessageEdit(messageBeforePattern, messageBeforePlace, messageAfter, messageAfterPlace);
+        return new MessageEdit(
+            messageBeforePattern,
+            messageBeforePlace,
+            messageAfter,
+            messageAfterPlace
+        );
     }
 }

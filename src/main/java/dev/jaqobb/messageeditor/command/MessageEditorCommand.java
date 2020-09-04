@@ -36,12 +36,17 @@ public final class MessageEditorCommand implements CommandExecutor {
 
     private final MessageEditorPlugin plugin;
 
-    public MessageEditorCommand(MessageEditorPlugin plugin) {
+    public MessageEditorCommand(final MessageEditorPlugin plugin) {
         this.plugin = plugin;
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] arguments) {
+    public boolean onCommand(
+        final CommandSender sender,
+        final Command command,
+        final String label,
+        final String[] arguments
+    ) {
         if (!sender.hasPermission("messageeditor.use")) {
             sender.sendMessage(this.plugin.getPrefix() + ChatColor.RED + "You do not have the required permissions to do that.");
             return true;
@@ -133,7 +138,10 @@ public final class MessageEditorCommand implements CommandExecutor {
         return true;
     }
 
-    private void sendHelpMessage(CommandSender sender, String label) {
+    private void sendHelpMessage(
+        final CommandSender sender,
+        final String label
+    ) {
         sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "Available commands:");
         sender.sendMessage(this.plugin.getPrefix() + ChatColor.YELLOW + "/" + label + " reload" + ChatColor.GRAY + " - " + ChatColor.YELLOW + "Reloads plugin.");
         sender.sendMessage(this.plugin.getPrefix() + ChatColor.YELLOW + "/" + label + " activate <message places>" + ChatColor.GRAY + " - " + ChatColor.YELLOW + "Activates analyzing specified message place.");
@@ -143,7 +151,7 @@ public final class MessageEditorCommand implements CommandExecutor {
         this.sendAvailableMessagePlaces(sender);
     }
 
-    private void sendAvailableMessagePlaces(CommandSender sender) {
+    private void sendAvailableMessagePlaces(final CommandSender sender) {
         sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "Available message places:");
         for (MessagePlace messagePlace : MessagePlace.values()) {
             boolean isValidMinecraftVersion = MinecraftVersion.atOrAbove(messagePlace.getMinimumRequiredMinecraftVersion());

@@ -38,12 +38,12 @@ public final class MessageEditorListener implements Listener {
 
     private final MessageEditorPlugin plugin;
 
-    public MessageEditorListener(MessageEditorPlugin plugin) {
+    public MessageEditorListener(final MessageEditorPlugin plugin) {
         this.plugin = plugin;
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerJoin(PlayerJoinEvent event) {
+    public void onPlayerJoin(final PlayerJoinEvent event) {
         Player player = event.getPlayer();
         if (player.hasPermission("messageeditor.use")) {
             player.sendMessage(this.plugin.getUpdater().getUpdateMessage());
@@ -51,7 +51,7 @@ public final class MessageEditorListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onPluginEnable(PluginEnableEvent event) {
+    public void onPluginEnable(final PluginEnableEvent event) {
         Plugin plugin = event.getPlugin();
         if (plugin.getName().equals("PlaceholderAPI")) {
             this.plugin.setPlaceholderApiPresent(true);
@@ -61,7 +61,7 @@ public final class MessageEditorListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onPluginDisable(PluginDisableEvent event) {
+    public void onPluginDisable(final PluginDisableEvent event) {
         Plugin plugin = event.getPlugin();
         if (plugin.getName().equals("PlaceholderAPI")) {
             this.plugin.setPlaceholderApiPresent(false);

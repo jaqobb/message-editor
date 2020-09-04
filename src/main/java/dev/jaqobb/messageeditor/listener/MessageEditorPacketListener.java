@@ -60,7 +60,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
         TextComponent.fromLegacyText(ChatColor.GRAY + "Click to copy this message's JSON to your clipboard.")
     );
 
-    public MessageEditorPacketListener(MessageEditorPlugin plugin) {
+    public MessageEditorPacketListener(final MessageEditorPlugin plugin) {
         super(
             plugin,
             ListenerPriority.HIGHEST,
@@ -77,7 +77,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
     }
 
     @Override
-    public void onPacketSending(PacketEvent event) {
+    public void onPacketSending(final PacketEvent event) {
         if (event.isCancelled()) {
             return;
         }
@@ -91,17 +91,16 @@ public final class MessageEditorPacketListener extends PacketAdapter {
                 return;
             }
         }
-        WrappedChatComponent message = newPacket.getChatComponents().read(0);
-        String messageJson = null;
-        if (message != null) {
-            messageJson = message.getJson();
-        } else if ((messagePlace == MessagePlace.GAME_CHAT || messagePlace == MessagePlace.SYSTEM_CHAT || messagePlace == MessagePlace.ACTION_BAR) && newPacket.getSpecificModifier(BaseComponent[].class).size() == 1) {
-            messageJson = ComponentSerializer.toString(newPacket.getSpecificModifier(BaseComponent[].class).read(0));
+        String message = null;
+        if (newPacket.getChatComponents().size() == 1 && newPacket.getChatComponents().read(0) != null) {
+            message = newPacket.getChatComponents().read(0).getJson();
+        } else if (newPacket.getSpecificModifier(BaseComponent[].class).size() == 1 && newPacket.getSpecificModifier(BaseComponent[].class).read(0) != null) {
+            message = ComponentSerializer.toString(newPacket.getSpecificModifier(BaseComponent[].class).read(0));
         }
-        if (messageJson == null) {
+        if (message == null) {
             return;
         }
-        Map.Entry<MessageEdit, String> cachedMessage = this.getPlugin().getCachedMessage(messageJson);
+        Map.Entry<MessageEdit, String> cachedMessage = this.getPlugin().getCachedMessage(message);
         MessageEdit messageEdit = null;
         Matcher messageEditMatcher = null;
         if (cachedMessage == null) {
@@ -109,7 +108,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
                 if (currentMessageEdit.getMessageBeforePlace() != null && currentMessageEdit.getMessageBeforePlace() != messagePlace) {
                     continue;
                 }
-                Matcher currentMessageEditMatcher = currentMessageEdit.getMatcher(messageJson);
+                Matcher currentMessageEditMatcher = currentMessageEdit.getMatcher(message);
                 if (currentMessageEditMatcher != null) {
                     messageEdit = currentMessageEdit;
                     messageEditMatcher = currentMessageEditMatcher;
@@ -138,7 +137,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
                     event.setCancelled(true);
                     return;
                 }
-                messageJson = cachedMessage.getValue();
+                message = cachedMessage.getValue();
             } else {
                 String messageAfter = messageEditMatcher.replaceAll(messageEdit.getMessageAfter());
                 if (this.getPlugin().isPlaceholderApiPresent()) {
@@ -147,7 +146,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
                 if (this.getPlugin().isMvdwPlaceholderApiPresent()) {
                     messageAfter = be.maximvdw.placeholderapi.PlaceholderAPI.replacePlaceholders(player, messageAfter);
                 }
-                this.getPlugin().cacheMessage(messageJson, messageEdit, messageAfter);
+                this.getPlugin().cacheMessage(message, messageEdit, messageAfter);
                 // Currently only chat and action bar messages can have their new position changed.
                 if (messagePlace == MessagePlace.GAME_CHAT || messagePlace == MessagePlace.SYSTEM_CHAT || messagePlace == MessagePlace.ACTION_BAR) {
                     // Currently only chat and action bar new positions are supported.
@@ -167,34 +166,38 @@ public final class MessageEditorPacketListener extends PacketAdapter {
                     event.setCancelled(true);
                     return;
                 }
-                messageJson = messageAfter;
+                message = messageAfter;
             }
         }
         if (messagePlace.isAnalyzingActivated()) {
+            String messageReplaced = message.replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0");
             String messageClear = "";
-            for (BaseComponent component : ComponentSerializer.parse(messageJson)) {
+            for (BaseComponent component : ComponentSerializer.parse(message)) {
                 messageClear += component.toPlainText();
             }
-            this.getPlugin().getLogger().log(Level.INFO, "Place: " + messagePlace.name() + ".");
-            this.getPlugin().getLogger().log(Level.INFO, "Receiver: " + player.getName() + ".");
+            this.getPlugin().getLogger().log(Level.INFO, "Place: " + messagePlace.name());
+            this.getPlugin().getLogger().log(Level.INFO, "Receiver: " + player.getName());
             this.getPlugin().getLogger().log(Level.INFO, "Message clear: " + messageClear);
-            this.getPlugin().getLogger().log(Level.INFO, "Message JSON: " + messageJson.replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0"));
+            this.getPlugin().getLogger().log(Level.INFO, "Message JSON: " + messageReplaced);
         }
         if ((messagePlace == MessagePlace.GAME_CHAT || messagePlace == MessagePlace.SYSTEM_CHAT) && player.hasPermission("messageeditor.use") && this.getPlugin().isAttachingSpecialHoverAndClickEventsEnabled()) {
-            TextComponent messageToSend = new TextComponent(ComponentSerializer.parse(message.getJson()));
+            TextComponent messageToSend = new TextComponent(ComponentSerializer.parse(message));
             messageToSend.setHoverEvent(COPY_TO_CLIPBOARD_HOVER_EVENT);
-            messageToSend.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, message.getJson().replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0")));
-            messageJson = ComponentSerializer.toString(messageToSend);
+            messageToSend.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, message.replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0")));
+            message = ComponentSerializer.toString(messageToSend);
         }
-        if (message != null) {
-            newPacket.getChatComponents().write(0, WrappedChatComponent.fromJson(messageJson));
-        } else if ((messagePlace == MessagePlace.GAME_CHAT || messagePlace == MessagePlace.SYSTEM_CHAT || messagePlace == MessagePlace.ACTION_BAR) && newPacket.getSpecificModifier(BaseComponent[].class).size() == 1) {
-            newPacket.getSpecificModifier(BaseComponent[].class).write(0, ComponentSerializer.parse(messageJson));
+        if (newPacket.getChatComponents().size() == 1 && newPacket.getChatComponents().read(0) != null) {
+            newPacket.getChatComponents().write(0, WrappedChatComponent.fromJson(message));
+        } else if (newPacket.getSpecificModifier(BaseComponent[].class).size() == 1) {
+            newPacket.getSpecificModifier(BaseComponent[].class).write(0, ComponentSerializer.parse(message));
         }
         event.setPacket(newPacket);
     }
 
-    private PacketContainer copyPacketContent(PacketContainer oldPacket, PacketContainer newPacket) {
+    private PacketContainer copyPacketContent(
+        final PacketContainer oldPacket,
+        final PacketContainer newPacket
+    ) {
         newPacket.getChatComponents().write(0, oldPacket.getChatComponents().read(0));
         if (newPacket.getType() == PacketType.Play.Server.CHAT) {
             BaseComponent[] components = oldPacket.getSpecificModifier(BaseComponent[].class).readSafely(0);
@@ -214,10 +217,10 @@ public final class MessageEditorPacketListener extends PacketAdapter {
                     .ifPresent(type -> newPacket.getChatTypes().write(0, type));
             }
         } else if (newPacket.getType() == PacketType.Play.Server.BOSS) {
+            newPacket.getUUIDs().write(0, oldPacket.getUUIDs().read(0));
             newPacket.getEnumModifier(BossBarMessageAction.class, 1).write(0, oldPacket.getEnumModifier(BossBarMessageAction.class, 1).read(0));
             newPacket.getEnumModifier(BossBarMessageColor.class, 4).write(0, oldPacket.getEnumModifier(BossBarMessageColor.class, 4).read(0));
             newPacket.getEnumModifier(BossBarMessageStyle.class, 5).write(0, oldPacket.getEnumModifier(BossBarMessageStyle.class, 5).read(0));
-            newPacket.getUUIDs().write(0, oldPacket.getUUIDs().read(0));
             // Health
             newPacket.getFloat().write(0, oldPacket.getFloat().read(0));
             // Darken sky
