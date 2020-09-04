@@ -118,9 +118,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
         }
         if (cachedMessage != null || (messageEdit != null && messageEditMatcher != null)) {
             if (cachedMessage != null) {
-                // Currently only chat and action bar messages can have their new position changed.
                 if (messagePlace == MessagePlace.GAME_CHAT || messagePlace == MessagePlace.SYSTEM_CHAT || messagePlace == MessagePlace.ACTION_BAR) {
-                    // Currently only chat and action bar new positions are supported.
                     MessagePlace newMessagePlace = cachedMessage.getKey().getMessageAfterPlace();
                     if (newMessagePlace != messagePlace && (newMessagePlace == MessagePlace.GAME_CHAT || newMessagePlace == MessagePlace.SYSTEM_CHAT || newMessagePlace == MessagePlace.ACTION_BAR)) {
                         newPacket.getBytes().writeSafely(0, newMessagePlace.getChatType());
@@ -147,9 +145,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
                     messageAfter = be.maximvdw.placeholderapi.PlaceholderAPI.replacePlaceholders(player, messageAfter);
                 }
                 this.getPlugin().cacheMessage(message, messageEdit, messageAfter);
-                // Currently only chat and action bar messages can have their new position changed.
                 if (messagePlace == MessagePlace.GAME_CHAT || messagePlace == MessagePlace.SYSTEM_CHAT || messagePlace == MessagePlace.ACTION_BAR) {
-                    // Currently only chat and action bar new positions are supported.
                     MessagePlace newMessagePlace = messageEdit.getMessageAfterPlace();
                     if (newMessagePlace != messagePlace && (newMessagePlace == MessagePlace.GAME_CHAT || newMessagePlace == MessagePlace.SYSTEM_CHAT || newMessagePlace == MessagePlace.ACTION_BAR)) {
                         newPacket.getBytes().writeSafely(0, newMessagePlace.getChatType());
@@ -198,36 +194,29 @@ public final class MessageEditorPacketListener extends PacketAdapter {
         final PacketContainer oldPacket,
         final PacketContainer newPacket
     ) {
-        newPacket.getChatComponents().write(0, oldPacket.getChatComponents().read(0));
-        if (newPacket.getType() == PacketType.Play.Server.CHAT) {
-            BaseComponent[] components = oldPacket.getSpecificModifier(BaseComponent[].class).readSafely(0);
-            if (components != null) {
-                newPacket.getSpecificModifier(BaseComponent[].class).writeSafely(0, components);
+        if (newPacket.getType() == PacketType.Login.Server.DISCONNECT) {
+            newPacket.getChatComponents().write(0, oldPacket.getChatComponents().read(0));
+        } else if (newPacket.getType() == PacketType.Play.Server.KICK_DISCONNECT) {
+            newPacket.getChatComponents().write(0, oldPacket.getChatComponents().read(0));
+        } else if (newPacket.getType() == PacketType.Play.Server.CHAT) {
+            newPacket.getChatComponents().write(0, oldPacket.getChatComponents().read(0));
+            if (newPacket.getSpecificModifier(BaseComponent[].class).size() == 1) {
+                newPacket.getSpecificModifier(BaseComponent[].class).write(0, oldPacket.getSpecificModifier(BaseComponent[].class).read(0));
             }
-            Byte position = oldPacket.getBytes().readSafely(0);
-            if (position == null) {
-                position = oldPacket.getChatTypes().read(0).getId();
-            }
-            Byte positionFinal = position;
-            newPacket.getBytes().writeSafely(0, positionFinal);
-            if (EnumWrappers.getChatTypeClass() != null) {
-                Arrays.stream(EnumWrappers.ChatType.values())
-                    .filter(type -> type.getId() == positionFinal)
-                    .findAny()
-                    .ifPresent(type -> newPacket.getChatTypes().write(0, type));
+            if (newPacket.getBytes().size() == 1) {
+                newPacket.getBytes().write(0, oldPacket.getBytes().read(0));
+            } else {
+                newPacket.getChatTypes().write(0, oldPacket.getChatTypes().read(0));
             }
         } else if (newPacket.getType() == PacketType.Play.Server.BOSS) {
             newPacket.getUUIDs().write(0, oldPacket.getUUIDs().read(0));
+            newPacket.getChatComponents().write(0, oldPacket.getChatComponents().read(0));
             newPacket.getEnumModifier(BossBarMessageAction.class, 1).write(0, oldPacket.getEnumModifier(BossBarMessageAction.class, 1).read(0));
             newPacket.getEnumModifier(BossBarMessageColor.class, 4).write(0, oldPacket.getEnumModifier(BossBarMessageColor.class, 4).read(0));
             newPacket.getEnumModifier(BossBarMessageStyle.class, 5).write(0, oldPacket.getEnumModifier(BossBarMessageStyle.class, 5).read(0));
-            // Health
             newPacket.getFloat().write(0, oldPacket.getFloat().read(0));
-            // Darken sky
             newPacket.getBooleans().write(0, oldPacket.getBooleans().read(0));
-            // Play music
             newPacket.getBooleans().write(1, oldPacket.getBooleans().read(1));
-            // Create fog
             newPacket.getBooleans().write(2, oldPacket.getBooleans().read(2));
         }
         return newPacket;
