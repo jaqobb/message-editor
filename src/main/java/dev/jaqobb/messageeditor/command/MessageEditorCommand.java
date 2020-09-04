@@ -60,8 +60,8 @@ public final class MessageEditorCommand implements CommandExecutor {
                 sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "Correct usage: " + ChatColor.YELLOW + "/" + label + " reload" + ChatColor.GRAY + ".");
                 return true;
             }
-            this.plugin.reloadConfig();
             this.plugin.clearCachedMessages();
+            this.plugin.reloadConfig();
             sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "Plugin has been reloaded.");
             return true;
         }
@@ -73,10 +73,11 @@ public final class MessageEditorCommand implements CommandExecutor {
                 return true;
             }
             int affectedMessagePlaces = 0;
-            for (int index = 1; index < arguments.length; index++) {
-                MessagePlace messagePlace = MessagePlace.fromName(arguments[index]);
+            for (int argumentIndex = 1; argumentIndex < arguments.length; argumentIndex++) {
+                String argument = arguments[argumentIndex];
+                MessagePlace messagePlace = MessagePlace.fromName(argument);
                 if (messagePlace == null) {
-                    sender.sendMessage(this.plugin.getPrefix() + ChatColor.RED + "Could not convert '" + ChatColor.GRAY + arguments[index] + ChatColor.RED + "' to message place.");
+                    sender.sendMessage(this.plugin.getPrefix() + ChatColor.RED + "Could not convert '" + ChatColor.GRAY + argument + ChatColor.RED + "' to message place.");
                     continue;
                 }
                 boolean validMinecraftVersion = MinecraftVersion.atOrAbove(messagePlace.getMinimumRequiredMinecraftVersion());
@@ -102,10 +103,11 @@ public final class MessageEditorCommand implements CommandExecutor {
                 return true;
             }
             int affectedMessagePlaces = 0;
-            for (int index = 1; index < arguments.length; index++) {
-                MessagePlace messagePlace = MessagePlace.fromName(arguments[index]);
+            for (int argumentIndex = 1; argumentIndex < arguments.length; argumentIndex++) {
+                String argument = arguments[argumentIndex];
+                MessagePlace messagePlace = MessagePlace.fromName(argument);
                 if (messagePlace == null) {
-                    sender.sendMessage(this.plugin.getPrefix() + ChatColor.RED + "Could not convert '" + ChatColor.GRAY + arguments[index] + ChatColor.RED + "' to message place.");
+                    sender.sendMessage(this.plugin.getPrefix() + ChatColor.RED + "Could not convert '" + ChatColor.GRAY + argument + ChatColor.RED + "' to message place.");
                     continue;
                 }
                 boolean validMinecraftVersion = MinecraftVersion.atOrAbove(messagePlace.getMinimumRequiredMinecraftVersion());

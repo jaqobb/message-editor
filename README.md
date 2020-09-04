@@ -97,6 +97,6 @@ Keep in mind that you can use PlaceholderAPI and MVdWPlaceholderAPI in edited me
 
 Message Editor requires:
 * Server version at least 1.8
-* ProtocolLib (possibly the latest version available)
-* PlaceholderAPI (optional) - if you want to add placeholders to new messages
-* MVdWPlaceholderAPI (optional) if you want to add placeholders to new messages
+* ProtocolLib
+* PlaceholderAPI (optional) - if you want to use placeholders in edited messages
+* MVdWPlaceholderAPI (optional) if you want to use placeholders in edited messages
