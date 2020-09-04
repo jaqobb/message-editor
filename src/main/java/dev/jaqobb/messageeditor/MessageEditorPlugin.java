@@ -119,7 +119,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
         } catch (IllegalArgumentException exception) {
             if (this.attachSpecialHoverAndClickEvents) {
                 this.attachSpecialHoverAndClickEvents = false;
-                this.getLogger().log(Level.WARNING, "Attaching special hover and click events has been disabled: copying to clipboard is not supported on your server.");
+                this.getLogger().log(Level.WARNING, "Attaching special hover and click events has been disabled: copying to clipboard is not supported by your server.");
                 this.getLogger().log(Level.WARNING, "The minimum required server version is " + MinecraftVersion.BEE_UPDATE.getVersion() + ".");
             }
         }

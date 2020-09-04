@@ -66,8 +66,8 @@ public final class MessageEditorCommandTabCompleter implements TabCompleter {
                     if (!messagePlace.name().startsWith(arguments[index].toUpperCase())) {
                         continue;
                     }
-                    boolean isValidMinecraftVersion = MinecraftVersion.atOrAbove(messagePlace.getMinimumRequiredMinecraftVersion());
-                    if (!isValidMinecraftVersion) {
+                    boolean validMinecraftVersion = MinecraftVersion.atOrAbove(messagePlace.getMinimumRequiredMinecraftVersion());
+                    if (!validMinecraftVersion) {
                         continue;
                     }
                     boolean canMessagePlaceAnalyzingStateBeModified = arguments[0].equalsIgnoreCase("activate") != messagePlace.isAnalyzingActivated();

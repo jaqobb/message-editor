@@ -79,9 +79,9 @@ public final class MessageEditorCommand implements CommandExecutor {
                     sender.sendMessage(this.plugin.getPrefix() + ChatColor.RED + "Could not convert '" + ChatColor.GRAY + arguments[index] + ChatColor.RED + "' to message place.");
                     continue;
                 }
-                boolean isValidMinecraftVersion = MinecraftVersion.atOrAbove(messagePlace.getMinimumRequiredMinecraftVersion());
-                if (!isValidMinecraftVersion) {
-                    sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + messagePlace.name() + ChatColor.RED + " message place is not supported on your server.");
+                boolean validMinecraftVersion = MinecraftVersion.atOrAbove(messagePlace.getMinimumRequiredMinecraftVersion());
+                if (!validMinecraftVersion) {
+                    sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + messagePlace.name() + ChatColor.RED + " message place is not supported by your server.");
                     continue;
                 }
                 if (!messagePlace.isAnalyzingActivated()) {
@@ -108,9 +108,9 @@ public final class MessageEditorCommand implements CommandExecutor {
                     sender.sendMessage(this.plugin.getPrefix() + ChatColor.RED + "Could not convert '" + ChatColor.GRAY + arguments[index] + ChatColor.RED + "' to message place.");
                     continue;
                 }
-                boolean isValidMinecraftVersion = MinecraftVersion.atOrAbove(messagePlace.getMinimumRequiredMinecraftVersion());
-                if (!isValidMinecraftVersion) {
-                    sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + messagePlace.name() + ChatColor.RED + " message place is not supported on your server.");
+                boolean validMinecraftVersion = MinecraftVersion.atOrAbove(messagePlace.getMinimumRequiredMinecraftVersion());
+                if (!validMinecraftVersion) {
+                    sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + messagePlace.name() + ChatColor.RED + " message place is not supported by your server.");
                     continue;
                 }
                 if (messagePlace.isAnalyzingActivated()) {
@@ -154,8 +154,8 @@ public final class MessageEditorCommand implements CommandExecutor {
     private void sendAvailableMessagePlaces(final CommandSender sender) {
         sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "Available message places:");
         for (MessagePlace messagePlace : MessagePlace.values()) {
-            boolean isValidMinecraftVersion = MinecraftVersion.atOrAbove(messagePlace.getMinimumRequiredMinecraftVersion());
-            if (isValidMinecraftVersion) {
+            boolean validMinecraftVersion = MinecraftVersion.atOrAbove(messagePlace.getMinimumRequiredMinecraftVersion());
+            if (validMinecraftVersion) {
                 sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "- " + ChatColor.YELLOW + messagePlace.name());
             }
         }

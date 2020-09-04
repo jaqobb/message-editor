@@ -49,7 +49,12 @@ public enum MessagePlace {
         final MinecraftVersion minimumRequiredMinecraftVersion,
         final PacketType packetType
     ) {
-        this(minimumRequiredMinecraftVersion, packetType, null, null);
+        this(
+            minimumRequiredMinecraftVersion,
+            packetType,
+            null,
+            null
+        );
     }
 
     private MessagePlace(
