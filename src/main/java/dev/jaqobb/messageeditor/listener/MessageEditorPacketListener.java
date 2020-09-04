@@ -30,7 +30,6 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import dev.jaqobb.messageeditor.MessageEditorPlugin;
 import dev.jaqobb.messageeditor.data.bossbar.BossBarMessageAction;
@@ -38,7 +37,6 @@ import dev.jaqobb.messageeditor.data.bossbar.BossBarMessageColor;
 import dev.jaqobb.messageeditor.data.bossbar.BossBarMessageStyle;
 import dev.jaqobb.messageeditor.data.edit.MessageEdit;
 import dev.jaqobb.messageeditor.data.place.MessagePlace;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
@@ -121,12 +119,10 @@ public final class MessageEditorPacketListener extends PacketAdapter {
                 if (messagePlace == MessagePlace.GAME_CHAT || messagePlace == MessagePlace.SYSTEM_CHAT || messagePlace == MessagePlace.ACTION_BAR) {
                     MessagePlace newMessagePlace = cachedMessage.getKey().getMessageAfterPlace();
                     if (newMessagePlace != messagePlace && (newMessagePlace == MessagePlace.GAME_CHAT || newMessagePlace == MessagePlace.SYSTEM_CHAT || newMessagePlace == MessagePlace.ACTION_BAR)) {
-                        newPacket.getBytes().writeSafely(0, newMessagePlace.getChatType());
-                        if (EnumWrappers.getChatTypeClass() != null) {
-                            Arrays.stream(EnumWrappers.ChatType.values())
-                                .filter(type -> type.getId() == newMessagePlace.getChatType())
-                                .findAny()
-                                .ifPresent(type -> newPacket.getChatTypes().write(0, type));
+                        if (newPacket.getBytes().size() == 1) {
+                            newPacket.getBytes().write(0, newMessagePlace.getChatType());
+                        } else {
+                            newPacket.getChatTypes().write(0, newMessagePlace.getChatTypeEnum());
                         }
                         messagePlace = newMessagePlace;
                     }
@@ -148,12 +144,10 @@ public final class MessageEditorPacketListener extends PacketAdapter {
                 if (messagePlace == MessagePlace.GAME_CHAT || messagePlace == MessagePlace.SYSTEM_CHAT || messagePlace == MessagePlace.ACTION_BAR) {
                     MessagePlace newMessagePlace = messageEdit.getMessageAfterPlace();
                     if (newMessagePlace != messagePlace && (newMessagePlace == MessagePlace.GAME_CHAT || newMessagePlace == MessagePlace.SYSTEM_CHAT || newMessagePlace == MessagePlace.ACTION_BAR)) {
-                        newPacket.getBytes().writeSafely(0, newMessagePlace.getChatType());
-                        if (EnumWrappers.getChatTypeClass() != null) {
-                            Arrays.stream(EnumWrappers.ChatType.values())
-                                .filter(type -> type.getId() == newMessagePlace.getChatType())
-                                .findAny()
-                                .ifPresent(type -> newPacket.getChatTypes().write(0, type));
+                        if (newPacket.getBytes().size() == 1) {
+                            newPacket.getBytes().write(0, newMessagePlace.getChatType());
+                        } else {
+                            newPacket.getChatTypes().write(0, newMessagePlace.getChatTypeEnum());
                         }
                         messagePlace = newMessagePlace;
                     }
@@ -172,7 +166,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
                 messageClear += component.toPlainText();
             }
             this.getPlugin().getLogger().log(Level.INFO, "Place: " + messagePlace.name());
-            this.getPlugin().getLogger().log(Level.INFO, "Receiver: " + player.getName());
+            this.getPlugin().getLogger().log(Level.INFO, "Player: " + player.getName());
             this.getPlugin().getLogger().log(Level.INFO, "Message clear: " + messageClear);
             this.getPlugin().getLogger().log(Level.INFO, "Message JSON: " + messageReplaced);
         }

@@ -27,14 +27,15 @@ package dev.jaqobb.messageeditor.data.place;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.utility.MinecraftVersion;
+import com.comphenix.protocol.wrappers.EnumWrappers;
 import java.util.Arrays;
 import java.util.Objects;
 
 public enum MessagePlace {
 
-    GAME_CHAT(MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 0),
-    SYSTEM_CHAT(MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 1),
-    ACTION_BAR(MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 2),
+    GAME_CHAT(MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 0, EnumWrappers.ChatType.CHAT),
+    SYSTEM_CHAT(MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 1, EnumWrappers.ChatType.SYSTEM),
+    ACTION_BAR(MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 2, EnumWrappers.ChatType.GAME_INFO),
     KICK(MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.KICK_DISCONNECT),
     DISCONNECT(MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Login.Server.DISCONNECT),
     BOSS_BAR(MinecraftVersion.COMBAT_UPDATE, PacketType.Play.Server.BOSS);
@@ -42,23 +43,26 @@ public enum MessagePlace {
     private final MinecraftVersion minimumRequiredMinecraftVersion;
     private final PacketType packetType;
     private final Byte chatType;
+    private final EnumWrappers.ChatType chatTypeEnum;
     private boolean analyzingActivated;
 
     private MessagePlace(
         final MinecraftVersion minimumRequiredMinecraftVersion,
         final PacketType packetType
     ) {
-        this(minimumRequiredMinecraftVersion, packetType, null);
+        this(minimumRequiredMinecraftVersion, packetType, null, null);
     }
 
     private MessagePlace(
         final MinecraftVersion minimumRequiredMinecraftVersion,
         final PacketType packetType,
-        final Byte chatType
+        final Byte chatType,
+        final EnumWrappers.ChatType chatTypeEnum
     ) {
         this.minimumRequiredMinecraftVersion = minimumRequiredMinecraftVersion;
         this.packetType = packetType;
         this.chatType = chatType;
+        this.chatTypeEnum = chatTypeEnum;
         this.analyzingActivated = false;
     }
 
@@ -72,6 +76,10 @@ public enum MessagePlace {
 
     public Byte getChatType() {
         return this.chatType;
+    }
+
+    public EnumWrappers.ChatType getChatTypeEnum() {
+        return this.chatTypeEnum;
     }
 
     public boolean isAnalyzingActivated() {
@@ -101,7 +109,10 @@ public enum MessagePlace {
     }
 
     public static MessagePlace fromPacketType(final PacketType packetType) {
-        return fromPacketType(packetType, null);
+        return Arrays.stream(values())
+            .filter(place -> place.packetType == packetType)
+            .findFirst()
+            .orElse(null);
     }
 
     public static MessagePlace fromPacketType(
@@ -111,6 +122,17 @@ public enum MessagePlace {
         return Arrays.stream(values())
             .filter(place -> place.packetType == packetType)
             .filter(place -> place.chatType == null || Objects.equals(place.chatType, chatType))
+            .findFirst()
+            .orElse(null);
+    }
+
+    public static MessagePlace fromPacketType(
+        final PacketType packetType,
+        final EnumWrappers.ChatType chatTypeEnum
+    ) {
+        return Arrays.stream(values())
+            .filter(place -> place.packetType == packetType)
+            .filter(place -> place.chatTypeEnum == null || place.chatTypeEnum == chatTypeEnum)
             .findFirst()
             .orElse(null);
     }
