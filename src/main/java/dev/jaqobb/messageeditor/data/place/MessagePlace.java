@@ -98,14 +98,13 @@ public enum MessagePlace {
     }
 
     public static MessagePlace fromPacket(final PacketContainer packet) {
-        Byte chatType = null;
-        if (packet.getType() == PacketType.Play.Server.CHAT) {
-            chatType = packet.getBytes().readSafely(0);
-            if (chatType == null) {
-                chatType = packet.getChatTypes().read(0).getId();
-            }
+        if (packet.getType() != PacketType.Play.Server.CHAT) {
+            return fromPacketType(packet.getType());
         }
-        return fromPacketType(packet.getType(), chatType);
+        if (packet.getBytes().size() == 1) {
+            return fromPacketType(packet.getType(), packet.getBytes().read(0));
+        }
+        return fromPacketType(packet.getType(), packet.getChatTypes().read(0));
     }
 
     public static MessagePlace fromPacketType(final PacketType packetType) {
