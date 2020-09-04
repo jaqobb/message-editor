@@ -29,7 +29,6 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import java.util.Arrays;
-import java.util.Objects;
 
 public enum MessagePlace {
 
@@ -116,11 +115,11 @@ public enum MessagePlace {
 
     public static MessagePlace fromPacketType(
         final PacketType packetType,
-        final Byte chatType
+        final byte chatType
     ) {
         return Arrays.stream(values())
             .filter(place -> place.packetType == packetType)
-            .filter(place -> place.chatType == null || Objects.equals(place.chatType, chatType))
+            .filter(place -> place.chatType != null && place.chatType == chatType)
             .findFirst()
             .orElse(null);
     }
@@ -131,7 +130,7 @@ public enum MessagePlace {
     ) {
         return Arrays.stream(values())
             .filter(place -> place.packetType == packetType)
-            .filter(place -> place.chatTypeEnum == null || place.chatTypeEnum == chatTypeEnum)
+            .filter(place -> place.chatTypeEnum != null && place.chatTypeEnum == chatTypeEnum)
             .findFirst()
             .orElse(null);
     }
