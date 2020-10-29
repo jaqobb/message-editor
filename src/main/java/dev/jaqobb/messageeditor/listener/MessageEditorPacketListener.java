@@ -37,6 +37,7 @@ import dev.jaqobb.messageeditor.data.bossbar.BossBarMessageColor;
 import dev.jaqobb.messageeditor.data.bossbar.BossBarMessageStyle;
 import dev.jaqobb.messageeditor.data.edit.MessageEdit;
 import dev.jaqobb.messageeditor.data.place.MessagePlace;
+import dev.jaqobb.messageeditor.data.scoreboard.ScoreboardHealthDisplayMode;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
@@ -65,7 +66,8 @@ public final class MessageEditorPacketListener extends PacketAdapter {
             PacketType.Login.Server.DISCONNECT,
             PacketType.Play.Server.KICK_DISCONNECT,
             PacketType.Play.Server.CHAT,
-            PacketType.Play.Server.BOSS
+            PacketType.Play.Server.BOSS,
+            PacketType.Play.Server.SCOREBOARD_OBJECTIVE
         );
     }
 
@@ -86,6 +88,14 @@ public final class MessageEditorPacketListener extends PacketAdapter {
         if (messagePlace == MessagePlace.BOSS_BAR) {
             BossBarMessageAction action = newPacket.getEnumModifier(BossBarMessageAction.class, 1).read(0);
             if (action != BossBarMessageAction.ADD && action != BossBarMessageAction.UPDATE_NAME) {
+                return;
+            }
+        } else if (messagePlace == MessagePlace.SCOREBOARD_TITLE) {
+            // 0 = create scoreboard objective
+            // 1 = delete scoreboard objective
+            // 2 = update scoreboard objective display name
+            int action = newPacket.getIntegers().read(0);
+            if (action != 0 && action != 2) {
                 return;
             }
         }
@@ -212,6 +222,11 @@ public final class MessageEditorPacketListener extends PacketAdapter {
             newPacket.getBooleans().write(0, oldPacket.getBooleans().read(0));
             newPacket.getBooleans().write(1, oldPacket.getBooleans().read(1));
             newPacket.getBooleans().write(2, oldPacket.getBooleans().read(2));
+        } else if (newPacket.getType() == PacketType.Play.Server.SCOREBOARD_OBJECTIVE) {
+            newPacket.getStrings().write(0, oldPacket.getStrings().read(0));
+            newPacket.getChatComponents().write(0, oldPacket.getChatComponents().read(0));
+            newPacket.getEnumModifier(ScoreboardHealthDisplayMode.class, 2).write(0, oldPacket.getEnumModifier(ScoreboardHealthDisplayMode.class, 2).read(0));
+            newPacket.getIntegers().write(0, oldPacket.getIntegers().read(0));
         }
         return newPacket;
     }
