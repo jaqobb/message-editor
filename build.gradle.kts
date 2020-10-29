@@ -73,8 +73,8 @@ repositories {
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.16.3-R0.1-SNAPSHOT")
     compileOnly("com.comphenix.protocol:ProtocolLib:4.6.0-SNAPSHOT")
-    compileOnly("me.clip:placeholderapi:2.10.6")
-    compileOnly("be.maximvdw:MVdWPlaceholderAPI:3.0.2-SNAPSHOT") {
+    compileOnly("me.clip:placeholderapi:2.10.9")
+    compileOnly("be.maximvdw:MVdWPlaceholderAPI:3.1.1-SNAPSHOT") {
         exclude("org.spigotmc")
     }
     implementation("org.bstats:bstats-bukkit:1.7")
