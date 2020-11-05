@@ -56,6 +56,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
     }
 
     private Metrics metrics;
+    private int updaterTaskId;
     private MessageEditorUpdater updater;
     private List<MessageEdit> messageEdits;
     private boolean attachSpecialHoverAndClickEvents;
@@ -64,7 +65,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
     private Cache<String, Map.Entry<MessageEdit, String>> cachedMessages;
 
     @Override
-    public void onLoad() {
+    public void onEnable() {
         MinecraftVersion minimumRequiredMinecraftVersion = null;
         for (MessagePlace messagePlace : MessagePlace.values()) {
             MinecraftVersion messagePlaceMininumRequiredMinecraftVersion = messagePlace.getMinimumRequiredMinecraftVersion();
@@ -93,10 +94,6 @@ public final class MessageEditorPlugin extends JavaPlugin {
         this.cachedMessages = CacheBuilder.newBuilder()
             .expireAfterAccess(15L, TimeUnit.MINUTES)
             .build();
-    }
-
-    @Override
-    public void onEnable() {
         this.getLogger().log(Level.INFO, "Starting updater...");
         this.updater = new MessageEditorUpdater(this);
         this.getServer().getScheduler().runTaskTimerAsynchronously(this, this.updater, 0L, 20L * 60L * 30L);
