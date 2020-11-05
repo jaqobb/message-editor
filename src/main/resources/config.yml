@@ -1,8 +1,3 @@
-# Update-related settings.
-update:
-  # Whether to notify about new updates.
-  notify: true
-
 # Whether special hover and click events should be attached to chat messages.
 # This option does nothing on < 1.15 servers.
 attach-special-hover-and-click-events: true
