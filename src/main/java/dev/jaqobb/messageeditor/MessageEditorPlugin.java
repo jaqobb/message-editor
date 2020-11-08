@@ -51,11 +51,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class MessageEditorPlugin extends JavaPlugin {
 
+    public static final String PLACEHOLDER_API_PLUGIN_NAME = "PlaceholderAPI";
+    public static final String MVDW_PLACEHOLDER_API_PLUGIN_NAME = "MVdWPlaceholderAPI";
+
     static {
         ConfigurationSerialization.registerClass(MessageEdit.class);
     }
 
     private Metrics metrics;
+    private boolean updateNotify;
     private MessageEditorUpdater updater;
     private List<MessageEdit> messageEdits;
     private boolean attachSpecialHoverAndClickEvents;
@@ -86,10 +90,10 @@ public final class MessageEditorPlugin extends JavaPlugin {
         this.reloadConfig();
         this.getLogger().log(Level.INFO, "Checking for placeholder APIs...");
         PluginManager pluginManager = this.getServer().getPluginManager();
-        this.placeholderApiPresent = pluginManager.isPluginEnabled("PlaceholderAPI");
-        this.mvdwPlaceholderApiPresent = pluginManager.isPluginEnabled("MVdWPlaceholderAPI");
-        this.getLogger().log(Level.INFO, "PlaceholderAPI: " + (this.placeholderApiPresent ? "present" : "not present") + ".");
-        this.getLogger().log(Level.INFO, "MVdWPlaceholderAPI: " + (this.mvdwPlaceholderApiPresent ? "present" : "not present") + ".");
+        this.placeholderApiPresent = pluginManager.isPluginEnabled(PLACEHOLDER_API_PLUGIN_NAME);
+        this.mvdwPlaceholderApiPresent = pluginManager.isPluginEnabled(MVDW_PLACEHOLDER_API_PLUGIN_NAME);
+        this.getLogger().log(Level.INFO, PLACEHOLDER_API_PLUGIN_NAME + ": " + (this.placeholderApiPresent ? "present" : "not present") + ".");
+        this.getLogger().log(Level.INFO, MVDW_PLACEHOLDER_API_PLUGIN_NAME + ": " + (this.mvdwPlaceholderApiPresent ? "present" : "not present") + ".");
         this.cachedMessages = CacheBuilder.newBuilder()
             .expireAfterAccess(15L, TimeUnit.MINUTES)
             .build();
@@ -113,6 +117,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
     @Override
     public void reloadConfig() {
         super.reloadConfig();
+        this.updateNotify = this.getConfig().getBoolean("update.notify", true);
         this.attachSpecialHoverAndClickEvents = this.getConfig().getBoolean("attach-special-hover-and-click-events", true);
         try {
             ClickEvent.Action.valueOf("COPY_TO_CLIPBOARD");
@@ -132,6 +137,10 @@ public final class MessageEditorPlugin extends JavaPlugin {
 
     public Metrics getMetrics() {
         return this.metrics;
+    }
+
+    public boolean isUpdateNotify() {
+        return this.updateNotify;
     }
 
     public MessageEditorUpdater getUpdater() {

@@ -45,7 +45,7 @@ public final class MessageEditorListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(final PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        if (player.hasPermission("messageeditor.use")) {
+        if (player.hasPermission("messageeditor.use") && this.plugin.isUpdateNotify()) {
             player.sendMessage(this.plugin.getUpdater().getUpdateMessage());
         }
     }
@@ -53,9 +53,9 @@ public final class MessageEditorListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPluginEnable(final PluginEnableEvent event) {
         Plugin plugin = event.getPlugin();
-        if (plugin.getName().equals("PlaceholderAPI")) {
+        if (plugin.getName().equals(MessageEditorPlugin.PLACEHOLDER_API_PLUGIN_NAME)) {
             this.plugin.setPlaceholderApiPresent(true);
-        } else if (plugin.getName().equals("MVdWPlaceholderAPI")) {
+        } else if (plugin.getName().equals(MessageEditorPlugin.MVDW_PLACEHOLDER_API_PLUGIN_NAME)) {
             this.plugin.setMvdwPlaceholderApiPresent(true);
         }
     }
@@ -63,9 +63,9 @@ public final class MessageEditorListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPluginDisable(final PluginDisableEvent event) {
         Plugin plugin = event.getPlugin();
-        if (plugin.getName().equals("PlaceholderAPI")) {
+        if (plugin.getName().equals(MessageEditorPlugin.PLACEHOLDER_API_PLUGIN_NAME)) {
             this.plugin.setPlaceholderApiPresent(false);
-        } else if (plugin.getName().equals("MVdWPlaceholderAPI")) {
+        } else if (plugin.getName().equals(MessageEditorPlugin.MVDW_PLACEHOLDER_API_PLUGIN_NAME)) {
             this.plugin.setMvdwPlaceholderApiPresent(false);
         }
     }
