@@ -16,3 +16,11 @@ message-edits:
   message-before-place: SYSTEM_CHAT
   message-after: '{"extra":[{"bold":true,"italic":true,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"red","text":"$1 joined the game"}],"text":""}'
   message-after-place: ACTION_BAR
+- ==: MessageEdit
+  message-before-pattern: '\{"extra":\[\{"text":"You are (\d+) version\(s\) behind"\}\],"text":""\}'
+  message-before-place: GAME_CHAT
+  message-after: '{"extra":[{"color":"green","text":"You are $1 version(s) behind. Consider updating."}],"text":""}'
+- ==: MessageEdit
+  message-before-pattern: '\{"extra":\[\{"text":"You are running the latest version"\}\],"text":""\}'
+  message-before-place: GAME_CHAT
+  message-after: '{"extra":[{"color":"green","text":"You are up to date with the server version! :)"}],"text":""}'
