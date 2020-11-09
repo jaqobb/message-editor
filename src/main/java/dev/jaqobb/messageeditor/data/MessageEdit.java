@@ -22,9 +22,8 @@
  * SOFTWARE.
  */
 
-package dev.jaqobb.messageeditor.data.edit;
+package dev.jaqobb.messageeditor.data;
 
-import dev.jaqobb.messageeditor.data.place.MessagePlace;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Matcher;

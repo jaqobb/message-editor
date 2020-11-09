@@ -26,7 +26,7 @@ package dev.jaqobb.messageeditor.command;
 
 import com.comphenix.protocol.utility.MinecraftVersion;
 import dev.jaqobb.messageeditor.MessageEditorPlugin;
-import dev.jaqobb.messageeditor.data.place.MessagePlace;
+import dev.jaqobb.messageeditor.data.MessagePlace;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
