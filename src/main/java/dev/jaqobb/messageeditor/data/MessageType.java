@@ -28,5 +28,4 @@ public enum MessageType {
 
     JSON,
     FORMATTED
-
 }
