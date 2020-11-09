@@ -34,21 +34,31 @@ import org.bukkit.configuration.serialization.SerializableAs;
 @SerializableAs("MessageEdit")
 public final class MessageEdit implements ConfigurationSerializable {
 
+    private final MessageType messageBeforeType;
     private final Pattern messageBeforePattern;
     private final MessagePlace messageBeforePlace;
+    private final MessageType messageAfterType;
     private final String messageAfter;
     private final MessagePlace messageAfterPlace;
 
     public MessageEdit(
+        final MessageType messageBeforeType,
         final String messageBeforePattern,
         final MessagePlace messageBeforePlace,
+        final MessageType messageAfterType,
         final String messageAfter,
         final MessagePlace messageAfterPlace
     ) {
+        this.messageBeforeType = messageBeforeType;
         this.messageBeforePattern = Pattern.compile(messageBeforePattern);
         this.messageBeforePlace = messageBeforePlace;
+        this.messageAfterType = messageAfterType;
         this.messageAfter = messageAfter;
         this.messageAfterPlace = messageAfterPlace;
+    }
+
+    public MessageType getMessageBeforeType() {
+        return this.messageBeforeType;
     }
 
     public Pattern getMessageBeforePattern() {
@@ -61,6 +71,10 @@ public final class MessageEdit implements ConfigurationSerializable {
 
     public String getMessageBefore() {
         return this.messageBeforePattern.pattern();
+    }
+
+    public MessageType getMessageAfterType() {
+        return this.messageAfterType;
     }
 
     public String getMessageAfter() {
@@ -81,11 +95,13 @@ public final class MessageEdit implements ConfigurationSerializable {
 
     @Override
     public Map<String, Object> serialize() {
-        Map<String, Object> data = new LinkedHashMap<>(3, 1.0F);
+        Map<String, Object> data = new LinkedHashMap<>(8, 1.0F);
+        data.put("message-before-type", this.messageBeforeType.name());
         data.put("message-before-pattern", this.messageBeforePattern.pattern());
         if (this.messageBeforePlace != null) {
             data.put("message-before-place", this.messageBeforePlace.name());
         }
+        data.put("message-after-type", this.messageAfterType.name());
         data.put("message-after", this.messageAfter);
         if (this.messageAfterPlace != null) {
             data.put("message-after-place", this.messageAfterPlace.name());
@@ -94,10 +110,18 @@ public final class MessageEdit implements ConfigurationSerializable {
     }
 
     public static MessageEdit deserialize(final Map<String, Object> data) {
+        MessageType messageBeforeType = MessageType.JSON;
+        if (data.containsKey("message-before-type")) {
+            messageBeforeType = MessageType.fromName((String) data.get("message-before-type"));
+        }
         String messageBeforePattern = (String) data.get("message-before-pattern");
         MessagePlace messageBeforePlace = null;
         if (data.containsKey("message-before-place")) {
             messageBeforePlace = MessagePlace.fromName((String) data.get("message-before-place"));
+        }
+        MessageType messageAfterType = MessageType.JSON;
+        if (data.containsKey("message-after-type")) {
+            messageAfterType = MessageType.fromName((String) data.get("message-after-type"));
         }
         String messageAfter = (String) data.get("message-after");
         MessagePlace messageAfterPlace = null;
@@ -105,8 +129,10 @@ public final class MessageEdit implements ConfigurationSerializable {
             messageAfterPlace = MessagePlace.fromName((String) data.get("message-after-place"));
         }
         return new MessageEdit(
+            messageBeforeType,
             messageBeforePattern,
             messageBeforePlace,
+            messageAfterType,
             messageAfter,
             messageAfterPlace
         );

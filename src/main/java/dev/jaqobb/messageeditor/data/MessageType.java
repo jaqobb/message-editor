@@ -24,8 +24,17 @@
 
 package dev.jaqobb.messageeditor.data;
 
+import java.util.Arrays;
+
 public enum MessageType {
 
     JSON,
-    FORMATTED
+    FORMATTED;
+
+    public static MessageType fromName(final String name) {
+        return Arrays.stream(values())
+            .filter(type -> type.name().equalsIgnoreCase(name))
+            .findFirst()
+            .orElse(null);
+    }
 }

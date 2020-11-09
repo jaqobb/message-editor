@@ -49,6 +49,7 @@ import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+// TODO: Remove message types from the configuration and make detecting them automatic.
 public final class MessageEditorPlugin extends JavaPlugin {
 
     public static final String PLACEHOLDER_API_PLUGIN_NAME = "PlaceholderAPI";
