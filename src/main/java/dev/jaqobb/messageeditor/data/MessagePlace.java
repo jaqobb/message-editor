@@ -32,14 +32,15 @@ import java.util.Arrays;
 
 public enum MessagePlace {
 
-    GAME_CHAT(MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 0, EnumWrappers.ChatType.CHAT),
-    SYSTEM_CHAT(MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 1, EnumWrappers.ChatType.SYSTEM),
-    ACTION_BAR(MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 2, EnumWrappers.ChatType.GAME_INFO),
-    KICK(MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.KICK_DISCONNECT),
-    DISCONNECT(MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Login.Server.DISCONNECT),
-    BOSS_BAR(MinecraftVersion.COMBAT_UPDATE, PacketType.Play.Server.BOSS),
-    SCOREBOARD_TITLE(MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.SCOREBOARD_OBJECTIVE);
+    GAME_CHAT("GC", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 0, EnumWrappers.ChatType.CHAT),
+    SYSTEM_CHAT("SC", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 1, EnumWrappers.ChatType.SYSTEM),
+    ACTION_BAR("AB", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 2, EnumWrappers.ChatType.GAME_INFO),
+    KICK("K", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.KICK_DISCONNECT),
+    DISCONNECT("D", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Login.Server.DISCONNECT),
+    BOSS_BAR("BB", MinecraftVersion.COMBAT_UPDATE, PacketType.Play.Server.BOSS),
+    SCOREBOARD_TITLE("ST", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.SCOREBOARD_OBJECTIVE);
 
+    private final String id;
     private final MinecraftVersion minimumRequiredMinecraftVersion;
     private final PacketType packetType;
     private final Byte chatType;
@@ -47,10 +48,12 @@ public enum MessagePlace {
     private boolean analyzingActivated;
 
     private MessagePlace(
+        final String id,
         final MinecraftVersion minimumRequiredMinecraftVersion,
         final PacketType packetType
     ) {
         this(
+            id,
             minimumRequiredMinecraftVersion,
             packetType,
             null,
@@ -59,16 +62,22 @@ public enum MessagePlace {
     }
 
     private MessagePlace(
+        final String id,
         final MinecraftVersion minimumRequiredMinecraftVersion,
         final PacketType packetType,
         final Byte chatType,
         final EnumWrappers.ChatType chatTypeEnum
     ) {
+        this.id = id;
         this.minimumRequiredMinecraftVersion = minimumRequiredMinecraftVersion;
         this.packetType = packetType;
         this.chatType = chatType;
         this.chatTypeEnum = chatTypeEnum;
         this.analyzingActivated = false;
+    }
+
+    public String getId() {
+        return this.id;
     }
 
     public MinecraftVersion getMinimumRequiredMinecraftVersion() {

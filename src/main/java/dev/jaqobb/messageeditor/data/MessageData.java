@@ -24,17 +24,32 @@
 
 package dev.jaqobb.messageeditor.data;
 
-import java.util.Arrays;
+public final class MessageData {
 
-public enum MessageType {
+    private MessagePlace messagePlace;
+    private String message;
 
-    JSON,
-    FORMATTED;
+    public MessageData(
+        final MessagePlace messagePlace,
+        final String message
+    ) {
+        this.messagePlace = messagePlace;
+        this.message = message;
+    }
 
-    public static MessageType fromName(final String name) {
-        return Arrays.stream(values())
-            .filter(type -> type.name().equalsIgnoreCase(name))
-            .findFirst()
-            .orElse(null);
+    public MessagePlace getMessagePlace() {
+        return this.messagePlace;
+    }
+
+    public void setMessagePlace(final MessagePlace messagePlace) {
+        this.messagePlace = messagePlace;
+    }
+
+    public String getMessage() {
+        return this.message;
+    }
+
+    public void setMessage(final String message) {
+        this.message = message;
     }
 }

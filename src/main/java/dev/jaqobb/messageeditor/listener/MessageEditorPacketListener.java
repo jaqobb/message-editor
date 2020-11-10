@@ -32,12 +32,14 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import dev.jaqobb.messageeditor.MessageEditorPlugin;
+import dev.jaqobb.messageeditor.data.MessageData;
 import dev.jaqobb.messageeditor.data.bossbar.BossBarMessageAction;
 import dev.jaqobb.messageeditor.data.bossbar.BossBarMessageColor;
 import dev.jaqobb.messageeditor.data.bossbar.BossBarMessageStyle;
 import dev.jaqobb.messageeditor.data.MessageEdit;
 import dev.jaqobb.messageeditor.data.MessagePlace;
 import dev.jaqobb.messageeditor.data.scoreboard.ScoreboardHealthDisplayMode;
+import dev.jaqobb.messageeditor.util.MessageUtils;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
@@ -169,6 +171,9 @@ public final class MessageEditorPacketListener extends PacketAdapter {
                 message = messageAfter;
             }
         }
+        String messageId = MessageUtils.composeMessageId(messagePlace, message);
+        MessageData messageData = new MessageData(messagePlace, message);
+        this.getPlugin().cacheMessageData(messageId, messageData);
         if (messagePlace.isAnalyzingActivated()) {
             String messageReplaced = message.replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0");
             String messageClear = "";
@@ -177,8 +182,9 @@ public final class MessageEditorPacketListener extends PacketAdapter {
             }
             this.getPlugin().getLogger().log(Level.INFO, "Place: " + messagePlace.name());
             this.getPlugin().getLogger().log(Level.INFO, "Player: " + player.getName());
-            this.getPlugin().getLogger().log(Level.INFO, "Message clear: " + messageClear);
-            this.getPlugin().getLogger().log(Level.INFO, "Message JSON: " + messageReplaced);
+            this.getPlugin().getLogger().log(Level.INFO, "Message JSON: '" + messageReplaced + "'");
+            this.getPlugin().getLogger().log(Level.INFO, "Message clear: '" + messageClear + "'");
+            this.getPlugin().getLogger().log(Level.INFO, "Message ID: '" + messageId + "'");
         }
         if ((messagePlace == MessagePlace.GAME_CHAT || messagePlace == MessagePlace.SYSTEM_CHAT) && player.hasPermission("messageeditor.use") && this.getPlugin().isAttachingSpecialHoverAndClickEventsEnabled()) {
             TextComponent messageToSend = new TextComponent(ComponentSerializer.parse(message));

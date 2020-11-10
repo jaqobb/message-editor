@@ -30,8 +30,9 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import dev.jaqobb.messageeditor.command.MessageEditorCommand;
 import dev.jaqobb.messageeditor.command.MessageEditorCommandTabCompleter;
-import dev.jaqobb.messageeditor.data.MessagePlace;
+import dev.jaqobb.messageeditor.data.MessageData;
 import dev.jaqobb.messageeditor.data.MessageEdit;
+import dev.jaqobb.messageeditor.data.MessagePlace;
 import dev.jaqobb.messageeditor.listener.MessageEditorListener;
 import dev.jaqobb.messageeditor.listener.MessageEditorPacketListener;
 import dev.jaqobb.messageeditor.updater.MessageEditorUpdater;
@@ -49,7 +50,6 @@ import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-// TODO: Remove message types from the configuration and make detecting them automatic.
 public final class MessageEditorPlugin extends JavaPlugin {
 
     public static final String PLACEHOLDER_API_PLUGIN_NAME = "PlaceholderAPI";
@@ -67,6 +67,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
     private boolean placeholderApiPresent;
     private boolean mvdwPlaceholderApiPresent;
     private Cache<String, Map.Entry<MessageEdit, String>> cachedMessages;
+    private Cache<String, MessageData> cachedMessagesData;
 
     @Override
     public void onLoad() {
@@ -96,6 +97,9 @@ public final class MessageEditorPlugin extends JavaPlugin {
         this.getLogger().log(Level.INFO, PLACEHOLDER_API_PLUGIN_NAME + ": " + (this.placeholderApiPresent ? "present" : "not present") + ".");
         this.getLogger().log(Level.INFO, MVDW_PLACEHOLDER_API_PLUGIN_NAME + ": " + (this.mvdwPlaceholderApiPresent ? "present" : "not present") + ".");
         this.cachedMessages = CacheBuilder.newBuilder()
+            .expireAfterAccess(15L, TimeUnit.MINUTES)
+            .build();
+        this.cachedMessagesData = CacheBuilder.newBuilder()
             .expireAfterAccess(15L, TimeUnit.MINUTES)
             .build();
     }
@@ -194,5 +198,28 @@ public final class MessageEditorPlugin extends JavaPlugin {
 
     public void clearCachedMessages() {
         this.cachedMessages.invalidateAll();
+    }
+
+    public Set<String> getCachedMessagesData() {
+        return Collections.unmodifiableSet(this.cachedMessagesData.asMap().keySet());
+    }
+
+    public MessageData getCachedMessageData(final String messageId) {
+        return this.cachedMessagesData.getIfPresent(messageId);
+    }
+
+    public void cacheMessageData(
+        final String messageId,
+        final MessageData messageData
+    ) {
+        this.cachedMessagesData.put(messageId, messageData);
+    }
+
+    public void uncacheMessageData(final String messageId) {
+        this.cachedMessagesData.invalidate(messageId);
+    }
+
+    public void clearCachedMessagesData() {
+        this.cachedMessagesData.invalidateAll();
     }
 }
