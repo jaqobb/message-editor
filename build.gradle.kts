@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "dev.jaqobb"
-version = "1.5.2"
+version = "1.5.3"
 description = "Spigot plugin that allows editing in-game messages that were previously unmodifiable"
 
 java {

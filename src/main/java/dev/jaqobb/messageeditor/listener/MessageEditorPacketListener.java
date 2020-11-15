@@ -33,11 +33,11 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import dev.jaqobb.messageeditor.MessageEditorPlugin;
 import dev.jaqobb.messageeditor.data.MessageData;
+import dev.jaqobb.messageeditor.data.MessageEdit;
+import dev.jaqobb.messageeditor.data.MessagePlace;
 import dev.jaqobb.messageeditor.data.bossbar.BossBarMessageAction;
 import dev.jaqobb.messageeditor.data.bossbar.BossBarMessageColor;
 import dev.jaqobb.messageeditor.data.bossbar.BossBarMessageStyle;
-import dev.jaqobb.messageeditor.data.MessageEdit;
-import dev.jaqobb.messageeditor.data.MessagePlace;
 import dev.jaqobb.messageeditor.data.scoreboard.ScoreboardHealthDisplayMode;
 import dev.jaqobb.messageeditor.util.MessageUtils;
 import java.util.Map;
@@ -229,10 +229,21 @@ public final class MessageEditorPacketListener extends PacketAdapter {
             newPacket.getBooleans().write(1, oldPacket.getBooleans().read(1));
             newPacket.getBooleans().write(2, oldPacket.getBooleans().read(2));
         } else if (newPacket.getType() == PacketType.Play.Server.SCOREBOARD_OBJECTIVE) {
+            // 0 = create scoreboard objective
+            // 1 = delete scoreboard objective
+            // 2 = update scoreboard objective display name
+            int oldAction = oldPacket.getIntegers().read(0);
             newPacket.getStrings().write(0, oldPacket.getStrings().read(0));
             newPacket.getChatComponents().write(0, oldPacket.getChatComponents().read(0));
-            newPacket.getEnumModifier(ScoreboardHealthDisplayMode.class, 2).write(0, oldPacket.getEnumModifier(ScoreboardHealthDisplayMode.class, 2).read(0));
-            newPacket.getIntegers().write(0, oldPacket.getIntegers().read(0));
+            // A certain tab list plugin seems to be providing null health display mode?
+            // The if condition below seems to fix the associated NPE.
+            // I didn't notice any bugs when deleting scoreboard objectives
+            // without health display mode set so I'm gonna assume this solution
+            // is okay?
+            if (oldAction != 1) {
+                newPacket.getEnumModifier(ScoreboardHealthDisplayMode.class, 2).write(0, oldPacket.getEnumModifier(ScoreboardHealthDisplayMode.class, 2).read(0));
+            }
+            newPacket.getIntegers().write(0, oldAction);
         }
         return newPacket;
     }
