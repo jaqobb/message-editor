@@ -45,7 +45,6 @@ repositories {
     maven("https://oss.sonatype.org/content/repositories/snapshots/") {
         content {
             includeGroup("net.md-5")
-
         }
     }
     maven("https://repo.dmulloy2.net/nexus/repository/public/") {
