@@ -43,16 +43,17 @@ case "${1}" in
 	(
 		set -e
 		cd "${base_folder}"
-		./gradlew clean build shadowJar
-		cd "${base_folder}/build/libs"
 		plugin_name=$(grep < "${base_folder}/settings.gradle.kts" "rootProject.name =" | cut -d ' ' -f 3 | tr -d \" | head -1)
 		plugin_version=$(grep < "${base_folder}/build.gradle.kts" "version =" | cut -d ' ' -f 3 | tr -d \" | head -1)
 		plugin_has_shadow=$(grep < "${base_folder}/build.gradle.kts" "id(\"com.github.johnrengelman.shadow\")" | head -1)
 		if [ -z "${plugin_has_shadow}" ]; then
 			plugin_file="${plugin_name}-${plugin_version}.jar"
+			./gradlew clean build
 		else
 			plugin_file="${plugin_name}-${plugin_version}-all.jar"
+			./gradlew clean build shadowJar
 		fi
+		cd "${base_folder}/build/libs"
 		echo "Copying the plugin's jar, ${plugin_file}, to the test server files..."
 		cp "${plugin_file}" "../../server/plugins"
 		echo "The plugin's jar, ${plugin_file}, has been copied to the test server files."
