@@ -34,15 +34,20 @@ import java.util.logging.Level;
 import javax.net.ssl.HttpsURLConnection;
 import net.md_5.bungee.api.ChatColor;
 
-public final class MessageEditorUpdater implements Runnable {
+public final class Updater implements Runnable {
 
     private final MessageEditorPlugin plugin;
+    private final int pluginId;
     private final String currentVersion;
     private String latestVersion;
     private Integer versionDifference;
 
-    public MessageEditorUpdater(final MessageEditorPlugin plugin) {
+    public Updater(
+        final MessageEditorPlugin plugin,
+        final int pluginId
+    ) {
         this.plugin = plugin;
+        this.pluginId = pluginId;
         this.currentVersion = this.plugin.getDescription().getVersion();
         this.latestVersion = null;
         this.versionDifference = null;
@@ -78,7 +83,7 @@ public final class MessageEditorUpdater implements Runnable {
     public void run() {
         try {
             HttpsURLConnection connection = (HttpsURLConnection) new URL(
-                "https://api.spigotmc.org/legacy/update.php?resource=82154"
+                "https://api.spigotmc.org/legacy/update.php?resource=" + this.pluginId
             ).openConnection();
             connection.setRequestMethod("GET");
             try (

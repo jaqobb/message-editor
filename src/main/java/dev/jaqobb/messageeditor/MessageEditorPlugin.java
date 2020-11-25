@@ -35,7 +35,7 @@ import dev.jaqobb.messageeditor.data.MessageEdit;
 import dev.jaqobb.messageeditor.data.MessagePlace;
 import dev.jaqobb.messageeditor.listener.MessageEditorListener;
 import dev.jaqobb.messageeditor.listener.MessageEditorPacketListener;
-import dev.jaqobb.messageeditor.updater.MessageEditorUpdater;
+import dev.jaqobb.messageeditor.updater.Updater;
 import java.util.AbstractMap;
 import java.util.Collections;
 import java.util.List;
@@ -61,7 +61,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
 
     private Metrics metrics;
     private boolean updateNotify;
-    private MessageEditorUpdater updater;
+    private Updater updater;
     private List<MessageEdit> messageEdits;
     private boolean attachSpecialHoverAndClickEvents;
     private boolean placeholderApiPresent;
@@ -107,7 +107,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         this.getLogger().log(Level.INFO, "Starting updater...");
-        this.updater = new MessageEditorUpdater(this);
+        this.updater = new Updater(this, 82154);
         this.getServer().getScheduler().runTaskTimerAsynchronously(this, this.updater, 0L, 20L * 60L * 30L);
         this.getLogger().log(Level.INFO, "Registering command...");
         this.getCommand("message-editor").setExecutor(new MessageEditorCommand(this));
@@ -148,7 +148,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
         return this.updateNotify;
     }
 
-    public MessageEditorUpdater getUpdater() {
+    public Updater getUpdater() {
         return this.updater;
     }
 
