@@ -43,7 +43,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
@@ -134,10 +133,6 @@ public final class MessageEditorPlugin extends JavaPlugin {
             }
         }
         this.messageEdits = (List<MessageEdit>) this.getConfig().getList("message-edits");
-    }
-
-    public String getPrefix() {
-        return ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + "Message Editor" + ChatColor.DARK_GRAY + "] ";
     }
 
     public Metrics getMetrics() {

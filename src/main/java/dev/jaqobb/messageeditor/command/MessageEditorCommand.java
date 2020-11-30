@@ -25,6 +25,7 @@
 package dev.jaqobb.messageeditor.command;
 
 import com.comphenix.protocol.utility.MinecraftVersion;
+import dev.jaqobb.messageeditor.MessageEditorConstants;
 import dev.jaqobb.messageeditor.MessageEditorPlugin;
 import dev.jaqobb.messageeditor.data.MessagePlace;
 import net.md_5.bungee.api.ChatColor;
@@ -48,7 +49,7 @@ public final class MessageEditorCommand implements CommandExecutor {
         final String[] arguments
     ) {
         if (!sender.hasPermission("messageeditor.use")) {
-            sender.sendMessage(this.plugin.getPrefix() + ChatColor.RED + "You do not have the required permissions to do that.");
+            sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.RED + "You do not have the required permissions to do that.");
             return true;
         }
         if (arguments.length == 0) {
@@ -57,18 +58,18 @@ public final class MessageEditorCommand implements CommandExecutor {
         }
         if (arguments[0].equalsIgnoreCase("reload")) {
             if (arguments.length != 1) {
-                sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "Correct usage: " + ChatColor.YELLOW + "/" + label + " reload" + ChatColor.GRAY + ".");
+                sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Correct usage: " + ChatColor.YELLOW + "/" + label + " reload" + ChatColor.GRAY + ".");
                 return true;
             }
             this.plugin.clearCachedMessages();
             this.plugin.reloadConfig();
-            sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "Plugin has been reloaded.");
+            sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Plugin has been reloaded.");
             return true;
         }
         if (arguments[0].equalsIgnoreCase("activate")) {
             if (arguments.length == 1) {
-                sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "Correct usage: " + ChatColor.YELLOW + "/" + label + " activate <message places>" + ChatColor.GRAY + ".");
-                sender.sendMessage(this.plugin.getPrefix());
+                sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Correct usage: " + ChatColor.YELLOW + "/" + label + " activate <message places>" + ChatColor.GRAY + ".");
+                sender.sendMessage(MessageEditorConstants.PREFIX);
                 this.sendAvailableMessagePlaces(sender);
                 return true;
             }
@@ -77,28 +78,28 @@ public final class MessageEditorCommand implements CommandExecutor {
                 String argument = arguments[argumentIndex];
                 MessagePlace messagePlace = MessagePlace.fromName(argument);
                 if (messagePlace == null) {
-                    sender.sendMessage(this.plugin.getPrefix() + ChatColor.RED + "Could not convert '" + ChatColor.GRAY + argument + ChatColor.RED + "' to message place.");
+                    sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.RED + "Could not convert '" + ChatColor.GRAY + argument + ChatColor.RED + "' to message place.");
                     continue;
                 }
                 boolean validMinecraftVersion = MinecraftVersion.atOrAbove(messagePlace.getMinimumRequiredMinecraftVersion());
                 if (!validMinecraftVersion) {
-                    sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + messagePlace.name() + ChatColor.RED + " message place is not supported by your server.");
+                    sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + messagePlace.name() + ChatColor.RED + " message place is not supported by your server.");
                     continue;
                 }
                 if (!messagePlace.isAnalyzingActivated()) {
                     messagePlace.setAnalyzingActivated(true);
                     affectedMessagePlaces++;
                 } else {
-                    sender.sendMessage(this.plugin.getPrefix() + ChatColor.RED + "Analyzing " + ChatColor.GRAY + messagePlace.name() + ChatColor.RED + " message place is already activated.");
+                    sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.RED + "Analyzing " + ChatColor.GRAY + messagePlace.name() + ChatColor.RED + " message place is already activated.");
                 }
             }
-            sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "You have activated analyzing " + ChatColor.YELLOW + affectedMessagePlaces + ChatColor.GRAY + " message place(s).");
+            sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "You have activated analyzing " + ChatColor.YELLOW + affectedMessagePlaces + ChatColor.GRAY + " message place(s).");
             return true;
         }
         if (arguments[0].equalsIgnoreCase("deactivate")) {
             if (arguments.length == 1) {
-                sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "Correct usage: " + ChatColor.YELLOW + "/" + label + " deactivate <message places>" + ChatColor.GRAY + ".");
-                sender.sendMessage(this.plugin.getPrefix());
+                sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Correct usage: " + ChatColor.YELLOW + "/" + label + " deactivate <message places>" + ChatColor.GRAY + ".");
+                sender.sendMessage(MessageEditorConstants.PREFIX);
                 this.sendAvailableMessagePlaces(sender);
                 return true;
             }
@@ -107,33 +108,33 @@ public final class MessageEditorCommand implements CommandExecutor {
                 String argument = arguments[argumentIndex];
                 MessagePlace messagePlace = MessagePlace.fromName(argument);
                 if (messagePlace == null) {
-                    sender.sendMessage(this.plugin.getPrefix() + ChatColor.RED + "Could not convert '" + ChatColor.GRAY + argument + ChatColor.RED + "' to message place.");
+                    sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.RED + "Could not convert '" + ChatColor.GRAY + argument + ChatColor.RED + "' to message place.");
                     continue;
                 }
                 boolean validMinecraftVersion = MinecraftVersion.atOrAbove(messagePlace.getMinimumRequiredMinecraftVersion());
                 if (!validMinecraftVersion) {
-                    sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + messagePlace.name() + ChatColor.RED + " message place is not supported by your server.");
+                    sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + messagePlace.name() + ChatColor.RED + " message place is not supported by your server.");
                     continue;
                 }
                 if (messagePlace.isAnalyzingActivated()) {
                     messagePlace.setAnalyzingActivated(false);
                     affectedMessagePlaces++;
                 } else {
-                    sender.sendMessage(this.plugin.getPrefix() + ChatColor.RED + "Analyzing " + ChatColor.GRAY + messagePlace.name() + ChatColor.RED + " message place is already deactivated.");
+                    sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.RED + "Analyzing " + ChatColor.GRAY + messagePlace.name() + ChatColor.RED + " message place is already deactivated.");
                 }
             }
-            sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "You have deactivated analyzing " + ChatColor.YELLOW + affectedMessagePlaces + ChatColor.GRAY + " message place(s).");
+            sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "You have deactivated analyzing " + ChatColor.YELLOW + affectedMessagePlaces + ChatColor.GRAY + " message place(s).");
             return true;
         }
         if (arguments[0].equalsIgnoreCase("deactivate-all")) {
             if (arguments.length != 1) {
-                sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "Correct usage: " + ChatColor.YELLOW + "/" + label + " deactivate-all" + ChatColor.GRAY + ".");
+                sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Correct usage: " + ChatColor.YELLOW + "/" + label + " deactivate-all" + ChatColor.GRAY + ".");
                 return true;
             }
             for (MessagePlace messagePlace : MessagePlace.values()) {
                 messagePlace.setAnalyzingActivated(false);
             }
-            sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "You have deactivated analyzing all message places.");
+            sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "You have deactivated analyzing all message places.");
             return true;
         }
         this.sendHelpMessage(sender, label);
@@ -144,21 +145,21 @@ public final class MessageEditorCommand implements CommandExecutor {
         final CommandSender sender,
         final String label
     ) {
-        sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "Available commands:");
-        sender.sendMessage(this.plugin.getPrefix() + ChatColor.YELLOW + "/" + label + " reload" + ChatColor.GRAY + " - " + ChatColor.YELLOW + "Reloads plugin.");
-        sender.sendMessage(this.plugin.getPrefix() + ChatColor.YELLOW + "/" + label + " activate <message places>" + ChatColor.GRAY + " - " + ChatColor.YELLOW + "Activates analyzing specified message place.");
-        sender.sendMessage(this.plugin.getPrefix() + ChatColor.YELLOW + "/" + label + " deactivate <message places>" + ChatColor.GRAY + " - " + ChatColor.YELLOW + "Deactivates analyzing specified message place.");
-        sender.sendMessage(this.plugin.getPrefix() + ChatColor.YELLOW + "/" + label + " deactivate-all" + ChatColor.GRAY + " - " + ChatColor.YELLOW + "Deactivates analyzing all message places.");
-        sender.sendMessage(this.plugin.getPrefix());
+        sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Available commands:");
+        sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.YELLOW + "/" + label + " reload" + ChatColor.GRAY + " - " + ChatColor.YELLOW + "Reloads plugin.");
+        sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.YELLOW + "/" + label + " activate <message places>" + ChatColor.GRAY + " - " + ChatColor.YELLOW + "Activates analyzing specified message place.");
+        sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.YELLOW + "/" + label + " deactivate <message places>" + ChatColor.GRAY + " - " + ChatColor.YELLOW + "Deactivates analyzing specified message place.");
+        sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.YELLOW + "/" + label + " deactivate-all" + ChatColor.GRAY + " - " + ChatColor.YELLOW + "Deactivates analyzing all message places.");
+        sender.sendMessage(MessageEditorConstants.PREFIX);
         this.sendAvailableMessagePlaces(sender);
     }
 
     private void sendAvailableMessagePlaces(final CommandSender sender) {
-        sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "Available message places:");
+        sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Available message places:");
         for (MessagePlace messagePlace : MessagePlace.values()) {
             boolean validMinecraftVersion = MinecraftVersion.atOrAbove(messagePlace.getMinimumRequiredMinecraftVersion());
             if (validMinecraftVersion) {
-                sender.sendMessage(this.plugin.getPrefix() + ChatColor.GRAY + "- " + ChatColor.YELLOW + messagePlace.name());
+                sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "- " + ChatColor.YELLOW + messagePlace.name());
             }
         }
     }

@@ -24,6 +24,7 @@
 
 package dev.jaqobb.messageeditor.updater;
 
+import dev.jaqobb.messageeditor.MessageEditorConstants;
 import dev.jaqobb.messageeditor.MessageEditorPlugin;
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -66,15 +67,15 @@ public final class Updater implements Runnable {
     }
 
     public String getUpdateMessage() {
-        String message = this.plugin.getPrefix() + ChatColor.GRAY;
+        String message = MessageEditorConstants.PREFIX;
         if (this.latestVersion == null || this.versionDifference == null) {
-            message += "Could not retrieve the latest version data. Make sure that you have internet access.";
+            message += ChatColor.RED + "Could not retrieve the latest version data. Make sure that you have internet access.";
         } else if (this.versionDifference > 0) {
-            message += "You are probably running a development version (" + ChatColor.YELLOW + this.currentVersion + ChatColor.GRAY + " > " + ChatColor.YELLOW + this.latestVersion + ChatColor.GRAY + "). It is advised to not run development versions on production servers as they are very likely to not work as intended.";
+            message += ChatColor.GRAY + "You are probably running a development version (" + ChatColor.YELLOW + this.currentVersion + ChatColor.GRAY + " > " + ChatColor.YELLOW + this.latestVersion + ChatColor.GRAY + "). It is advised to not run development versions on production servers as they are very likely to not work as intended.";
         } else if (this.versionDifference < 0) {
-            message += "You are running an outdated version (" + ChatColor.YELLOW + this.currentVersion + ChatColor.GRAY + " < " + ChatColor.YELLOW + this.latestVersion + ChatColor.GRAY + "). Consider updating the plugin.";
+            message += ChatColor.GRAY + "You are running an outdated version (" + ChatColor.YELLOW + this.currentVersion + ChatColor.GRAY + " < " + ChatColor.YELLOW + this.latestVersion + ChatColor.GRAY + "). Consider updating the plugin.";
         } else {
-            message += "You are running the latest version (" + ChatColor.YELLOW + this.latestVersion + ChatColor.GRAY + "). You have nothing to do.";
+            message += ChatColor.GRAY + "You are running the latest version (" + ChatColor.YELLOW + this.latestVersion + ChatColor.GRAY + "). You have nothing to do.";
         }
         return message;
     }
