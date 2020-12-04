@@ -50,6 +50,8 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.entity.Player;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public final class MessageEditorPacketListener extends PacketAdapter {
 
@@ -69,7 +71,8 @@ public final class MessageEditorPacketListener extends PacketAdapter {
             PacketType.Play.Server.KICK_DISCONNECT,
             PacketType.Play.Server.CHAT,
             PacketType.Play.Server.BOSS,
-            PacketType.Play.Server.SCOREBOARD_OBJECTIVE
+            PacketType.Play.Server.SCOREBOARD_OBJECTIVE,
+            PacketType.Play.Server.SCOREBOARD_SCORE
         );
     }
 
@@ -102,10 +105,13 @@ public final class MessageEditorPacketListener extends PacketAdapter {
             }
         }
         String message = null;
+        // TODO: Better way to get message?
         if (newPacket.getChatComponents().size() == 1 && newPacket.getChatComponents().read(0) != null) {
             message = newPacket.getChatComponents().read(0).getJson();
         } else if (newPacket.getSpecificModifier(BaseComponent[].class).size() == 1 && newPacket.getSpecificModifier(BaseComponent[].class).read(0) != null) {
             message = ComponentSerializer.toString(newPacket.getSpecificModifier(BaseComponent[].class).read(0));
+        } else if (newPacket.getStrings().size() >= 1 && newPacket.getStrings().read(0) != null) {
+            message = newPacket.getStrings().read(0);
         }
         if (message == null) {
             return;
@@ -175,15 +181,23 @@ public final class MessageEditorPacketListener extends PacketAdapter {
         MessageData messageData = new MessageData(messagePlace, message);
         this.getPlugin().cacheMessageData(messageId, messageData);
         if (messagePlace.isAnalyzingActivated()) {
-            String messageReplaced = message.replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0");
-            String messageClear = "";
-            for (BaseComponent component : ComponentSerializer.parse(message)) {
-                messageClear += component.toPlainText();
-            }
             this.getPlugin().getLogger().log(Level.INFO, "Place: " + messagePlace.name());
             this.getPlugin().getLogger().log(Level.INFO, "Player: " + player.getName());
-            this.getPlugin().getLogger().log(Level.INFO, "Message JSON: '" + messageReplaced + "'");
-            this.getPlugin().getLogger().log(Level.INFO, "Message clear: '" + messageClear + "'");
+            // TODO: Any better way to check if it's JSON?
+            try {
+                new JSONParser().parse(message);
+                String messageReplaced = message.replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0");
+                String messageClear = "";
+                for (BaseComponent component : ComponentSerializer.parse(message)) {
+                    messageClear += component.toPlainText();
+                }
+                this.getPlugin().getLogger().log(Level.INFO, "Message JSON: '" + messageReplaced + "'");
+                this.getPlugin().getLogger().log(Level.INFO, "Message clear: '" + messageClear + "'");
+            } catch (ParseException exception) {
+                String messageSuffix = message.contains("§") ? " (replace & -> § in colors)" : "";
+                this.getPlugin().getLogger().log(Level.INFO, "Message: '" + message.replace("§", "&") + "'" + messageSuffix);
+                this.getPlugin().getLogger().log(Level.INFO, "Message clear: '" + ChatColor.stripColor(message) + "'");
+            }
             this.getPlugin().getLogger().log(Level.INFO, "Message ID: '" + messageId + "'");
         }
         if ((messagePlace == MessagePlace.GAME_CHAT || messagePlace == MessagePlace.SYSTEM_CHAT) && player.hasPermission("messageeditor.use") && this.getPlugin().isAttachingSpecialHoverAndClickEventsEnabled()) {
@@ -196,6 +210,8 @@ public final class MessageEditorPacketListener extends PacketAdapter {
             newPacket.getChatComponents().write(0, WrappedChatComponent.fromJson(message));
         } else if (newPacket.getSpecificModifier(BaseComponent[].class).size() == 1) {
             newPacket.getSpecificModifier(BaseComponent[].class).write(0, ComponentSerializer.parse(message));
+        } else if (newPacket.getStrings().size() >= 1 && newPacket.getStrings().read(0) != null) {
+            newPacket.getStrings().write(0, message);
         }
         event.setPacket(newPacket);
     }
@@ -244,6 +260,11 @@ public final class MessageEditorPacketListener extends PacketAdapter {
                 newPacket.getEnumModifier(ScoreboardHealthDisplayMode.class, 2).write(0, oldPacket.getEnumModifier(ScoreboardHealthDisplayMode.class, 2).read(0));
             }
             newPacket.getIntegers().write(0, oldAction);
+        } else if (newPacket.getType() == PacketType.Play.Server.SCOREBOARD_SCORE) {
+            newPacket.getStrings().write(0, oldPacket.getStrings().read(0));
+            newPacket.getStrings().write(1, oldPacket.getStrings().read(1));
+            newPacket.getIntegers().write(0, oldPacket.getIntegers().read(0));
+            newPacket.getScoreboardActions().write(0, oldPacket.getScoreboardActions().read(0));
         }
         return newPacket;
     }

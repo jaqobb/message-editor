@@ -38,7 +38,8 @@ public enum MessagePlace {
     KICK("K", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.KICK_DISCONNECT),
     DISCONNECT("D", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Login.Server.DISCONNECT),
     BOSS_BAR("BB", MinecraftVersion.COMBAT_UPDATE, PacketType.Play.Server.BOSS),
-    SCOREBOARD_TITLE("ST", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.SCOREBOARD_OBJECTIVE);
+    SCOREBOARD_TITLE("ST", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.SCOREBOARD_OBJECTIVE),
+    SCOREBOARD_ENTRY("SE", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.SCOREBOARD_SCORE);
 
     private final String id;
     private final MinecraftVersion minimumRequiredMinecraftVersion;

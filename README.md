@@ -16,7 +16,7 @@ Message Editor supports:
 * [x] Triggering message editing only on specific positions - since 1.3.2
 * [x] Editing message positions - since 1.4.0
 * [x] Editing scoreboard titles - since 1.5.0
-* [ ] Editing scoreboard entries
+* [x] Editing scoreboard entries - since 1.6.0
 
 ### Showcase
 
