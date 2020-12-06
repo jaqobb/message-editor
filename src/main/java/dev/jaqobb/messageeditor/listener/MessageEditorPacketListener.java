@@ -177,7 +177,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
         MessageData messageData = new MessageData(messagePlace, message);
         this.getPlugin().cacheMessageData(messageId, messageData);
         if (messagePlace.isAnalyzingActivated()) {
-            this.getPlugin().getLogger().log(Level.INFO, "Place: " + messagePlace.name());
+            this.getPlugin().getLogger().log(Level.INFO, "Place: " + messagePlace.getFriendlyName() + " (" + messagePlace.name() + ")");
             this.getPlugin().getLogger().log(Level.INFO, "Player: " + player.getName());
             if (messagePlace != MessagePlace.SCOREBOARD_ENTRY) {
                 String messageReplaced = message.replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0");

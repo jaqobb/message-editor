@@ -73,7 +73,7 @@ message-edits:
   message-after-place: ACTION_BAR
 - ==: MessageEdit
   message-before-pattern: '\{"extra":\[\{"text":"You are (\d+) version\(s\) behind"\}\],"text":""\}'
-  message-before-place: GAME_CHAT
+  message-before-place: SYSTEM_CHAT
   message-after: '{"extra":[{"color":"green","text":"You are $1 version(s) behind. Consider updating."}],"text":""}'
 ```
 
