@@ -30,6 +30,7 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import dev.jaqobb.messageeditor.MessageEditorPlugin;
 import dev.jaqobb.messageeditor.data.MessageData;
@@ -101,6 +102,11 @@ public final class MessageEditorPacketListener extends PacketAdapter {
             // 2 = update scoreboard objective display name
             int action = newPacket.getIntegers().read(0);
             if (action != 0 && action != 2) {
+                return;
+            }
+        } else if (newPacket.getType() == PacketType.Play.Server.SCOREBOARD_SCORE) {
+            EnumWrappers.ScoreboardAction action = newPacket.getScoreboardActions().read(0);
+            if (action == EnumWrappers.ScoreboardAction.REMOVE) {
                 return;
             }
         }
