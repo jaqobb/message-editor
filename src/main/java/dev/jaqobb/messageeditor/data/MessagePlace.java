@@ -35,7 +35,7 @@ import net.md_5.bungee.chat.ComponentSerializer;
 
 public enum MessagePlace {
 
-    GAME_CHAT("GC", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 0, EnumWrappers.ChatType.CHAT) {
+    GAME_CHAT("GC", "Game Chat", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 0, EnumWrappers.ChatType.CHAT) {
         @Override
         public String getMessage(final PacketContainer packet) {
             WrappedChatComponent message = packet.getChatComponents().read(0);
@@ -50,19 +50,19 @@ public enum MessagePlace {
             return null;
         }
     },
-    SYSTEM_CHAT("SC", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 1, EnumWrappers.ChatType.SYSTEM) {
+    SYSTEM_CHAT("SC", "System Chat", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 1, EnumWrappers.ChatType.SYSTEM) {
         @Override
         public String getMessage(final PacketContainer packet) {
             return GAME_CHAT.getMessage(packet);
         }
     },
-    ACTION_BAR("AB", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 2, EnumWrappers.ChatType.GAME_INFO) {
+    ACTION_BAR("AB", "Action Bar", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 2, EnumWrappers.ChatType.GAME_INFO) {
         @Override
         public String getMessage(final PacketContainer packet) {
             return GAME_CHAT.getMessage(packet);
         }
     },
-    KICK("K", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.KICK_DISCONNECT) {
+    KICK("K", "Kick", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.KICK_DISCONNECT) {
         @Override
         public String getMessage(final PacketContainer packet) {
             WrappedChatComponent message = packet.getChatComponents().read(0);
@@ -72,7 +72,7 @@ public enum MessagePlace {
             return message.getJson();
         }
     },
-    DISCONNECT("D", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Login.Server.DISCONNECT) {
+    DISCONNECT("D", "Disconnect", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Login.Server.DISCONNECT) {
         @Override
         public String getMessage(final PacketContainer packet) {
             WrappedChatComponent message = packet.getChatComponents().read(0);
@@ -82,7 +82,7 @@ public enum MessagePlace {
             return message.getJson();
         }
     },
-    BOSS_BAR("BB", MinecraftVersion.COMBAT_UPDATE, PacketType.Play.Server.BOSS) {
+    BOSS_BAR("BB", "Boss Bar", MinecraftVersion.COMBAT_UPDATE, PacketType.Play.Server.BOSS) {
         @Override
         public String getMessage(final PacketContainer packet) {
             WrappedChatComponent message = packet.getChatComponents().read(0);
@@ -92,7 +92,7 @@ public enum MessagePlace {
             return message.getJson();
         }
     },
-    SCOREBOARD_TITLE("ST", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.SCOREBOARD_OBJECTIVE) {
+    SCOREBOARD_TITLE("ST", "Scoreboard Title", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.SCOREBOARD_OBJECTIVE) {
         @Override
         public String getMessage(final PacketContainer packet) {
             WrappedChatComponent message = packet.getChatComponents().read(0);
@@ -102,7 +102,7 @@ public enum MessagePlace {
             return message.getJson();
         }
     },
-    SCOREBOARD_ENTRY("SE", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.SCOREBOARD_SCORE) {
+    SCOREBOARD_ENTRY("SE", "Scoreboard Entry", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.SCOREBOARD_SCORE) {
         @Override
         public String getMessage(final PacketContainer packet) {
             return packet.getStrings().read(0);
@@ -110,6 +110,7 @@ public enum MessagePlace {
     };
 
     private final String id;
+    private final String friendlyName;
     private final MinecraftVersion minimumRequiredMinecraftVersion;
     private final PacketType packetType;
     private final Byte chatType;
@@ -118,11 +119,13 @@ public enum MessagePlace {
 
     private MessagePlace(
         final String id,
+        final String friendlyName,
         final MinecraftVersion minimumRequiredMinecraftVersion,
         final PacketType packetType
     ) {
         this(
             id,
+            friendlyName,
             minimumRequiredMinecraftVersion,
             packetType,
             null,
@@ -132,12 +135,14 @@ public enum MessagePlace {
 
     private MessagePlace(
         final String id,
+        final String friendlyName,
         final MinecraftVersion minimumRequiredMinecraftVersion,
         final PacketType packetType,
         final Byte chatType,
         final EnumWrappers.ChatType chatTypeEnum
     ) {
         this.id = id;
+        this.friendlyName = friendlyName;
         this.minimumRequiredMinecraftVersion = minimumRequiredMinecraftVersion;
         this.packetType = packetType;
         this.chatType = chatType;
@@ -147,6 +152,10 @@ public enum MessagePlace {
 
     public String getId() {
         return this.id;
+    }
+
+    public String getFriendlyName() {
+        return this.friendlyName;
     }
 
     public MinecraftVersion getMinimumRequiredMinecraftVersion() {
