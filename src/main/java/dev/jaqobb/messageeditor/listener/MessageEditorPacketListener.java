@@ -51,8 +51,6 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.entity.Player;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 public final class MessageEditorPacketListener extends PacketAdapter {
 
@@ -61,7 +59,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
     @SuppressWarnings("deprecation")
     private static final HoverEvent COPY_TO_CLIPBOARD_HOVER_EVENT = new HoverEvent(
         HoverEvent.Action.SHOW_TEXT,
-        TextComponent.fromLegacyText(ChatColor.GRAY + "Click to copy this message's JSON to your clipboard.")
+        TextComponent.fromLegacyText(ChatColor.GRAY + "Click to copy this message's ID to your clipboard.")
     );
 
     public MessageEditorPacketListener(final MessageEditorPlugin plugin) {
@@ -181,9 +179,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
         if (messagePlace.isAnalyzingActivated()) {
             this.getPlugin().getLogger().log(Level.INFO, "Place: " + messagePlace.name());
             this.getPlugin().getLogger().log(Level.INFO, "Player: " + player.getName());
-            // TODO: Any better way to check if it's JSON?
-            try {
-                new JSONParser().parse(message);
+            if (messagePlace != MessagePlace.SCOREBOARD_ENTRY) {
                 String messageReplaced = message.replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0");
                 String messageClear = "";
                 for (BaseComponent component : ComponentSerializer.parse(message)) {
@@ -191,8 +187,8 @@ public final class MessageEditorPacketListener extends PacketAdapter {
                 }
                 this.getPlugin().getLogger().log(Level.INFO, "Message JSON: '" + messageReplaced + "'");
                 this.getPlugin().getLogger().log(Level.INFO, "Message clear: '" + messageClear + "'");
-            } catch (ParseException exception) {
-                String messageSuffix = message.contains("§") ? " (replace & -> § in colors)" : "";
+            } else {
+                String messageSuffix = message.contains("§") ? " (replace & -> § (section sign) in colors)" : "";
                 this.getPlugin().getLogger().log(Level.INFO, "Message: '" + message.replace("§", "&") + "'" + messageSuffix);
                 this.getPlugin().getLogger().log(Level.INFO, "Message clear: '" + ChatColor.stripColor(message) + "'");
             }
@@ -201,7 +197,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
         if ((messagePlace == MessagePlace.GAME_CHAT || messagePlace == MessagePlace.SYSTEM_CHAT) && player.hasPermission("messageeditor.use") && this.getPlugin().isAttachingSpecialHoverAndClickEventsEnabled()) {
             TextComponent messageToSend = new TextComponent(ComponentSerializer.parse(message));
             messageToSend.setHoverEvent(COPY_TO_CLIPBOARD_HOVER_EVENT);
-            messageToSend.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, message.replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0")));
+            messageToSend.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, messageId));
             message = ComponentSerializer.toString(messageToSend);
         }
         if (newPacket.getChatComponents().size() == 1 && newPacket.getChatComponents().read(0) != null) {
