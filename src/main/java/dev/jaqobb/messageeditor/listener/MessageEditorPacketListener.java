@@ -33,7 +33,6 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import dev.jaqobb.messageeditor.MessageEditorPlugin;
-import dev.jaqobb.messageeditor.data.MessageData;
 import dev.jaqobb.messageeditor.data.MessageEdit;
 import dev.jaqobb.messageeditor.data.MessagePlace;
 import dev.jaqobb.messageeditor.data.bossbar.BossBarMessageAction;
@@ -174,8 +173,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
             }
         }
         String messageId = MessageUtils.composeMessageId(messagePlace, message);
-        MessageData messageData = new MessageData(messagePlace, message);
-        this.getPlugin().cacheMessageData(messageId, messageData);
+        this.getPlugin().cacheMessageData(messageId, messagePlace, message);
         if (messagePlace.isAnalyzingActivated()) {
             this.getPlugin().getLogger().log(Level.INFO, "Place: " + messagePlace.getFriendlyName() + " (" + messagePlace.name() + ")");
             this.getPlugin().getLogger().log(Level.INFO, "Player: " + player.getName());

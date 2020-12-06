@@ -24,32 +24,6 @@
 
 package dev.jaqobb.messageeditor.data;
 
-public final class MessageData {
+public final class MessageEditData {
 
-    private MessagePlace messagePlace;
-    private String message;
-
-    public MessageData(
-        final MessagePlace messagePlace,
-        final String message
-    ) {
-        this.messagePlace = messagePlace;
-        this.message = message;
-    }
-
-    public MessagePlace getMessagePlace() {
-        return this.messagePlace;
-    }
-
-    public void setMessagePlace(final MessagePlace messagePlace) {
-        this.messagePlace = messagePlace;
-    }
-
-    public String getMessage() {
-        return this.message;
-    }
-
-    public void setMessage(final String message) {
-        this.message = message;
-    }
 }

@@ -30,7 +30,6 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import dev.jaqobb.messageeditor.command.MessageEditorCommand;
 import dev.jaqobb.messageeditor.command.MessageEditorCommandTabCompleter;
-import dev.jaqobb.messageeditor.data.MessageData;
 import dev.jaqobb.messageeditor.data.MessageEdit;
 import dev.jaqobb.messageeditor.data.MessagePlace;
 import dev.jaqobb.messageeditor.listener.MessageEditorListener;
@@ -63,7 +62,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
     private boolean placeholderApiPresent;
     private boolean mvdwPlaceholderApiPresent;
     private Cache<String, Map.Entry<MessageEdit, String>> cachedMessages;
-    private Cache<String, MessageData> cachedMessagesData;
+    private Cache<String, Map.Entry<MessagePlace, String>> cachedMessagesData;
 
     @Override
     public void onLoad() {
@@ -196,15 +195,16 @@ public final class MessageEditorPlugin extends JavaPlugin {
         return Collections.unmodifiableSet(this.cachedMessagesData.asMap().keySet());
     }
 
-    public MessageData getCachedMessageData(final String messageId) {
+    public Map.Entry<MessagePlace, String> getCachedMessageData(final String messageId) {
         return this.cachedMessagesData.getIfPresent(messageId);
     }
 
     public void cacheMessageData(
         final String messageId,
-        final MessageData messageData
+        final MessagePlace messagePlace,
+        final String message
     ) {
-        this.cachedMessagesData.put(messageId, messageData);
+        this.cachedMessagesData.put(messageId, new AbstractMap.SimpleEntry<>(messagePlace, message));
     }
 
     public void uncacheMessageData(final String messageId) {
