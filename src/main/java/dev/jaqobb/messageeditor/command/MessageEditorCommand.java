@@ -24,7 +24,6 @@
 
 package dev.jaqobb.messageeditor.command;
 
-import com.comphenix.protocol.utility.MinecraftVersion;
 import dev.jaqobb.messageeditor.MessageEditorConstants;
 import dev.jaqobb.messageeditor.MessageEditorPlugin;
 import dev.jaqobb.messageeditor.data.MessagePlace;
@@ -81,8 +80,7 @@ public final class MessageEditorCommand implements CommandExecutor {
                     sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.RED + "Could not convert '" + ChatColor.GRAY + argument + ChatColor.RED + "' to message place.");
                     continue;
                 }
-                boolean validMinecraftVersion = MinecraftVersion.atOrAbove(messagePlace.getMinimumRequiredMinecraftVersion());
-                if (!validMinecraftVersion) {
+                if (!messagePlace.isSupported()) {
                     sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + messagePlace.getFriendlyName() + ChatColor.RED + " message place is not supported by your server.");
                     continue;
                 }
@@ -111,8 +109,7 @@ public final class MessageEditorCommand implements CommandExecutor {
                     sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.RED + "Could not convert '" + ChatColor.GRAY + argument + ChatColor.RED + "' to message place.");
                     continue;
                 }
-                boolean validMinecraftVersion = MinecraftVersion.atOrAbove(messagePlace.getMinimumRequiredMinecraftVersion());
-                if (!validMinecraftVersion) {
+                if (!messagePlace.isSupported()) {
                     sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + messagePlace.getFriendlyName() + ChatColor.RED + " message place is not supported by your server.");
                     continue;
                 }
@@ -157,8 +154,7 @@ public final class MessageEditorCommand implements CommandExecutor {
     private void sendAvailableMessagePlaces(final CommandSender sender) {
         sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Available message places:");
         for (MessagePlace messagePlace : MessagePlace.values()) {
-            boolean validMinecraftVersion = MinecraftVersion.atOrAbove(messagePlace.getMinimumRequiredMinecraftVersion());
-            if (validMinecraftVersion) {
+            if (messagePlace.isSupported()) {
                 sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "- " + ChatColor.YELLOW + messagePlace.name() + ChatColor.GRAY + " (" + ChatColor.YELLOW + messagePlace.getFriendlyName() + ChatColor.GRAY + ")");
             }
         }

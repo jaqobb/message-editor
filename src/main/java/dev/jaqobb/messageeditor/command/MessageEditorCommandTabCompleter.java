@@ -24,7 +24,6 @@
 
 package dev.jaqobb.messageeditor.command;
 
-import com.comphenix.protocol.utility.MinecraftVersion;
 import dev.jaqobb.messageeditor.data.MessagePlace;
 import java.util.LinkedList;
 import java.util.List;
@@ -66,8 +65,7 @@ public final class MessageEditorCommandTabCompleter implements TabCompleter {
                     if (!messagePlace.name().startsWith(arguments[index].toUpperCase())) {
                         continue;
                     }
-                    boolean validMinecraftVersion = MinecraftVersion.atOrAbove(messagePlace.getMinimumRequiredMinecraftVersion());
-                    if (!validMinecraftVersion) {
+                    if (!messagePlace.isSupported()) {
                         continue;
                     }
                     boolean canMessagePlaceAnalyzingStateBeModified = arguments[0].equalsIgnoreCase("activate") != messagePlace.isAnalyzingActivated();

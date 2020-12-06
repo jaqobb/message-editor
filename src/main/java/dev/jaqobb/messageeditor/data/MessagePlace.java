@@ -115,6 +115,7 @@ public enum MessagePlace {
     private final PacketType packetType;
     private final Byte chatType;
     private final EnumWrappers.ChatType chatTypeEnum;
+    private boolean supported;
     private boolean analyzingActivated;
 
     private MessagePlace(
@@ -147,6 +148,7 @@ public enum MessagePlace {
         this.packetType = packetType;
         this.chatType = chatType;
         this.chatTypeEnum = chatTypeEnum;
+        this.supported = MinecraftVersion.atOrAbove(this.minimumRequiredMinecraftVersion);
         this.analyzingActivated = false;
     }
 
@@ -172,6 +174,10 @@ public enum MessagePlace {
 
     public EnumWrappers.ChatType getChatTypeEnum() {
         return this.chatTypeEnum;
+    }
+
+    public boolean isSupported() {
+        return this.supported;
     }
 
     public boolean isAnalyzingActivated() {
