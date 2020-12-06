@@ -28,6 +28,9 @@ import net.md_5.bungee.api.ChatColor;
 
 public final class MessageEditorConstants {
 
+    public static final String PLACEHOLDER_API_PLUGIN_NAME = "PlaceholderAPI";
+    public static final String MVDW_PLACEHOLDER_API_PLUGIN_NAME = "MVdWPlaceholderAPI";
+
     public static final String PREFIX = ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + "Message Editor" + ChatColor.DARK_GRAY + "] ";
 
     private MessageEditorConstants() {

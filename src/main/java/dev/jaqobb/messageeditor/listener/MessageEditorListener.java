@@ -24,7 +24,9 @@
 
 package dev.jaqobb.messageeditor.listener;
 
+import dev.jaqobb.messageeditor.MessageEditorConstants;
 import dev.jaqobb.messageeditor.MessageEditorPlugin;
+import java.util.logging.Level;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -53,20 +55,24 @@ public final class MessageEditorListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPluginEnable(final PluginEnableEvent event) {
         Plugin plugin = event.getPlugin();
-        if (plugin.getName().equals(MessageEditorPlugin.PLACEHOLDER_API_PLUGIN_NAME)) {
+        if (plugin.getName().equals(MessageEditorConstants.PLACEHOLDER_API_PLUGIN_NAME)) {
             this.plugin.setPlaceholderApiPresent(true);
-        } else if (plugin.getName().equals(MessageEditorPlugin.MVDW_PLACEHOLDER_API_PLUGIN_NAME)) {
+            this.plugin.getLogger().log(Level.INFO, MessageEditorConstants.PLACEHOLDER_API_PLUGIN_NAME + " integration has been enabled.");
+        } else if (plugin.getName().equals(MessageEditorConstants.MVDW_PLACEHOLDER_API_PLUGIN_NAME)) {
             this.plugin.setMvdwPlaceholderApiPresent(true);
+            this.plugin.getLogger().log(Level.INFO, MessageEditorConstants.MVDW_PLACEHOLDER_API_PLUGIN_NAME + " integration has been enabled.");
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPluginDisable(final PluginDisableEvent event) {
         Plugin plugin = event.getPlugin();
-        if (plugin.getName().equals(MessageEditorPlugin.PLACEHOLDER_API_PLUGIN_NAME)) {
+        if (plugin.getName().equals(MessageEditorConstants.PLACEHOLDER_API_PLUGIN_NAME)) {
             this.plugin.setPlaceholderApiPresent(false);
-        } else if (plugin.getName().equals(MessageEditorPlugin.MVDW_PLACEHOLDER_API_PLUGIN_NAME)) {
+            this.plugin.getLogger().log(Level.INFO, MessageEditorConstants.PLACEHOLDER_API_PLUGIN_NAME + " integration has been disabled.");
+        } else if (plugin.getName().equals(MessageEditorConstants.MVDW_PLACEHOLDER_API_PLUGIN_NAME)) {
             this.plugin.setMvdwPlaceholderApiPresent(false);
+            this.plugin.getLogger().log(Level.INFO, MessageEditorConstants.MVDW_PLACEHOLDER_API_PLUGIN_NAME + " integration has been disabled.");
         }
     }
 }
