@@ -25,6 +25,7 @@ bukkit {
     commands {
         create("message-editor") {
             description = "Message Editor main command"
+            aliases = listOf("messageeditor")
         }
     }
 }

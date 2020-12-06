@@ -123,7 +123,7 @@ public final class MessageEditorCommand implements CommandExecutor {
             sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "You have deactivated analyzing " + ChatColor.YELLOW + affectedMessagePlaces + ChatColor.GRAY + " message place(s).");
             return true;
         }
-        if (arguments[0].equalsIgnoreCase("deactivate-all")) {
+        if (arguments[0].equalsIgnoreCase("deactivate-all") || arguments[0].equalsIgnoreCase("deactivateall")) {
             if (arguments.length != 1) {
                 sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Correct usage: " + ChatColor.YELLOW + "/" + label + " deactivate-all" + ChatColor.GRAY + ".");
                 return true;
@@ -143,10 +143,11 @@ public final class MessageEditorCommand implements CommandExecutor {
         final String label
     ) {
         sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Available commands:");
-        sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.YELLOW + "/" + label + " reload" + ChatColor.GRAY + " - " + ChatColor.YELLOW + "Reloads plugin.");
-        sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.YELLOW + "/" + label + " activate <message places>" + ChatColor.GRAY + " - " + ChatColor.YELLOW + "Activates analyzing specified message place(s).");
-        sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.YELLOW + "/" + label + " deactivate <message places>" + ChatColor.GRAY + " - " + ChatColor.YELLOW + "Deactivates analyzing specified message place(s).");
-        sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.YELLOW + "/" + label + " deactivate-all" + ChatColor.GRAY + " - " + ChatColor.YELLOW + "Deactivates analyzing all message places.");
+        sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.YELLOW + "/message-editor reload" + ChatColor.GRAY + " - Reloads plugin.");
+        sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.YELLOW + "/message-editor edit <message ID>" + ChatColor.GRAY + " - Opens message editor.");
+        sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.YELLOW + "/message-editor activate <message places>" + ChatColor.GRAY + " - Activates analyzing specified message place(s).");
+        sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.YELLOW + "/message-editor deactivate <message places>" + ChatColor.GRAY + " - Deactivates analyzing specified message place(s).");
+        sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.YELLOW + "/message-editor deactivate-all" + ChatColor.GRAY + " - Deactivates analyzing all message places.");
         sender.sendMessage(MessageEditorConstants.PREFIX);
         this.sendAvailableMessagePlaces(sender);
     }

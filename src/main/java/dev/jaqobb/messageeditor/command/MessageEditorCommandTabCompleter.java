@@ -58,6 +58,9 @@ public final class MessageEditorCommandTabCompleter implements TabCompleter {
             if ("deactivate-all".startsWith(argument)) {
                 completion.add("deactivate-all");
             }
+            if ("deactivateall".startsWith(argument)) {
+                completion.add("deactivateall");
+            }
         }
         if (arguments.length > 1 && (arguments[0].equalsIgnoreCase("activate") || (arguments[0].equalsIgnoreCase("deactivate")))) {
             for (int index = 1; index < arguments.length; index++) {
