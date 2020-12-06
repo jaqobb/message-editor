@@ -110,15 +110,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
                 return;
             }
         }
-        String message = null;
-        // TODO: Better way to get message?
-        if (newPacket.getChatComponents().size() == 1 && newPacket.getChatComponents().read(0) != null) {
-            message = newPacket.getChatComponents().read(0).getJson();
-        } else if (newPacket.getSpecificModifier(BaseComponent[].class).size() == 1 && newPacket.getSpecificModifier(BaseComponent[].class).read(0) != null) {
-            message = ComponentSerializer.toString(newPacket.getSpecificModifier(BaseComponent[].class).read(0));
-        } else if (newPacket.getStrings().size() >= 1 && newPacket.getStrings().read(0) != null) {
-            message = newPacket.getStrings().read(0);
-        }
+        String message = messagePlace.getMessage(newPacket);
         if (message == null) {
             return;
         }

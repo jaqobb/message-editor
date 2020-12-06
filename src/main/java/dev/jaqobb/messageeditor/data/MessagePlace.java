@@ -28,18 +28,86 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.EnumWrappers;
+import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import java.util.Arrays;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.chat.ComponentSerializer;
 
 public enum MessagePlace {
 
-    GAME_CHAT("GC", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 0, EnumWrappers.ChatType.CHAT),
-    SYSTEM_CHAT("SC", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 1, EnumWrappers.ChatType.SYSTEM),
-    ACTION_BAR("AB", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 2, EnumWrappers.ChatType.GAME_INFO),
-    KICK("K", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.KICK_DISCONNECT),
-    DISCONNECT("D", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Login.Server.DISCONNECT),
-    BOSS_BAR("BB", MinecraftVersion.COMBAT_UPDATE, PacketType.Play.Server.BOSS),
-    SCOREBOARD_TITLE("ST", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.SCOREBOARD_OBJECTIVE),
-    SCOREBOARD_ENTRY("SE", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.SCOREBOARD_SCORE);
+    GAME_CHAT("GC", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 0, EnumWrappers.ChatType.CHAT) {
+        @Override
+        public String getMessage(final PacketContainer packet) {
+            WrappedChatComponent message = packet.getChatComponents().read(0);
+            if (message != null) {
+                return message.getJson();
+            } else {
+                BaseComponent[] messageComponent = packet.getSpecificModifier(BaseComponent[].class).readSafely(0);
+                if (messageComponent != null) {
+                    return ComponentSerializer.toString(messageComponent);
+                }
+            }
+            return null;
+        }
+    },
+    SYSTEM_CHAT("SC", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 1, EnumWrappers.ChatType.SYSTEM) {
+        @Override
+        public String getMessage(final PacketContainer packet) {
+            return GAME_CHAT.getMessage(packet);
+        }
+    },
+    ACTION_BAR("AB", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 2, EnumWrappers.ChatType.GAME_INFO) {
+        @Override
+        public String getMessage(final PacketContainer packet) {
+            return GAME_CHAT.getMessage(packet);
+        }
+    },
+    KICK("K", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.KICK_DISCONNECT) {
+        @Override
+        public String getMessage(final PacketContainer packet) {
+            WrappedChatComponent message = packet.getChatComponents().read(0);
+            if (message == null) {
+                return null;
+            }
+            return message.getJson();
+        }
+    },
+    DISCONNECT("D", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Login.Server.DISCONNECT) {
+        @Override
+        public String getMessage(final PacketContainer packet) {
+            WrappedChatComponent message = packet.getChatComponents().read(0);
+            if (message == null) {
+                return null;
+            }
+            return message.getJson();
+        }
+    },
+    BOSS_BAR("BB", MinecraftVersion.COMBAT_UPDATE, PacketType.Play.Server.BOSS) {
+        @Override
+        public String getMessage(final PacketContainer packet) {
+            WrappedChatComponent message = packet.getChatComponents().read(0);
+            if (message == null) {
+                return null;
+            }
+            return message.getJson();
+        }
+    },
+    SCOREBOARD_TITLE("ST", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.SCOREBOARD_OBJECTIVE) {
+        @Override
+        public String getMessage(final PacketContainer packet) {
+            WrappedChatComponent message = packet.getChatComponents().read(0);
+            if (message == null) {
+                return null;
+            }
+            return message.getJson();
+        }
+    },
+    SCOREBOARD_ENTRY("SE", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.SCOREBOARD_SCORE) {
+        @Override
+        public String getMessage(final PacketContainer packet) {
+            return packet.getStrings().read(0);
+        }
+    };
 
     private final String id;
     private final MinecraftVersion minimumRequiredMinecraftVersion;
@@ -104,6 +172,8 @@ public enum MessagePlace {
     public void setAnalyzingActivated(final boolean activated) {
         this.analyzingActivated = activated;
     }
+
+    public abstract String getMessage(PacketContainer packet);
 
     public static MessagePlace fromName(final String name) {
         return Arrays.stream(values())
