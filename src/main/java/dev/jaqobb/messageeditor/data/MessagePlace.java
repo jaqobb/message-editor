@@ -109,6 +109,8 @@ public enum MessagePlace {
         }
     };
 
+    public static final MessagePlace[] VALUES = values();
+
     private final String id;
     private final String friendlyName;
     private final MinecraftVersion minimumRequiredMinecraftVersion;
@@ -191,7 +193,7 @@ public enum MessagePlace {
     public abstract String getMessage(PacketContainer packet);
 
     public static MessagePlace fromName(final String name) {
-        return Arrays.stream(values())
+        return Arrays.stream(VALUES)
             .filter(place -> place.name().equalsIgnoreCase(name))
             .findFirst()
             .orElse(null);
@@ -208,7 +210,7 @@ public enum MessagePlace {
     }
 
     public static MessagePlace fromPacketType(final PacketType packetType) {
-        return Arrays.stream(values())
+        return Arrays.stream(VALUES)
             .filter(place -> place.packetType == packetType)
             .findFirst()
             .orElse(null);
@@ -218,7 +220,7 @@ public enum MessagePlace {
         final PacketType packetType,
         final byte chatType
     ) {
-        return Arrays.stream(values())
+        return Arrays.stream(VALUES)
             .filter(place -> place.packetType == packetType)
             .filter(place -> place.chatType != null && place.chatType == chatType)
             .findFirst()
@@ -229,7 +231,7 @@ public enum MessagePlace {
         final PacketType packetType,
         final EnumWrappers.ChatType chatTypeEnum
     ) {
-        return Arrays.stream(values())
+        return Arrays.stream(VALUES)
             .filter(place -> place.packetType == packetType)
             .filter(place -> place.chatTypeEnum != null && place.chatTypeEnum == chatTypeEnum)
             .findFirst()

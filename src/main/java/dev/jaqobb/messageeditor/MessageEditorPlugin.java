@@ -74,7 +74,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
     @Override
     public void onLoad() {
         MinecraftVersion minimumRequiredMinecraftVersion = null;
-        for (MessagePlace messagePlace : MessagePlace.values()) {
+        for (MessagePlace messagePlace : MessagePlace.VALUES) {
             MinecraftVersion messagePlaceMininumRequiredMinecraftVersion = messagePlace.getMinimumRequiredMinecraftVersion();
             if (minimumRequiredMinecraftVersion == null || minimumRequiredMinecraftVersion.compareTo(messagePlaceMininumRequiredMinecraftVersion) > 0) {
                 minimumRequiredMinecraftVersion = messagePlaceMininumRequiredMinecraftVersion;

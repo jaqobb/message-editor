@@ -148,7 +148,7 @@ public final class MessageEditorCommand implements CommandExecutor {
                 sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Correct usage: " + ChatColor.YELLOW + "/" + label + " deactivate-all" + ChatColor.GRAY + ".");
                 return true;
             }
-            for (MessagePlace messagePlace : MessagePlace.values()) {
+            for (MessagePlace messagePlace : MessagePlace.VALUES) {
                 messagePlace.setAnalyzingActivated(false);
             }
             sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "You have deactivated analyzing all message places.");
@@ -174,7 +174,7 @@ public final class MessageEditorCommand implements CommandExecutor {
 
     private void sendAvailableMessagePlaces(final CommandSender sender) {
         sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Available message places:");
-        for (MessagePlace messagePlace : MessagePlace.values()) {
+        for (MessagePlace messagePlace : MessagePlace.VALUES) {
             if (messagePlace.isSupported()) {
                 sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "- " + ChatColor.YELLOW + messagePlace.name() + ChatColor.GRAY + " (" + ChatColor.YELLOW + messagePlace.getFriendlyName() + ChatColor.GRAY + ")");
             }
