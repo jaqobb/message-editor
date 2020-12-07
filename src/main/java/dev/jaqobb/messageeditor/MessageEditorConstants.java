@@ -33,6 +33,8 @@ public final class MessageEditorConstants {
     public static final String PLACEHOLDER_API_PLUGIN_NAME = "PlaceholderAPI";
     public static final String MVDW_PLACEHOLDER_API_PLUGIN_NAME = "MVdWPlaceholderAPI";
 
+    public static final int MESSAGE_LENGTH = 40;
+
     private MessageEditorConstants() {
         throw new UnsupportedOperationException("Cannot create instance of this class");
     }

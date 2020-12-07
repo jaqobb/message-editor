@@ -82,7 +82,7 @@ public final class MessageEditorCommand implements CommandExecutor {
                 player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.RED + "There is no cached message data attached to the '" + ChatColor.GRAY + arguments[1] + ChatColor.RED + "' message ID.");
                 return true;
             }
-            this.plugin.getMenuManager().openMenu(player, messageData);
+            this.plugin.getMenuManager().openMenu(player, messageData, true);
             return true;
         }
         if (arguments[0].equalsIgnoreCase("activate")) {

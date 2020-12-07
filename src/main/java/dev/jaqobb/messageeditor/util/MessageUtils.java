@@ -25,6 +25,7 @@
 package dev.jaqobb.messageeditor.util;
 
 import dev.jaqobb.messageeditor.data.MessagePlace;
+import net.md_5.bungee.api.ChatColor;
 
 public final class MessageUtils {
 
@@ -58,5 +59,24 @@ public final class MessageUtils {
             }
         }
         return messagePlaceId + messageId;
+    }
+
+    public static String getLastColors(final String message) {
+        int messageLength = message.length();
+        String result = "";
+        for (int index = messageLength - 1; index > -1; index--) {
+            char section = message.charAt(index);
+            if (section == ChatColor.COLOR_CHAR && index < messageLength - 1) {
+                char character = message.charAt(index + 1);
+                ChatColor color = ChatColor.getByChar(character);
+                if (color != null) {
+                    result = color + result;
+                    if (color == ChatColor.RESET || (color != ChatColor.MAGIC && color != ChatColor.BOLD && color != ChatColor.STRIKETHROUGH && color != ChatColor.UNDERLINE && color != ChatColor.ITALIC)) {
+                        break;
+                    }
+                }
+            }
+        }
+        return result;
     }
 }

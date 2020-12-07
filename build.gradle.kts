@@ -33,6 +33,20 @@ bukkit {
 
 tasks {
     shadowJar {
+        exclude("com/cryptomorin/xseries/messages/*")
+        exclude("com/cryptomorin/xseries/particles/*")
+        exclude("com/cryptomorin/xseries/NMSExtras*")
+        exclude("com/cryptomorin/xseries/NoteBlockMusic*")
+        exclude("com/cryptomorin/xseries/ReflectionUtils*")
+        exclude("com/cryptomorin/xseries/SkullCacheListener*")
+        exclude("com/cryptomorin/xseries/SkullUtils*")
+        exclude("com/cryptomorin/xseries/XBiome*")
+        exclude("com/cryptomorin/xseries/XBlock*")
+        exclude("com/cryptomorin/xseries/XEnchantment*")
+        exclude("com/cryptomorin/xseries/XEntity*")
+        exclude("com/cryptomorin/xseries/XItemStack*")
+        exclude("com/cryptomorin/xseries/XPotion*")
+        relocate("com.cryptomorin.xseries", "dev.jaqobb.messageeditor.library.com.cryptomorin.xseries")
         relocate("org.bstats.bukkit", "dev.jaqobb.messageeditor.metrics")
     }
 }
@@ -47,6 +61,11 @@ repositories {
     maven("https://oss.sonatype.org/content/repositories/snapshots/") {
         content {
             includeGroup("net.md-5")
+        }
+    }
+    maven("https://libraries.minecraft.net") {
+        content {
+            includeGroup("com.mojang")
         }
     }
     maven("https://repo.dmulloy2.net/nexus/repository/public/") {
@@ -73,10 +92,12 @@ repositories {
 
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.16.4-R0.1-SNAPSHOT")
+    compileOnly("com.mojang:authlib:2.0.27")
     compileOnly("com.comphenix.protocol:ProtocolLib:4.6.0-SNAPSHOT")
     compileOnly("me.clip:placeholderapi:2.10.9")
     compileOnly("be.maximvdw:MVdWPlaceholderAPI:3.1.1-SNAPSHOT") {
         exclude("org.spigotmc")
     }
+    implementation("com.github.cryptomorin:XSeries:7.6.0.0.1")
     implementation("org.bstats:bstats-bukkit:1.7")
 }

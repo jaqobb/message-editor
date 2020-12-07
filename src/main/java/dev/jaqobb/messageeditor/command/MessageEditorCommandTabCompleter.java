@@ -49,6 +49,9 @@ public final class MessageEditorCommandTabCompleter implements TabCompleter {
             if ("reload".startsWith(argument)) {
                 completion.add("reload");
             }
+            if ("edit".startsWith(argument)) {
+                completion.add("edit");
+            }
             if ("activate".startsWith(argument)) {
                 completion.add("activate");
             }
