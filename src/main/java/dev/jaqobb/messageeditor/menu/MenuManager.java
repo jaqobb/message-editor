@@ -104,7 +104,7 @@ public final class MenuManager {
         }
         ItemStack oldMessagePlaceItem = XMaterial.COMPASS.parseItem();
         ItemMeta oldMessagePlaceItemMeta = oldMessagePlaceItem.getItemMeta();
-        oldMessagePlaceItemMeta.setDisplayName(ChatColor.GRAY + "Old message place");
+        oldMessagePlaceItemMeta.setDisplayName(ChatColor.WHITE + "Old message place");
         oldMessagePlaceItemMeta.setLore(Arrays.asList(
             "",
             ChatColor.GRAY + "ID: " + ChatColor.YELLOW + messageData.getMessagePlace().name(),
@@ -112,22 +112,9 @@ public final class MenuManager {
         ));
         oldMessagePlaceItem.setItemMeta(oldMessagePlaceItemMeta);
         inventory.setItem(11, oldMessagePlaceItem);
-        ItemStack newMessagePlaceItem = XMaterial.COMPASS.parseItem();
-        ItemMeta newMessagePlaceItemMeta = newMessagePlaceItem.getItemMeta();
-        newMessagePlaceItemMeta.setDisplayName(ChatColor.GRAY + "New message place");
-        newMessagePlaceItemMeta.setLore(Arrays.asList(
-            "",
-            ChatColor.GRAY + "ID: " + ChatColor.YELLOW + messageData.getMessagePlace().name(),
-            ChatColor.GRAY + "Friendly name: " + ChatColor.YELLOW + messageData.getMessagePlace().getFriendlyName(),
-            "",
-            ChatColor.GRAY + "Click to change message place."
-        ));
-        newMessagePlaceItem.setItemMeta(newMessagePlaceItemMeta);
-        inventory.setItem(15, newMessagePlaceItem);
-
         ItemStack oldMessageItem = XMaterial.PAPER.parseItem();
         ItemMeta oldMessageItemMeta = oldMessageItem.getItemMeta();
-        oldMessageItemMeta.setDisplayName(ChatColor.GRAY + "Old message");
+        oldMessageItemMeta.setDisplayName(ChatColor.WHITE + "Old message");
         String oldMessage;
         if (messageData.isMessageJson()) {
             oldMessage = BaseComponent.toLegacyText(ComponentSerializer.parse(messageData.getMessage()));
@@ -152,10 +139,73 @@ public final class MenuManager {
                 oldMessageChunk = "";
             }
         }
+        oldMessageLore.add("");
+        oldMessageLore.add(ChatColor.GRAY + "Click to change message (pattern).");
         oldMessageItemMeta.setLore(oldMessageLore);
         oldMessageItem.setItemMeta(oldMessageItemMeta);
         inventory.setItem(20, oldMessageItem);
-
+        ItemStack oldMessagePreviewItem = XMaterial.OAK_SIGN.parseItem();
+        ItemMeta oldMessagePreviewItemMeta = oldMessagePreviewItem.getItemMeta();
+        oldMessagePreviewItemMeta.setDisplayName(ChatColor.WHITE + "Preview message");
+        oldMessagePreviewItemMeta.setLore(Arrays.asList(
+            "",
+            ChatColor.GRAY + "Click to preview message."
+        ));
+        oldMessagePreviewItem.setItemMeta(oldMessagePreviewItemMeta);
+        inventory.setItem(29, oldMessagePreviewItem);
+        ItemStack newMessagePlaceItem = XMaterial.COMPASS.parseItem();
+        ItemMeta newMessagePlaceItemMeta = newMessagePlaceItem.getItemMeta();
+        newMessagePlaceItemMeta.setDisplayName(ChatColor.WHITE + "New message place");
+        newMessagePlaceItemMeta.setLore(Arrays.asList(
+            "",
+            ChatColor.GRAY + "ID: " + ChatColor.YELLOW + messageData.getMessagePlace().name(),
+            ChatColor.GRAY + "Friendly name: " + ChatColor.YELLOW + messageData.getMessagePlace().getFriendlyName(),
+            "",
+            ChatColor.GRAY + "Click to change message place."
+        ));
+        newMessagePlaceItem.setItemMeta(newMessagePlaceItemMeta);
+        inventory.setItem(15, newMessagePlaceItem);
+        ItemStack newMessageItem = XMaterial.PAPER.parseItem();
+        ItemMeta newMessageItemMeta = newMessageItem.getItemMeta();
+        newMessageItemMeta.setDisplayName(ChatColor.WHITE + "New message");
+        String newMessage;
+        if (messageData.isMessageJson()) {
+            newMessage = BaseComponent.toLegacyText(ComponentSerializer.parse(messageData.getMessage()));
+        } else {
+            newMessage = messageData.getMessage();
+        }
+        List<String> newMessageLore = new ArrayList<>(10);
+        newMessageLore.add("");
+        String newMessageChunk = "";
+        String[] newMessageData = newMessage.split(" ");
+        for (int newMessageDataIndex = 0; newMessageDataIndex < newMessageData.length; newMessageDataIndex++) {
+            if (newMessageDataIndex > 0 && newMessageDataIndex < newMessageData.length && !newMessageChunk.isEmpty()) {
+                newMessageChunk += " ";
+            }
+            newMessageChunk += newMessageData[newMessageDataIndex];
+            if (newMessageDataIndex == newMessageData.length - 1 || newMessageChunk.length() >= MessageEditorConstants.MESSAGE_LENGTH) {
+                if (newMessageLore.size() == 1) {
+                    newMessageLore.add(newMessageChunk);
+                } else {
+                    newMessageLore.add(MessageUtils.getLastColors(newMessageLore.get(newMessageLore.size() - 1)) + newMessageChunk);
+                }
+                newMessageChunk = "";
+            }
+        }
+        newMessageLore.add("");
+        newMessageLore.add(ChatColor.GRAY + "Click to change message.");
+        newMessageItemMeta.setLore(newMessageLore);
+        newMessageItem.setItemMeta(newMessageItemMeta);
+        inventory.setItem(24, newMessageItem);
+        ItemStack newMessagePreviewItem = XMaterial.OAK_SIGN.parseItem();
+        ItemMeta newMessagePreviewItemMeta = newMessagePreviewItem.getItemMeta();
+        newMessagePreviewItemMeta.setDisplayName(ChatColor.WHITE + "Preview message");
+        newMessagePreviewItemMeta.setLore(Arrays.asList(
+            "",
+            ChatColor.GRAY + "Click to preview message."
+        ));
+        newMessagePreviewItem.setItemMeta(newMessagePreviewItemMeta);
+        inventory.setItem(33, newMessagePreviewItem);
         inventory.setItem(22, this.arrowItem);
         ItemStack doneItem = XMaterial.GREEN_TERRACOTTA.parseItem();
         ItemMeta doneItemMeta = doneItem.getItemMeta();
