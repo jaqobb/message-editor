@@ -26,12 +26,15 @@ package dev.jaqobb.messageeditor.listener;
 
 import dev.jaqobb.messageeditor.MessageEditorConstants;
 import dev.jaqobb.messageeditor.MessageEditorPlugin;
+import dev.jaqobb.messageeditor.data.MessageEditData;
 import java.util.logging.Level;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.Plugin;
@@ -49,6 +52,25 @@ public final class MessageEditorListener implements Listener {
         Player player = event.getPlayer();
         if (player.hasPermission("messageeditor.use") && this.plugin.isUpdateNotify()) {
             player.sendMessage(this.plugin.getUpdater().getUpdateMessage());
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerQuit(final PlayerQuitEvent event) {
+        this.plugin.removeCurrentMessageEditData(event.getPlayer().getUniqueId());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerKick(final PlayerQuitEvent event) {
+        this.plugin.removeCurrentMessageEditData(event.getPlayer().getUniqueId());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerInventoryClose(final InventoryCloseEvent event) {
+        Player player = (Player) event.getPlayer();
+        MessageEditData messageEditData = this.plugin.getCurrentMessageEditData(player.getUniqueId());
+        if (messageEditData != null && messageEditData.shouldDestroy()) {
+            this.plugin.removeCurrentMessageEditData(player.getUniqueId());
         }
     }
 

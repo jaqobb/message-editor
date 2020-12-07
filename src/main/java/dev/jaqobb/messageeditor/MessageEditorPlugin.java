@@ -31,15 +31,18 @@ import com.google.common.cache.CacheBuilder;
 import dev.jaqobb.messageeditor.command.MessageEditorCommand;
 import dev.jaqobb.messageeditor.command.MessageEditorCommandTabCompleter;
 import dev.jaqobb.messageeditor.data.MessageEdit;
+import dev.jaqobb.messageeditor.data.MessageEditData;
 import dev.jaqobb.messageeditor.data.MessagePlace;
 import dev.jaqobb.messageeditor.listener.MessageEditorListener;
 import dev.jaqobb.messageeditor.listener.MessageEditorPacketListener;
 import dev.jaqobb.messageeditor.updater.Updater;
 import java.util.AbstractMap;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -63,6 +66,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
     private boolean mvdwPlaceholderApiPresent;
     private Cache<String, Map.Entry<MessageEdit, String>> cachedMessages;
     private Cache<String, Map.Entry<MessagePlace, String>> cachedMessagesData;
+    private Map<UUID, MessageEditData> currentMessageEditsData;
 
     @Override
     public void onLoad() {
@@ -97,6 +101,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
         this.cachedMessagesData = CacheBuilder.newBuilder()
             .expireAfterAccess(15L, TimeUnit.MINUTES)
             .build();
+        this.currentMessageEditsData = new HashMap<>(16);
     }
 
     @Override
@@ -213,5 +218,28 @@ public final class MessageEditorPlugin extends JavaPlugin {
 
     public void clearCachedMessagesData() {
         this.cachedMessagesData.invalidateAll();
+    }
+
+    public Map<UUID, MessageEditData> getCurrentMessageEditsData() {
+        return Collections.unmodifiableMap(this.currentMessageEditsData);
+    }
+
+    public MessageEditData getCurrentMessageEditData(final UUID uuid) {
+        return this.currentMessageEditsData.get(uuid);
+    }
+
+    public void setCurrentMessageEdit(
+        final UUID uuid,
+        final MessageEditData messageEditData
+    ) {
+        this.currentMessageEditsData.put(uuid, messageEditData);
+    }
+
+    public void removeCurrentMessageEditData(final UUID uuid) {
+        this.currentMessageEditsData.remove(uuid);
+    }
+
+    public void clearCurrentMessageEditsData() {
+        this.currentMessageEditsData.clear();
     }
 }

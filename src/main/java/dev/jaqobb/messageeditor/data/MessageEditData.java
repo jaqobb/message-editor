@@ -30,6 +30,7 @@ public final class MessageEditData {
     private String oldMessage;
     private MessagePlace newMessagePlace;
     private String newMessage;
+    private boolean shouldDestroy;
 
     public MessageEditData(
         final MessagePlace oldMessagePlace,
@@ -41,6 +42,7 @@ public final class MessageEditData {
         this.oldMessage = oldMessage;
         this.newMessagePlace = newMessagePlace;
         this.newMessage = newMessage;
+        this.shouldDestroy = true;
     }
 
     public MessagePlace getOldMessagePlace() {
@@ -69,5 +71,13 @@ public final class MessageEditData {
 
     public void setNewMessage(final String newMessage) {
         this.newMessage = newMessage;
+    }
+
+    public boolean shouldDestroy() {
+        return this.shouldDestroy;
+    }
+
+    public void setShouldDestroy(final boolean shouldDestroy) {
+        this.shouldDestroy = shouldDestroy;
     }
 }
