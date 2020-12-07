@@ -20,13 +20,15 @@ Message Editor supports:
 
 ### Showcase
 
+Images show first the original message and then the same message but after being edited using Message Editor.
+
+![](images/showcase_before_2.png)
+
+![](images/showcase_after_2.png)
+
 ![](images/showcase_before.png)
 
-Join message before editing it using Message Editor.
-
 ![](images/showcase_after.png)
-
-Join message after editing it using Message Editor.
 
 ### Usage
 
