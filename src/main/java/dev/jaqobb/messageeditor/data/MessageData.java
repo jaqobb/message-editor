@@ -22,18 +22,33 @@
  * SOFTWARE.
  */
 
-package dev.jaqobb.messageeditor;
+package dev.jaqobb.messageeditor.data;
 
-import net.md_5.bungee.api.ChatColor;
+public final class MessageData {
 
-public final class MessageEditorConstants {
+    private final MessagePlace messagePlace;
+    private final String message;
+    private final boolean messageJson;
 
-    public static final String PREFIX = ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + "Message Editor" + ChatColor.DARK_GRAY + "] ";
+    public MessageData(
+        final MessagePlace messagePlace,
+        final String message,
+        final boolean messageJson
+    ) {
+        this.messagePlace = messagePlace;
+        this.message = message;
+        this.messageJson = messageJson;
+    }
 
-    public static final String PLACEHOLDER_API_PLUGIN_NAME = "PlaceholderAPI";
-    public static final String MVDW_PLACEHOLDER_API_PLUGIN_NAME = "MVdWPlaceholderAPI";
+    public MessagePlace getMessagePlace() {
+        return this.messagePlace;
+    }
 
-    private MessageEditorConstants() {
-        throw new UnsupportedOperationException("Cannot create instance of this class");
+    public String getMessage() {
+        return this.message;
+    }
+
+    public boolean isMessageJson() {
+        return this.messageJson;
     }
 }

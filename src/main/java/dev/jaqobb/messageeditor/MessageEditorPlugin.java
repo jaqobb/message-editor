@@ -30,11 +30,13 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import dev.jaqobb.messageeditor.command.MessageEditorCommand;
 import dev.jaqobb.messageeditor.command.MessageEditorCommandTabCompleter;
+import dev.jaqobb.messageeditor.data.MessageData;
 import dev.jaqobb.messageeditor.data.MessageEdit;
 import dev.jaqobb.messageeditor.data.MessageEditData;
 import dev.jaqobb.messageeditor.data.MessagePlace;
 import dev.jaqobb.messageeditor.listener.MessageEditorListener;
 import dev.jaqobb.messageeditor.listener.MessageEditorPacketListener;
+import dev.jaqobb.messageeditor.menu.MenuManager;
 import dev.jaqobb.messageeditor.updater.Updater;
 import java.util.AbstractMap;
 import java.util.Collections;
@@ -64,8 +66,9 @@ public final class MessageEditorPlugin extends JavaPlugin {
     private boolean attachSpecialHoverAndClickEvents;
     private boolean placeholderApiPresent;
     private boolean mvdwPlaceholderApiPresent;
+    private MenuManager menuManager;
     private Cache<String, Map.Entry<MessageEdit, String>> cachedMessages;
-    private Cache<String, Map.Entry<MessagePlace, String>> cachedMessagesData;
+    private Cache<String, MessageData> cachedMessagesData;
     private Map<UUID, MessageEditData> currentMessageEditsData;
 
     @Override
@@ -109,6 +112,8 @@ public final class MessageEditorPlugin extends JavaPlugin {
         this.getLogger().log(Level.INFO, "Starting updater...");
         this.updater = new Updater(this, 82154);
         this.getServer().getScheduler().runTaskTimerAsynchronously(this, this.updater, 0L, 20L * 60L * 30L);
+        this.getLogger().log(Level.INFO, "Starting menu manager...");
+        this.menuManager = new MenuManager(this);
         this.getLogger().log(Level.INFO, "Registering command...");
         this.getCommand("message-editor").setExecutor(new MessageEditorCommand(this));
         this.getCommand("message-editor").setTabCompleter(new MessageEditorCommandTabCompleter());
@@ -172,6 +177,10 @@ public final class MessageEditorPlugin extends JavaPlugin {
         this.mvdwPlaceholderApiPresent = present;
     }
 
+    public MenuManager getMenuManager() {
+        return this.menuManager;
+    }
+
     public Set<String> getCachedMessages() {
         return Collections.unmodifiableSet(this.cachedMessages.asMap().keySet());
     }
@@ -200,16 +209,15 @@ public final class MessageEditorPlugin extends JavaPlugin {
         return Collections.unmodifiableSet(this.cachedMessagesData.asMap().keySet());
     }
 
-    public Map.Entry<MessagePlace, String> getCachedMessageData(final String messageId) {
+    public MessageData getCachedMessageData(final String messageId) {
         return this.cachedMessagesData.getIfPresent(messageId);
     }
 
     public void cacheMessageData(
         final String messageId,
-        final MessagePlace messagePlace,
-        final String message
+        final MessageData messageData
     ) {
-        this.cachedMessagesData.put(messageId, new AbstractMap.SimpleEntry<>(messagePlace, message));
+        this.cachedMessagesData.put(messageId, messageData);
     }
 
     public void uncacheMessageData(final String messageId) {

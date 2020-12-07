@@ -115,7 +115,7 @@ public enum MessagePlace {
     private final PacketType packetType;
     private final Byte chatType;
     private final EnumWrappers.ChatType chatTypeEnum;
-    private boolean supported;
+    private final boolean supported;
     private boolean analyzingActivated;
 
     private MessagePlace(

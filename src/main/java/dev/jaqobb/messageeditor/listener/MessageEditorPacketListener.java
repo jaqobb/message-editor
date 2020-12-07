@@ -33,6 +33,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import dev.jaqobb.messageeditor.MessageEditorPlugin;
+import dev.jaqobb.messageeditor.data.MessageData;
 import dev.jaqobb.messageeditor.data.MessageEdit;
 import dev.jaqobb.messageeditor.data.MessagePlace;
 import dev.jaqobb.messageeditor.data.bossbar.BossBarMessageAction;
@@ -50,6 +51,8 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.entity.Player;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public final class MessageEditorPacketListener extends PacketAdapter {
 
@@ -172,12 +175,19 @@ public final class MessageEditorPacketListener extends PacketAdapter {
                 message = messageAfter;
             }
         }
+        boolean messageJson;
+        try {
+            new JSONParser().parse(message);
+            messageJson = true;
+        } catch (ParseException exception) {
+            messageJson = false;
+        }
         String messageId = MessageUtils.composeMessageId(messagePlace, message);
-        this.getPlugin().cacheMessageData(messageId, messagePlace, message);
+        this.getPlugin().cacheMessageData(messageId, new MessageData(messagePlace, message, messageJson));
         if (messagePlace.isAnalyzingActivated()) {
             this.getPlugin().getLogger().log(Level.INFO, "Place: " + messagePlace.getFriendlyName() + " (" + messagePlace.name() + ")");
             this.getPlugin().getLogger().log(Level.INFO, "Player: " + player.getName());
-            if (messagePlace != MessagePlace.SCOREBOARD_ENTRY) {
+            if (messageJson) {
                 String messageReplaced = message.replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0");
                 String messageClear = "";
                 for (BaseComponent component : ComponentSerializer.parse(message)) {

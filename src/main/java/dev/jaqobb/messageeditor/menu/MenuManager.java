@@ -25,6 +25,11 @@
 package dev.jaqobb.messageeditor.menu;
 
 import dev.jaqobb.messageeditor.MessageEditorPlugin;
+import dev.jaqobb.messageeditor.data.MessageData;
+import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 
 public final class MenuManager {
 
@@ -32,5 +37,13 @@ public final class MenuManager {
 
     public MenuManager(final MessageEditorPlugin plugin) {
         this.plugin = plugin;
+    }
+
+    public void openMenu(
+        final Player player,
+        final MessageData messageData
+    ) {
+        Inventory inventory = Bukkit.createInventory(null, 54, ChatColor.DARK_GRAY + "Message Editor");
+        player.openInventory(inventory);
     }
 }

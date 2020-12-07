@@ -26,11 +26,13 @@ package dev.jaqobb.messageeditor.command;
 
 import dev.jaqobb.messageeditor.MessageEditorConstants;
 import dev.jaqobb.messageeditor.MessageEditorPlugin;
+import dev.jaqobb.messageeditor.data.MessageData;
 import dev.jaqobb.messageeditor.data.MessagePlace;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public final class MessageEditorCommand implements CommandExecutor {
 
@@ -63,6 +65,24 @@ public final class MessageEditorCommand implements CommandExecutor {
             this.plugin.clearCachedMessages();
             this.plugin.reloadConfig();
             sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Plugin has been reloaded.");
+            return true;
+        }
+        if (arguments[0].equalsIgnoreCase("edit")) {
+            if (!(sender instanceof Player)) {
+                sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.RED + "Only players can do that.");
+                return true;
+            }
+            Player player = (Player) sender;
+            if (arguments.length != 2) {
+                player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Correct usage: " + ChatColor.YELLOW + "/" + label + " edit <message ID>" + ChatColor.GRAY + ".");
+                return true;
+            }
+            MessageData messageData = this.plugin.getCachedMessageData(arguments[1]);
+            if (messageData == null) {
+                player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.RED + "There is no cached message data attached to the '" + ChatColor.GRAY + arguments[1] + ChatColor.RED + "' message ID.");
+                return true;
+            }
+            this.plugin.getMenuManager().openMenu(player, messageData);
             return true;
         }
         if (arguments[0].equalsIgnoreCase("activate")) {

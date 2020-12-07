@@ -17,6 +17,7 @@ bukkit {
     name = "MessageEditor"
     main = "dev.jaqobb.messageeditor.MessageEditorPlugin"
     version = project.version as String
+    apiVersion = "1.13"
     depend = listOf("ProtocolLib")
     softDepend = listOf("PlaceholderAPI", "MVdWPlaceholderAPI")
     description = project.description
