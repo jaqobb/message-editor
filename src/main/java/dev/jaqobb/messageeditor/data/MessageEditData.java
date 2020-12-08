@@ -31,6 +31,7 @@ public final class MessageEditData {
     private final MessagePlace oldMessagePlace;
     private String newMessage;
     private boolean newMessageJson;
+    private String newMessageCache;
     private MessagePlace newMessagePlace;
     private Mode mode;
     private boolean shouldDestroy;
@@ -54,12 +55,13 @@ public final class MessageEditData {
         final boolean newMessageJson,
         final MessagePlace newMessagePlace
     ) {
-        this.oldMessagePlace = oldMessagePlace;
         this.oldMessage = oldMessage;
         this.oldMessageJson = oldMessageJson;
-        this.newMessagePlace = newMessagePlace;
+        this.oldMessagePlace = oldMessagePlace;
         this.newMessage = newMessage;
         this.newMessageJson = newMessageJson;
+        this.newMessageCache = "";
+        this.newMessagePlace = newMessagePlace;
         this.mode = Mode.NONE;
         this.shouldDestroy = true;
     }
@@ -100,6 +102,14 @@ public final class MessageEditData {
         this.newMessageJson = newMessageJson;
     }
 
+    public String getNewMessageCache() {
+        return this.newMessageCache;
+    }
+
+    public void setNewMessageCache(final String newMessageCache) {
+        this.newMessageCache = newMessageCache;
+    }
+
     public MessagePlace getNewMessagePlace() {
         return this.newMessagePlace;
     }
@@ -126,6 +136,7 @@ public final class MessageEditData {
 
     public static enum Mode {
 
-        NONE
+        NONE,
+        EDITTING_NEW_MESSAGE
     }
 }

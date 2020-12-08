@@ -30,7 +30,7 @@ import dev.jaqobb.messageeditor.MessageEditorPlugin;
 import dev.jaqobb.messageeditor.data.MessageEdit;
 import dev.jaqobb.messageeditor.data.MessageEditData;
 import java.util.logging.Level;
-import org.bukkit.ChatColor;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -47,6 +47,8 @@ import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.plugin.Plugin;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public final class MessageEditorListener implements Listener {
 
@@ -106,7 +108,14 @@ public final class MessageEditorListener implements Listener {
         if (messageEditData == null) {
             return;
         }
-        if (slot == 48) {
+        if (slot == 15) {
+            messageEditData.setShouldDestroy(false);
+            messageEditData.setMode(MessageEditData.Mode.EDITTING_NEW_MESSAGE);
+            messageEditData.setNewMessageCache("");
+            player.closeInventory();
+            player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
+            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Enter new message. Enter 'done' once you are done.");
+        } else if (slot == 48) {
             this.plugin.addMessageEdit(new MessageEdit(
                 messageEditData.isOldMessageJson() ? messageEditData.getOldMessage().replaceAll(MessageEditorConstants.SPECIAL_REGEX_CHARACTERS, "\\\\$0") : messageEditData.getOldMessage(),
                 messageEditData.getOldMessagePlace(),
@@ -133,7 +142,33 @@ public final class MessageEditorListener implements Listener {
         if (messageEditData == null) {
             return;
         }
+        if (messageEditData.getMode() == MessageEditData.Mode.NONE) {
+            return;
+        }
         event.setCancelled(true);
+        String message = event.getMessage();
+        if (message.equals("done")) {
+            if (messageEditData.getMode() == MessageEditData.Mode.EDITTING_NEW_MESSAGE) {
+                messageEditData.setMode(MessageEditData.Mode.NONE);
+                messageEditData.setShouldDestroy(true);
+                messageEditData.setNewMessage(messageEditData.getNewMessageCache());
+                try {
+                    new JSONParser().parse(messageEditData.getNewMessage());
+                    messageEditData.setNewMessageJson(true);
+                } catch (ParseException exception) {
+                    messageEditData.setNewMessage(ChatColor.translateAlternateColorCodes('&', messageEditData.getNewMessage()));
+                    messageEditData.setNewMessageJson(false);
+                }
+                messageEditData.setNewMessageCache("");
+            }
+            this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, messageEditData, true));
+            return;
+        }
+        if (messageEditData.getMode() == MessageEditData.Mode.EDITTING_NEW_MESSAGE) {
+            messageEditData.setNewMessageCache(messageEditData.getNewMessageCache() + message);
+            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Message has been added. Continue if your message is longer than the chat characters limit or enter 'done' to apply changes.");
+            player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

@@ -216,4 +216,129 @@ public final class MenuManager {
         }
         this.plugin.setCurrentMessageEdit(player.getUniqueId(), new MessageEditData(messageData));
     }
+
+    public void openMenu(
+        final Player player,
+        final MessageEditData messageEditData,
+        final boolean playSound
+    ) {
+        Inventory inventory = Bukkit.createInventory(null, 54, ChatColor.DARK_GRAY + "Message Editor");
+        for (int blackStainedGlassPaneSlot : BLACK_STAINED_GLASS_PANE_SLOTS) {
+            inventory.setItem(blackStainedGlassPaneSlot, this.blackStainedGlassPaneItem);
+        }
+        for (int grayStainedGlassPaneSlot : GRAY_STAINED_GLASS_PANE_SLOTS) {
+            inventory.setItem(grayStainedGlassPaneSlot, this.grayStainedGlassPaneItem);
+        }
+
+        ItemStack oldMessageItem = XMaterial.PAPER.parseItem();
+        ItemMeta oldMessageItemMeta = oldMessageItem.getItemMeta();
+        oldMessageItemMeta.setDisplayName(ChatColor.WHITE + "Old message");
+        String oldMessage;
+        if (messageEditData.isOldMessageJson()) {
+            oldMessage = BaseComponent.toLegacyText(ComponentSerializer.parse(messageEditData.getOldMessage()));
+        } else {
+            oldMessage = messageEditData.getOldMessage();
+        }
+        List<String> oldMessageLore = new ArrayList<>(10);
+        oldMessageLore.add("");
+        String oldMessageChunk = "";
+        String[] oldMessageData = oldMessage.split(" ");
+        for (int oldMessageDataIndex = 0; oldMessageDataIndex < oldMessageData.length; oldMessageDataIndex++) {
+            if (oldMessageDataIndex > 0 && oldMessageDataIndex < oldMessageData.length && !oldMessageChunk.isEmpty()) {
+                oldMessageChunk += " ";
+            }
+            oldMessageChunk += oldMessageData[oldMessageDataIndex];
+            if (oldMessageDataIndex == oldMessageData.length - 1 || oldMessageChunk.length() >= MessageEditorConstants.MESSAGE_LENGTH) {
+                if (oldMessageLore.size() == 1) {
+                    oldMessageLore.add(oldMessageChunk);
+                } else {
+                    oldMessageLore.add(MessageUtils.getLastColors(oldMessageLore.get(oldMessageLore.size() - 1)) + oldMessageChunk);
+                }
+                oldMessageChunk = "";
+            }
+        }
+        oldMessageLore.add("");
+        oldMessageLore.add(ChatColor.GRAY + "Click to change message (pattern).");
+        oldMessageItemMeta.setLore(oldMessageLore);
+        oldMessageItem.setItemMeta(oldMessageItemMeta);
+        inventory.setItem(11, oldMessageItem);
+        ItemStack oldMessagePlaceItem = XMaterial.COMPASS.parseItem();
+        ItemMeta oldMessagePlaceItemMeta = oldMessagePlaceItem.getItemMeta();
+        oldMessagePlaceItemMeta.setDisplayName(ChatColor.WHITE + "Old message place");
+        oldMessagePlaceItemMeta.setLore(Arrays.asList(
+            "",
+            ChatColor.GRAY + "ID: " + ChatColor.YELLOW + messageEditData.getOldMessagePlace().name(),
+            ChatColor.GRAY + "Friendly name: " + ChatColor.YELLOW + messageEditData.getOldMessagePlace().getFriendlyName()
+        ));
+        oldMessagePlaceItem.setItemMeta(oldMessagePlaceItemMeta);
+        inventory.setItem(20, oldMessagePlaceItem);
+        ItemStack newMessageItem = XMaterial.PAPER.parseItem();
+        ItemMeta newMessageItemMeta = newMessageItem.getItemMeta();
+        newMessageItemMeta.setDisplayName(ChatColor.WHITE + "New message");
+        String newMessage;
+        if (messageEditData.isNewMessageJson()) {
+            newMessage = BaseComponent.toLegacyText(ComponentSerializer.parse(messageEditData.getNewMessage()));
+        } else {
+            newMessage = messageEditData.getNewMessage();
+        }
+        List<String> newMessageLore = new ArrayList<>(10);
+        newMessageLore.add("");
+        String newMessageChunk = "";
+        String[] newMessageData = newMessage.split(" ");
+        for (int newMessageDataIndex = 0; newMessageDataIndex < newMessageData.length; newMessageDataIndex++) {
+            if (newMessageDataIndex > 0 && newMessageDataIndex < newMessageData.length && !newMessageChunk.isEmpty()) {
+                newMessageChunk += " ";
+            }
+            newMessageChunk += newMessageData[newMessageDataIndex];
+            if (newMessageDataIndex == newMessageData.length - 1 || newMessageChunk.length() >= MessageEditorConstants.MESSAGE_LENGTH) {
+                if (newMessageLore.size() == 1) {
+                    newMessageLore.add(newMessageChunk);
+                } else {
+                    newMessageLore.add(MessageUtils.getLastColors(newMessageLore.get(newMessageLore.size() - 1)) + newMessageChunk);
+                }
+                newMessageChunk = "";
+            }
+        }
+        newMessageLore.add("");
+        newMessageLore.add(ChatColor.GRAY + "Click to change message.");
+        newMessageItemMeta.setLore(newMessageLore);
+        newMessageItem.setItemMeta(newMessageItemMeta);
+        inventory.setItem(15, newMessageItem);
+        ItemStack newMessagePlaceItem = XMaterial.COMPASS.parseItem();
+        ItemMeta newMessagePlaceItemMeta = newMessagePlaceItem.getItemMeta();
+        newMessagePlaceItemMeta.setDisplayName(ChatColor.WHITE + "New message place");
+        newMessagePlaceItemMeta.setLore(Arrays.asList(
+            "",
+            ChatColor.GRAY + "ID: " + ChatColor.YELLOW + messageEditData.getNewMessagePlace().name(),
+            ChatColor.GRAY + "Friendly name: " + ChatColor.YELLOW + messageEditData.getNewMessagePlace().getFriendlyName(),
+            "",
+            ChatColor.GRAY + "Click to change message place."
+        ));
+        newMessagePlaceItem.setItemMeta(newMessagePlaceItemMeta);
+        inventory.setItem(24, newMessagePlaceItem);
+        inventory.setItem(22, this.arrowItem);
+        ItemStack doneItem = XMaterial.GREEN_TERRACOTTA.parseItem();
+        ItemMeta doneItemMeta = doneItem.getItemMeta();
+        doneItemMeta.setDisplayName(ChatColor.GREEN + "Done");
+        doneItemMeta.setLore(Arrays.asList(
+            "",
+            ChatColor.GRAY + "Click to save message edit",
+            ChatColor.GRAY + "and apply it to your server."
+        ));
+        doneItem.setItemMeta(doneItemMeta);
+        inventory.setItem(48, doneItem);
+        ItemStack cancelItem = XMaterial.RED_TERRACOTTA.parseItem();
+        ItemMeta cancelItemMeta = cancelItem.getItemMeta();
+        cancelItemMeta.setDisplayName(ChatColor.RED + "Cancel");
+        cancelItemMeta.setLore(Arrays.asList(
+            "",
+            ChatColor.GRAY + "Click to cancel message edit."
+        ));
+        cancelItem.setItemMeta(cancelItemMeta);
+        inventory.setItem(50, cancelItem);
+        player.openInventory(inventory);
+        if (playSound) {
+            player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
+        }
+    }
 }

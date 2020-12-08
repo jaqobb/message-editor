@@ -8,7 +8,7 @@ update:
 attach-special-hover-and-click-events: true
 
 # Messages that should be edited.
-# For in-depth tutorial check here:
+# For more in-depth tutorial check here:
 # https://github.com/jaqobb/message-editor#usage
 message-edits:
 - ==: MessageEdit
