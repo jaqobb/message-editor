@@ -65,7 +65,6 @@ public final class MessageEditorCommand implements CommandExecutor {
                 return true;
             }
             this.plugin.clearCachedMessages();
-            this.plugin.clearCachedMessagesData();
             this.plugin.clearCurrentMessageEditsData();
             this.plugin.reloadConfig();
             for (Player player : Bukkit.getOnlinePlayers()) {
