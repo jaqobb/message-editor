@@ -29,10 +29,12 @@ import dev.jaqobb.messageeditor.MessageEditorPlugin;
 import dev.jaqobb.messageeditor.data.MessageData;
 import dev.jaqobb.messageeditor.data.MessagePlace;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.InventoryView;
 
 public final class MessageEditorCommand implements CommandExecutor {
 
@@ -63,7 +65,16 @@ public final class MessageEditorCommand implements CommandExecutor {
                 return true;
             }
             this.plugin.clearCachedMessages();
+            this.plugin.clearCachedMessagesData();
+            this.plugin.clearCurrentMessageEditsData();
             this.plugin.reloadConfig();
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                InventoryView inventoryView = player.getOpenInventory();
+                if (inventoryView.getTitle().equals(ChatColor.DARK_GRAY + "Message Editor")) {
+                    player.closeInventory();
+                    player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Your message editor menu has been closed due to the plugin reload.");
+                }
+            }
             sender.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Plugin has been reloaded.");
             return true;
         }

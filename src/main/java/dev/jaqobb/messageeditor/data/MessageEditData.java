@@ -26,27 +26,42 @@ package dev.jaqobb.messageeditor.data;
 
 public final class MessageEditData {
 
-    private final MessagePlace oldMessagePlace;
     private String oldMessage;
-    private MessagePlace newMessagePlace;
+    private boolean oldMessageJson;
+    private final MessagePlace oldMessagePlace;
     private String newMessage;
+    private boolean newMessageJson;
+    private MessagePlace newMessagePlace;
+    private Mode mode;
     private boolean shouldDestroy;
 
+    public MessageEditData(final MessageData messageData) {
+        this(
+            messageData.getMessage(),
+            messageData.isMessageJson(),
+            messageData.getMessagePlace(),
+            messageData.getMessage(),
+            messageData.isMessageJson(),
+            messageData.getMessagePlace()
+        );
+    }
+
     public MessageEditData(
-        final MessagePlace oldMessagePlace,
         final String oldMessage,
-        final MessagePlace newMessagePlace,
-        final String newMessage
+        final boolean oldMessageJson,
+        final MessagePlace oldMessagePlace,
+        final String newMessage,
+        final boolean newMessageJson,
+        final MessagePlace newMessagePlace
     ) {
         this.oldMessagePlace = oldMessagePlace;
         this.oldMessage = oldMessage;
+        this.oldMessageJson = oldMessageJson;
         this.newMessagePlace = newMessagePlace;
         this.newMessage = newMessage;
+        this.newMessageJson = newMessageJson;
+        this.mode = Mode.NONE;
         this.shouldDestroy = true;
-    }
-
-    public MessagePlace getOldMessagePlace() {
-        return this.oldMessagePlace;
     }
 
     public String getOldMessage() {
@@ -57,12 +72,16 @@ public final class MessageEditData {
         this.oldMessage = oldMessage;
     }
 
-    public MessagePlace getNewMessagePlace() {
-        return this.newMessagePlace;
+    public boolean isOldMessageJson() {
+        return this.oldMessageJson;
     }
 
-    public void setNewMessagePlace(final MessagePlace newMessagePlace) {
-        this.newMessagePlace = newMessagePlace;
+    public void setOldMessageJson(final boolean oldMessageJson) {
+        this.oldMessageJson = oldMessageJson;
+    }
+
+    public MessagePlace getOldMessagePlace() {
+        return this.oldMessagePlace;
     }
 
     public String getNewMessage() {
@@ -73,11 +92,40 @@ public final class MessageEditData {
         this.newMessage = newMessage;
     }
 
+    public boolean isNewMessageJson() {
+        return this.newMessageJson;
+    }
+
+    public void setNewMessageJson(final boolean newMessageJson) {
+        this.newMessageJson = newMessageJson;
+    }
+
+    public MessagePlace getNewMessagePlace() {
+        return this.newMessagePlace;
+    }
+
+    public void setNewMessagePlace(final MessagePlace newMessagePlace) {
+        this.newMessagePlace = newMessagePlace;
+    }
+
+    public Mode getMode() {
+        return this.mode;
+    }
+
+    public void setMode(final Mode mode) {
+        this.mode = mode;
+    }
+
     public boolean shouldDestroy() {
         return this.shouldDestroy;
     }
 
     public void setShouldDestroy(final boolean shouldDestroy) {
         this.shouldDestroy = shouldDestroy;
+    }
+
+    public static enum Mode {
+
+        NONE
     }
 }

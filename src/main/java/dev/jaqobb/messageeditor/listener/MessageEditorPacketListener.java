@@ -56,8 +56,6 @@ import org.json.simple.parser.ParseException;
 
 public final class MessageEditorPacketListener extends PacketAdapter {
 
-    private static final String SPECIAL_REGEX_CHARACTERS = "[<>{}()\\[\\].+\\-*?^$\\\\|]";
-
     public MessageEditorPacketListener(final MessageEditorPlugin plugin) {
         super(
             plugin,
@@ -184,7 +182,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
             this.getPlugin().getLogger().log(Level.INFO, "Place: " + messagePlace.getFriendlyName() + " (" + messagePlace.name() + ")");
             this.getPlugin().getLogger().log(Level.INFO, "Player: " + player.getName());
             if (messageJson) {
-                String messageReplaced = message.replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0");
+                String messageReplaced = message.replaceAll(MessageEditorConstants.SPECIAL_REGEX_CHARACTERS, "\\\\$0");
                 String messageClear = "";
                 for (BaseComponent component : ComponentSerializer.parse(message)) {
                     messageClear += component.toPlainText();

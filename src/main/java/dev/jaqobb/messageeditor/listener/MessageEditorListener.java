@@ -24,19 +24,28 @@
 
 package dev.jaqobb.messageeditor.listener;
 
+import com.cryptomorin.xseries.XSound;
 import dev.jaqobb.messageeditor.MessageEditorConstants;
 import dev.jaqobb.messageeditor.MessageEditorPlugin;
+import dev.jaqobb.messageeditor.data.MessageEdit;
 import dev.jaqobb.messageeditor.data.MessageEditData;
 import java.util.logging.Level;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.plugin.Plugin;
 
 public final class MessageEditorListener implements Listener {
@@ -72,6 +81,59 @@ public final class MessageEditorListener implements Listener {
         if (messageEditData != null && messageEditData.shouldDestroy()) {
             this.plugin.removeCurrentMessageEditData(player.getUniqueId());
         }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onPlayerInventoryCLick(final InventoryClickEvent event) {
+        Player player = (Player) event.getWhoClicked();
+        Inventory inventory = event.getInventory();
+        InventoryView inventoryView = event.getView();
+        if (!inventoryView.getTitle().equals(ChatColor.DARK_GRAY + "Message Editor")) {
+            return;
+        }
+        event.setCancelled(true);
+        if (event.getSlotType() == InventoryType.SlotType.OUTSIDE) {
+            return;
+        }
+        if (event.getAction() == InventoryAction.NOTHING) {
+            return;
+        }
+        int slot = event.getRawSlot();
+        if (slot < 0 && slot >= inventory.getSize()) {
+            return;
+        }
+        MessageEditData messageEditData = this.plugin.getCurrentMessageEditData(player.getUniqueId());
+        if (messageEditData == null) {
+            return;
+        }
+        if (slot == 48) {
+            this.plugin.addMessageEdit(new MessageEdit(
+                messageEditData.isOldMessageJson() ? messageEditData.getOldMessage().replaceAll(MessageEditorConstants.SPECIAL_REGEX_CHARACTERS, "\\\\$0") : messageEditData.getOldMessage(),
+                messageEditData.getOldMessagePlace(),
+                messageEditData.getNewMessage(),
+                messageEditData.getNewMessagePlace()
+            ));
+            this.plugin.clearCachedMessages();
+            this.plugin.saveConfig();
+            messageEditData.setShouldDestroy(true);
+            player.closeInventory();
+            player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
+            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Message edit has been saved and applied.");
+        } else if (slot == 50) {
+            messageEditData.setShouldDestroy(true);
+            player.closeInventory();
+            player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onPlayerChat(final AsyncPlayerChatEvent event) {
+        Player player = event.getPlayer();
+        MessageEditData messageEditData = this.plugin.getCurrentMessageEditData(player.getUniqueId());
+        if (messageEditData == null) {
+            return;
+        }
+        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

@@ -147,6 +147,10 @@ public final class MessageEditorPlugin extends JavaPlugin {
         return Collections.unmodifiableList(this.messageEdits);
     }
 
+    public void addMessageEdit(final MessageEdit messageEdit) {
+        this.messageEdits.add(messageEdit);
+    }
+
     public boolean isAttachingSpecialHoverAndClickEventsEnabled() {
         return this.attachSpecialHoverAndClickEvents;
     }

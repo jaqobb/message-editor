@@ -31,6 +31,7 @@ import com.mojang.authlib.properties.Property;
 import dev.jaqobb.messageeditor.MessageEditorConstants;
 import dev.jaqobb.messageeditor.MessageEditorPlugin;
 import dev.jaqobb.messageeditor.data.MessageData;
+import dev.jaqobb.messageeditor.data.MessageEditData;
 import dev.jaqobb.messageeditor.util.MessageUtils;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
@@ -51,7 +52,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 public final class MenuManager {
 
     private static final int[] BLACK_STAINED_GLASS_PANE_SLOTS = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 49, 51, 52, 53};
-    private static final int[] GRAY_STAINED_GLASS_PANE_SLOTS = {10, 12, 13, 14, 16, 19, 21, 23, 25, 28, 30, 31, 32, 34, 37, 38, 39, 40, 41, 42, 43};
+    private static final int[] GRAY_STAINED_GLASS_PANE_SLOTS = {10, 12, 13, 14, 16, 19, 21, 23, 25, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43};
 
     private final MessageEditorPlugin plugin;
     private final ItemStack blackStainedGlassPaneItem;
@@ -102,16 +103,7 @@ public final class MenuManager {
         for (int grayStainedGlassPaneSlot : GRAY_STAINED_GLASS_PANE_SLOTS) {
             inventory.setItem(grayStainedGlassPaneSlot, this.grayStainedGlassPaneItem);
         }
-        ItemStack oldMessagePlaceItem = XMaterial.COMPASS.parseItem();
-        ItemMeta oldMessagePlaceItemMeta = oldMessagePlaceItem.getItemMeta();
-        oldMessagePlaceItemMeta.setDisplayName(ChatColor.WHITE + "Old message place");
-        oldMessagePlaceItemMeta.setLore(Arrays.asList(
-            "",
-            ChatColor.GRAY + "ID: " + ChatColor.YELLOW + messageData.getMessagePlace().name(),
-            ChatColor.GRAY + "Friendly name: " + ChatColor.YELLOW + messageData.getMessagePlace().getFriendlyName()
-        ));
-        oldMessagePlaceItem.setItemMeta(oldMessagePlaceItemMeta);
-        inventory.setItem(11, oldMessagePlaceItem);
+
         ItemStack oldMessageItem = XMaterial.PAPER.parseItem();
         ItemMeta oldMessageItemMeta = oldMessageItem.getItemMeta();
         oldMessageItemMeta.setDisplayName(ChatColor.WHITE + "Old message");
@@ -143,28 +135,17 @@ public final class MenuManager {
         oldMessageLore.add(ChatColor.GRAY + "Click to change message (pattern).");
         oldMessageItemMeta.setLore(oldMessageLore);
         oldMessageItem.setItemMeta(oldMessageItemMeta);
-        inventory.setItem(20, oldMessageItem);
-        ItemStack oldMessagePreviewItem = XMaterial.OAK_SIGN.parseItem();
-        ItemMeta oldMessagePreviewItemMeta = oldMessagePreviewItem.getItemMeta();
-        oldMessagePreviewItemMeta.setDisplayName(ChatColor.WHITE + "Preview message");
-        oldMessagePreviewItemMeta.setLore(Arrays.asList(
-            "",
-            ChatColor.GRAY + "Click to preview message."
-        ));
-        oldMessagePreviewItem.setItemMeta(oldMessagePreviewItemMeta);
-        inventory.setItem(29, oldMessagePreviewItem);
-        ItemStack newMessagePlaceItem = XMaterial.COMPASS.parseItem();
-        ItemMeta newMessagePlaceItemMeta = newMessagePlaceItem.getItemMeta();
-        newMessagePlaceItemMeta.setDisplayName(ChatColor.WHITE + "New message place");
-        newMessagePlaceItemMeta.setLore(Arrays.asList(
+        inventory.setItem(11, oldMessageItem);
+        ItemStack oldMessagePlaceItem = XMaterial.COMPASS.parseItem();
+        ItemMeta oldMessagePlaceItemMeta = oldMessagePlaceItem.getItemMeta();
+        oldMessagePlaceItemMeta.setDisplayName(ChatColor.WHITE + "Old message place");
+        oldMessagePlaceItemMeta.setLore(Arrays.asList(
             "",
             ChatColor.GRAY + "ID: " + ChatColor.YELLOW + messageData.getMessagePlace().name(),
-            ChatColor.GRAY + "Friendly name: " + ChatColor.YELLOW + messageData.getMessagePlace().getFriendlyName(),
-            "",
-            ChatColor.GRAY + "Click to change message place."
+            ChatColor.GRAY + "Friendly name: " + ChatColor.YELLOW + messageData.getMessagePlace().getFriendlyName()
         ));
-        newMessagePlaceItem.setItemMeta(newMessagePlaceItemMeta);
-        inventory.setItem(15, newMessagePlaceItem);
+        oldMessagePlaceItem.setItemMeta(oldMessagePlaceItemMeta);
+        inventory.setItem(20, oldMessagePlaceItem);
         ItemStack newMessageItem = XMaterial.PAPER.parseItem();
         ItemMeta newMessageItemMeta = newMessageItem.getItemMeta();
         newMessageItemMeta.setDisplayName(ChatColor.WHITE + "New message");
@@ -196,16 +177,19 @@ public final class MenuManager {
         newMessageLore.add(ChatColor.GRAY + "Click to change message.");
         newMessageItemMeta.setLore(newMessageLore);
         newMessageItem.setItemMeta(newMessageItemMeta);
-        inventory.setItem(24, newMessageItem);
-        ItemStack newMessagePreviewItem = XMaterial.OAK_SIGN.parseItem();
-        ItemMeta newMessagePreviewItemMeta = newMessagePreviewItem.getItemMeta();
-        newMessagePreviewItemMeta.setDisplayName(ChatColor.WHITE + "Preview message");
-        newMessagePreviewItemMeta.setLore(Arrays.asList(
+        inventory.setItem(15, newMessageItem);
+        ItemStack newMessagePlaceItem = XMaterial.COMPASS.parseItem();
+        ItemMeta newMessagePlaceItemMeta = newMessagePlaceItem.getItemMeta();
+        newMessagePlaceItemMeta.setDisplayName(ChatColor.WHITE + "New message place");
+        newMessagePlaceItemMeta.setLore(Arrays.asList(
             "",
-            ChatColor.GRAY + "Click to preview message."
+            ChatColor.GRAY + "ID: " + ChatColor.YELLOW + messageData.getMessagePlace().name(),
+            ChatColor.GRAY + "Friendly name: " + ChatColor.YELLOW + messageData.getMessagePlace().getFriendlyName(),
+            "",
+            ChatColor.GRAY + "Click to change message place."
         ));
-        newMessagePreviewItem.setItemMeta(newMessagePreviewItemMeta);
-        inventory.setItem(33, newMessagePreviewItem);
+        newMessagePlaceItem.setItemMeta(newMessagePlaceItemMeta);
+        inventory.setItem(24, newMessagePlaceItem);
         inventory.setItem(22, this.arrowItem);
         ItemStack doneItem = XMaterial.GREEN_TERRACOTTA.parseItem();
         ItemMeta doneItemMeta = doneItem.getItemMeta();
@@ -230,5 +214,6 @@ public final class MenuManager {
         if (playSound) {
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
         }
+        this.plugin.setCurrentMessageEdit(player.getUniqueId(), new MessageEditData(messageData));
     }
 }
