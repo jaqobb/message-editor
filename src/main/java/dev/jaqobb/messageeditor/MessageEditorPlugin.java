@@ -47,7 +47,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-import net.md_5.bungee.api.chat.ClickEvent;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.PluginManager;
@@ -129,15 +128,6 @@ public final class MessageEditorPlugin extends JavaPlugin {
         super.reloadConfig();
         this.updateNotify = this.getConfig().getBoolean("update.notify", true);
         this.attachSpecialHoverAndClickEvents = this.getConfig().getBoolean("attach-special-hover-and-click-events", true);
-        try {
-            ClickEvent.Action.valueOf("COPY_TO_CLIPBOARD");
-        } catch (IllegalArgumentException exception) {
-            if (this.attachSpecialHoverAndClickEvents) {
-                this.attachSpecialHoverAndClickEvents = false;
-                this.getLogger().log(Level.WARNING, "Attaching special hover and click events has been disabled: copying to clipboard is not supported by your server.");
-                this.getLogger().log(Level.WARNING, "The minimum required server version is " + MinecraftVersion.BEE_UPDATE.getVersion() + ".");
-            }
-        }
         this.messageEdits = (List<MessageEdit>) this.getConfig().getList("message-edits");
     }
 

@@ -58,12 +58,6 @@ public final class MessageEditorPacketListener extends PacketAdapter {
 
     private static final String SPECIAL_REGEX_CHARACTERS = "[<>{}()\\[\\].+\\-*?^$\\\\|]";
 
-    @SuppressWarnings("deprecation")
-    private static final HoverEvent COPY_TO_CLIPBOARD_HOVER_EVENT = new HoverEvent(
-        HoverEvent.Action.SHOW_TEXT,
-        TextComponent.fromLegacyText(ChatColor.GRAY + "Click to copy this message's ID to your clipboard.")
-    );
-
     public MessageEditorPacketListener(final MessageEditorPlugin plugin) {
         super(
             plugin,
@@ -82,6 +76,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
         return (MessageEditorPlugin) super.getPlugin();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onPacketSending(final PacketEvent event) {
         if (event.isCancelled()) {
@@ -204,8 +199,13 @@ public final class MessageEditorPacketListener extends PacketAdapter {
         }
         if ((messagePlace == MessagePlace.GAME_CHAT || messagePlace == MessagePlace.SYSTEM_CHAT) && player.hasPermission("messageeditor.use") && this.getPlugin().isAttachingSpecialHoverAndClickEventsEnabled()) {
             TextComponent messageToSend = new TextComponent(ComponentSerializer.parse(message));
-            messageToSend.setHoverEvent(COPY_TO_CLIPBOARD_HOVER_EVENT);
-            messageToSend.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, messageId));
+            messageToSend.setHoverEvent(new HoverEvent(
+                HoverEvent.Action.SHOW_TEXT,
+                TextComponent.fromLegacyText(ChatColor.GRAY + "Click to start editing this message.")
+            ));
+            messageToSend.setClickEvent(new ClickEvent(
+                ClickEvent.Action.RUN_COMMAND,
+                "/message-editor edit " + messageId));
             message = ComponentSerializer.toString(messageToSend);
         }
         if (newPacket.getChatComponents().size() == 1 && newPacket.getChatComponents().read(0) != null) {
