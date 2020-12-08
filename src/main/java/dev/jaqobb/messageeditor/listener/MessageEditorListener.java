@@ -184,7 +184,7 @@ public final class MessageEditorListener implements Listener {
         }
         if (messageEditDataMode == MessageEditData.Mode.EDITTING_NEW_MESSAGE) {
             messageEditData.setNewMessageCache(messageEditData.getNewMessageCache() + message);
-            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Message has been added. Continue if your message is longer and had to divide it in parts. Otherwise enter '" + ChatColor.YELLOW + "done" + ChatColor.GRAY + "' to apply changes.");
+            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Message has been added. Continue if your message is longer and had to divide it into parts. Otherwise enter '" + ChatColor.YELLOW + "done" + ChatColor.GRAY + "' to set the new message.");
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
         } else if (messageEditDataMode == MessageEditData.Mode.EDITTING_NEW_MESSAGE_PLACE) {
             MessagePlace messagePlace = MessagePlace.fromName(message);
