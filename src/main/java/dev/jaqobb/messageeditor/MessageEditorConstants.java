@@ -24,6 +24,7 @@
 
 package dev.jaqobb.messageeditor;
 
+import java.util.regex.Pattern;
 import net.md_5.bungee.api.ChatColor;
 
 public final class MessageEditorConstants {
@@ -34,6 +35,8 @@ public final class MessageEditorConstants {
     public static final String MVDW_PLACEHOLDER_API_PLUGIN_NAME = "MVdWPlaceholderAPI";
 
     public static final int MESSAGE_LENGTH = 40;
+
+    public static final Pattern CHAT_COLOR_PATTERN = Pattern.compile("(?i)" + ChatColor.COLOR_CHAR + "([0-9A-FK-ORX])");
 
     private MessageEditorConstants() {
         throw new UnsupportedOperationException("Cannot create instance of this class");

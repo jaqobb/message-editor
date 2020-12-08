@@ -32,6 +32,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
+import dev.jaqobb.messageeditor.MessageEditorConstants;
 import dev.jaqobb.messageeditor.MessageEditorPlugin;
 import dev.jaqobb.messageeditor.data.MessageData;
 import dev.jaqobb.messageeditor.data.MessageEdit;
@@ -145,6 +146,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
                 message = cachedMessage.getValue();
             } else {
                 String messageAfter = messageEditMatcher.replaceAll(messageEdit.getMessageAfter());
+                messageAfter = ChatColor.translateAlternateColorCodes('&', messageAfter);
                 if (this.getPlugin().isPlaceholderApiPresent()) {
                     messageAfter = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, messageAfter);
                 }
@@ -191,14 +193,20 @@ public final class MessageEditorPacketListener extends PacketAdapter {
                 this.getPlugin().getLogger().log(Level.INFO, "Message JSON: '" + messageReplaced + "'");
                 this.getPlugin().getLogger().log(Level.INFO, "Message clear: '" + messageClear + "'");
             } else {
-                String messageSuffix = message.contains("§") ? " (replace & -> § (section sign) in colors)" : "";
-                this.getPlugin().getLogger().log(Level.INFO, "Message: '" + message.replace("§", "&") + "'" + messageSuffix);
-                this.getPlugin().getLogger().log(Level.INFO, "Message clear: '" + ChatColor.stripColor(message) + "'");
+                Matcher matcher = MessageEditorConstants.CHAT_COLOR_PATTERN.matcher(message);
+                String messageSuffix = matcher.find() ? " (replace & -> § (section sign) in colors)" : "";
+                this.getPlugin().getLogger().log(Level.INFO, "Message: '" + matcher.replaceAll("&$1") + "'" + messageSuffix);
+                this.getPlugin().getLogger().log(Level.INFO, "Message clear: '" + matcher.replaceAll("") + "'");
             }
             this.getPlugin().getLogger().log(Level.INFO, "Message ID: '" + messageId + "'");
         }
         if ((messagePlace == MessagePlace.GAME_CHAT || messagePlace == MessagePlace.SYSTEM_CHAT) && player.hasPermission("messageeditor.use") && this.getPlugin().isAttachingSpecialHoverAndClickEventsEnabled()) {
-            TextComponent messageToSend = new TextComponent(ComponentSerializer.parse(message));
+            TextComponent messageToSend;
+            if (messageJson) {
+                messageToSend = new TextComponent(ComponentSerializer.parse(message));
+            } else {
+                messageToSend = new TextComponent(TextComponent.fromLegacyText(message));
+            }
             messageToSend.setHoverEvent(new HoverEvent(
                 HoverEvent.Action.SHOW_TEXT,
                 TextComponent.fromLegacyText(ChatColor.GRAY + "Click to start editing this message.")
@@ -207,13 +215,27 @@ public final class MessageEditorPacketListener extends PacketAdapter {
                 ClickEvent.Action.RUN_COMMAND,
                 "/message-editor edit " + messageId));
             message = ComponentSerializer.toString(messageToSend);
+            messageJson = true;
         }
+        // TODO: Move to MessagePlace?
         if (newPacket.getChatComponents().size() == 1 && newPacket.getChatComponents().read(0) != null) {
-            newPacket.getChatComponents().write(0, WrappedChatComponent.fromJson(message));
+            if (messageJson) {
+                newPacket.getChatComponents().write(0, WrappedChatComponent.fromJson(message));
+            } else {
+                newPacket.getChatComponents().write(0, WrappedChatComponent.fromText(message));
+            }
         } else if (newPacket.getSpecificModifier(BaseComponent[].class).size() == 1) {
-            newPacket.getSpecificModifier(BaseComponent[].class).write(0, ComponentSerializer.parse(message));
+            if (messageJson) {
+                newPacket.getSpecificModifier(BaseComponent[].class).write(0, ComponentSerializer.parse(message));
+            } else {
+                newPacket.getSpecificModifier(BaseComponent[].class).write(0, TextComponent.fromLegacyText(message));
+            }
         } else if (newPacket.getStrings().size() >= 1 && newPacket.getStrings().read(0) != null) {
-            newPacket.getStrings().write(0, message);
+            if (messageJson) {
+                newPacket.getStrings().write(0, BaseComponent.toLegacyText(ComponentSerializer.parse(message)));
+            } else {
+                newPacket.getStrings().write(0, message);
+            }
         }
         event.setPacket(newPacket);
     }
