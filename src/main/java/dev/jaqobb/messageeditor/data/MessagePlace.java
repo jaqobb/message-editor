@@ -305,7 +305,7 @@ public enum MessagePlace {
 
     public static MessagePlace fromName(final String name) {
         return Arrays.stream(VALUES)
-            .filter(place -> place.name().equalsIgnoreCase(name))
+            .filter(place -> place.name().equalsIgnoreCase(name) || place.friendlyName.equalsIgnoreCase(name))
             .findFirst()
             .orElse(null);
     }

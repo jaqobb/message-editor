@@ -137,6 +137,7 @@ public final class MessageEditData {
     public static enum Mode {
 
         NONE,
-        EDITTING_NEW_MESSAGE
+        EDITTING_NEW_MESSAGE,
+        EDITTING_NEW_MESSAGE_PLACE
     }
 }

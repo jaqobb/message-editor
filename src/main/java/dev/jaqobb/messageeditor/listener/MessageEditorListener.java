@@ -29,6 +29,7 @@ import dev.jaqobb.messageeditor.MessageEditorConstants;
 import dev.jaqobb.messageeditor.MessageEditorPlugin;
 import dev.jaqobb.messageeditor.data.MessageEdit;
 import dev.jaqobb.messageeditor.data.MessageEditData;
+import dev.jaqobb.messageeditor.data.MessagePlace;
 import java.util.logging.Level;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
@@ -115,6 +116,22 @@ public final class MessageEditorListener implements Listener {
             player.closeInventory();
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
             player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Enter new message. Enter 'done' once you are done entering the new message.");
+        } else if (slot == 24) {
+            MessagePlace oldMessagePlace = messageEditData.getOldMessagePlace();
+            if (oldMessagePlace != MessagePlace.GAME_CHAT && oldMessagePlace != MessagePlace.SYSTEM_CHAT && oldMessagePlace != MessagePlace.ACTION_BAR) {
+                player.playSound(player.getLocation(), XSound.BLOCK_ANVIL_HIT.parseSound(), 1.0F, 1.0F);
+                player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.RED + "You cannot change message place of this message.");
+                return;
+            }
+            messageEditData.setShouldDestroy(false);
+            messageEditData.setMode(MessageEditData.Mode.EDITTING_NEW_MESSAGE_PLACE);
+            player.closeInventory();
+            player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
+            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Enter new message place.");
+            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Available message places:");
+            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "- " + ChatColor.YELLOW + MessagePlace.GAME_CHAT.name() + ChatColor.GRAY + " (" + ChatColor.YELLOW + MessagePlace.GAME_CHAT.getFriendlyName() + ChatColor.GRAY + ")");
+            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "- " + ChatColor.YELLOW + MessagePlace.SYSTEM_CHAT.name() + ChatColor.GRAY + " (" + ChatColor.YELLOW + MessagePlace.SYSTEM_CHAT.getFriendlyName() + ChatColor.GRAY + ")");
+            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "- " + ChatColor.YELLOW + MessagePlace.ACTION_BAR.name() + ChatColor.GRAY + " (" + ChatColor.YELLOW + MessagePlace.ACTION_BAR.getFriendlyName() + ChatColor.GRAY + ")");
         } else if (slot == 48) {
             this.plugin.addMessageEdit(new MessageEdit(
                 messageEditData.isOldMessageJson() ? messageEditData.getOldMessage().replaceAll(MessageEditorConstants.SPECIAL_REGEX_CHARACTERS, "\\\\$0") : messageEditData.getOldMessage(),
@@ -142,13 +159,14 @@ public final class MessageEditorListener implements Listener {
         if (messageEditData == null) {
             return;
         }
-        if (messageEditData.getMode() == MessageEditData.Mode.NONE) {
+        MessageEditData.Mode messageEditDataMode = messageEditData.getMode();
+        if (messageEditDataMode == MessageEditData.Mode.NONE) {
             return;
         }
         event.setCancelled(true);
         String message = event.getMessage();
         if (message.equals("done")) {
-            if (messageEditData.getMode() == MessageEditData.Mode.EDITTING_NEW_MESSAGE) {
+            if (messageEditDataMode == MessageEditData.Mode.EDITTING_NEW_MESSAGE) {
                 messageEditData.setMode(MessageEditData.Mode.NONE);
                 messageEditData.setShouldDestroy(true);
                 messageEditData.setNewMessage(messageEditData.getNewMessageCache());
@@ -160,14 +178,34 @@ public final class MessageEditorListener implements Listener {
                     messageEditData.setNewMessageJson(false);
                 }
                 messageEditData.setNewMessageCache("");
+                this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, messageEditData, true));
+                return;
             }
-            this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, messageEditData, true));
-            return;
         }
-        if (messageEditData.getMode() == MessageEditData.Mode.EDITTING_NEW_MESSAGE) {
+        if (messageEditDataMode == MessageEditData.Mode.EDITTING_NEW_MESSAGE) {
             messageEditData.setNewMessageCache(messageEditData.getNewMessageCache() + message);
-            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Message has been added. Continue if your message is longer than the chat characters limit or enter 'done' to apply changes.");
+            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Message has been added. Continue if your message is longer and had to divide it in parts. Otherwise enter 'done' to apply changes.");
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
+        } else if (messageEditDataMode == MessageEditData.Mode.EDITTING_NEW_MESSAGE_PLACE) {
+            MessagePlace messagePlace = MessagePlace.fromName(message);
+            if (messagePlace == null) {
+                player.playSound(player.getLocation(), XSound.BLOCK_ANVIL_HIT.parseSound(), 1.0F, 1.0F);
+                player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.RED + "Could not convert '" + ChatColor.GRAY + message + ChatColor.RED + "' to message place.");
+                return;
+            }
+            if (messagePlace != MessagePlace.GAME_CHAT && messagePlace != MessagePlace.SYSTEM_CHAT && messagePlace != MessagePlace.ACTION_BAR) {
+                player.playSound(player.getLocation(), XSound.BLOCK_ANVIL_HIT.parseSound(), 1.0F, 1.0F);
+                player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.RED + "This message place is not available.");
+                player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Available message places:");
+                player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "- " + ChatColor.YELLOW + MessagePlace.GAME_CHAT.name() + ChatColor.GRAY + " (" + ChatColor.YELLOW + MessagePlace.GAME_CHAT.getFriendlyName() + ChatColor.GRAY + ")");
+                player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "- " + ChatColor.YELLOW + MessagePlace.SYSTEM_CHAT.name() + ChatColor.GRAY + " (" + ChatColor.YELLOW + MessagePlace.SYSTEM_CHAT.getFriendlyName() + ChatColor.GRAY + ")");
+                player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "- " + ChatColor.YELLOW + MessagePlace.ACTION_BAR.name() + ChatColor.GRAY + " (" + ChatColor.YELLOW + MessagePlace.ACTION_BAR.getFriendlyName() + ChatColor.GRAY + ")");
+                return;
+            }
+            messageEditData.setMode(MessageEditData.Mode.NONE);
+            messageEditData.setShouldDestroy(true);
+            messageEditData.setNewMessagePlace(messagePlace);
+            this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, messageEditData, true));
         }
     }
 
