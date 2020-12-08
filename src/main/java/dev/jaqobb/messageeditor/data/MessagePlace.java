@@ -31,6 +31,7 @@ import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import java.util.Arrays;
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 
 public enum MessagePlace {
@@ -49,17 +50,56 @@ public enum MessagePlace {
             }
             return null;
         }
+
+        @Override
+        public void setMessage(
+            final PacketContainer packet,
+            final String message,
+            final boolean messageJson
+        ) {
+            if (packet.getChatComponents().read(0) != null) {
+                if (messageJson) {
+                    packet.getChatComponents().write(0, WrappedChatComponent.fromJson(message));
+                } else {
+                    packet.getChatComponents().write(0, WrappedChatComponent.fromText(message));
+                }
+            } else {
+                if (messageJson) {
+                    packet.getSpecificModifier(BaseComponent[].class).writeSafely(0, ComponentSerializer.parse(message));
+                } else {
+                    packet.getSpecificModifier(BaseComponent[].class).writeSafely(0, TextComponent.fromLegacyText(message));
+                }
+            }
+        }
     },
     SYSTEM_CHAT("SC", "System Chat", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 1, EnumWrappers.ChatType.SYSTEM) {
         @Override
         public String getMessage(final PacketContainer packet) {
             return GAME_CHAT.getMessage(packet);
         }
+
+        @Override
+        public void setMessage(
+            final PacketContainer packet,
+            final String message,
+            final boolean messageJson
+        ) {
+            GAME_CHAT.setMessage(packet, message, messageJson);
+        }
     },
     ACTION_BAR("AB", "Action Bar", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 2, EnumWrappers.ChatType.GAME_INFO) {
         @Override
         public String getMessage(final PacketContainer packet) {
             return GAME_CHAT.getMessage(packet);
+        }
+
+        @Override
+        public void setMessage(
+            final PacketContainer packet,
+            final String message,
+            final boolean messageJson
+        ) {
+            GAME_CHAT.setMessage(packet, message, messageJson);
         }
     },
     KICK("K", "Kick", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.KICK_DISCONNECT) {
@@ -71,6 +111,19 @@ public enum MessagePlace {
             }
             return message.getJson();
         }
+
+        @Override
+        public void setMessage(
+            final PacketContainer packet,
+            final String message,
+            final boolean messageJson
+        ) {
+            if (messageJson) {
+                packet.getChatComponents().write(0, WrappedChatComponent.fromJson(message));
+            } else {
+                packet.getChatComponents().write(0, WrappedChatComponent.fromText(message));
+            }
+        }
     },
     DISCONNECT("D", "Disconnect", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Login.Server.DISCONNECT) {
         @Override
@@ -80,6 +133,19 @@ public enum MessagePlace {
                 return null;
             }
             return message.getJson();
+        }
+
+        @Override
+        public void setMessage(
+            final PacketContainer packet,
+            final String message,
+            final boolean messageJson
+        ) {
+            if (messageJson) {
+                packet.getChatComponents().write(0, WrappedChatComponent.fromJson(message));
+            } else {
+                packet.getChatComponents().write(0, WrappedChatComponent.fromText(message));
+            }
         }
     },
     BOSS_BAR("BB", "Boss Bar", MinecraftVersion.COMBAT_UPDATE, PacketType.Play.Server.BOSS) {
@@ -91,6 +157,19 @@ public enum MessagePlace {
             }
             return message.getJson();
         }
+
+        @Override
+        public void setMessage(
+            final PacketContainer packet,
+            final String message,
+            final boolean messageJson
+        ) {
+            if (messageJson) {
+                packet.getChatComponents().write(0, WrappedChatComponent.fromJson(message));
+            } else {
+                packet.getChatComponents().write(0, WrappedChatComponent.fromText(message));
+            }
+        }
     },
     SCOREBOARD_TITLE("ST", "Scoreboard Title", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.SCOREBOARD_OBJECTIVE) {
         @Override
@@ -101,11 +180,37 @@ public enum MessagePlace {
             }
             return message.getJson();
         }
+
+        @Override
+        public void setMessage(
+            final PacketContainer packet,
+            final String message,
+            final boolean messageJson
+        ) {
+            if (messageJson) {
+                packet.getChatComponents().write(0, WrappedChatComponent.fromJson(message));
+            } else {
+                packet.getChatComponents().write(0, WrappedChatComponent.fromText(message));
+            }
+        }
     },
     SCOREBOARD_ENTRY("SE", "Scoreboard Entry", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.SCOREBOARD_SCORE) {
         @Override
         public String getMessage(final PacketContainer packet) {
             return packet.getStrings().read(0);
+        }
+
+        @Override
+        public void setMessage(
+            final PacketContainer packet,
+            final String message,
+            final boolean messageJson
+        ) {
+            if (messageJson) {
+                packet.getStrings().write(0, BaseComponent.toLegacyText(ComponentSerializer.parse(message)));
+            } else {
+                packet.getStrings().write(0, message);
+            }
         }
     };
 
@@ -191,6 +296,12 @@ public enum MessagePlace {
     }
 
     public abstract String getMessage(PacketContainer packet);
+
+    public abstract void setMessage(
+        PacketContainer packet,
+        String message,
+        boolean messageJson
+    );
 
     public static MessagePlace fromName(final String name) {
         return Arrays.stream(VALUES)

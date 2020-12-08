@@ -31,7 +31,6 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
-import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import dev.jaqobb.messageeditor.MessageEditorConstants;
 import dev.jaqobb.messageeditor.MessageEditorPlugin;
 import dev.jaqobb.messageeditor.data.MessageData;
@@ -217,26 +216,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
             message = ComponentSerializer.toString(messageToSend);
             messageJson = true;
         }
-        // TODO: Move to MessagePlace?
-        if (newPacket.getChatComponents().size() == 1 && newPacket.getChatComponents().read(0) != null) {
-            if (messageJson) {
-                newPacket.getChatComponents().write(0, WrappedChatComponent.fromJson(message));
-            } else {
-                newPacket.getChatComponents().write(0, WrappedChatComponent.fromText(message));
-            }
-        } else if (newPacket.getSpecificModifier(BaseComponent[].class).size() == 1) {
-            if (messageJson) {
-                newPacket.getSpecificModifier(BaseComponent[].class).write(0, ComponentSerializer.parse(message));
-            } else {
-                newPacket.getSpecificModifier(BaseComponent[].class).write(0, TextComponent.fromLegacyText(message));
-            }
-        } else if (newPacket.getStrings().size() >= 1 && newPacket.getStrings().read(0) != null) {
-            if (messageJson) {
-                newPacket.getStrings().write(0, BaseComponent.toLegacyText(ComponentSerializer.parse(message)));
-            } else {
-                newPacket.getStrings().write(0, message);
-            }
-        }
+        messagePlace.setMessage(newPacket, message, messageJson);
         event.setPacket(newPacket);
     }
 
