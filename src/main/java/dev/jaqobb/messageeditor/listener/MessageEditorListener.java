@@ -114,7 +114,7 @@ public final class MessageEditorListener implements Listener {
             messageEditData.setNewMessageCache("");
             player.closeInventory();
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
-            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Enter new message. Enter 'done' once you are done.");
+            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Enter new message. Enter 'done' once you are done entering the new message.");
         } else if (slot == 48) {
             this.plugin.addMessageEdit(new MessageEdit(
                 messageEditData.isOldMessageJson() ? messageEditData.getOldMessage().replaceAll(MessageEditorConstants.SPECIAL_REGEX_CHARACTERS, "\\\\$0") : messageEditData.getOldMessage(),
