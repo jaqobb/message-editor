@@ -38,7 +38,7 @@ public final class MessageEditorConstants {
 
     public static final Pattern CHAT_COLOR_PATTERN = Pattern.compile("(?i)" + ChatColor.COLOR_CHAR + "([0-9A-FK-ORX])");
 
-    public static final String SPECIAL_REGEX_CHARACTERS = "[<>{}()\\[\\].+\\-*?^$\\\\|]";
+    public static final String SPECIAL_REGEX_CHARACTERS = "[/<>{}()\\[\\].+\\-*?^$\\\\|]";
 
     private MessageEditorConstants() {
         throw new UnsupportedOperationException("Cannot create instance of this class");
