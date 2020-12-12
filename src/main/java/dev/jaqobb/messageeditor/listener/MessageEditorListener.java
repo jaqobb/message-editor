@@ -31,6 +31,7 @@ import dev.jaqobb.messageeditor.data.MessageEdit;
 import dev.jaqobb.messageeditor.data.MessageEditData;
 import dev.jaqobb.messageeditor.data.MessagePlace;
 import java.util.logging.Level;
+import java.util.regex.Pattern;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -109,7 +110,14 @@ public final class MessageEditorListener implements Listener {
         if (messageEditData == null) {
             return;
         }
-        if (slot == 15) {
+        if (slot == 11) {
+            messageEditData.setShouldDestroy(false);
+            messageEditData.setMode(MessageEditData.Mode.EDITTING_OLD_MESSAGE_PATTERN_KEY);
+            messageEditData.setOldMessagePatternKey("");
+            player.closeInventory();
+            player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
+            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Enter old message pattern key, that is what you want to replace, or enter '" + ChatColor.YELLOW + "done" + ChatColor.GRAY + "' if you are done replacing everything you want.");
+        } else if (slot == 15) {
             messageEditData.setShouldDestroy(false);
             messageEditData.setMode(MessageEditData.Mode.EDITTING_NEW_MESSAGE);
             messageEditData.setNewMessageCache("");
@@ -134,7 +142,7 @@ public final class MessageEditorListener implements Listener {
             player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "- " + ChatColor.YELLOW + MessagePlace.ACTION_BAR.name() + ChatColor.GRAY + " (" + ChatColor.YELLOW + MessagePlace.ACTION_BAR.getFriendlyName() + ChatColor.GRAY + ")");
         } else if (slot == 48) {
             this.plugin.addMessageEdit(new MessageEdit(
-                messageEditData.isOldMessageJson() ? messageEditData.getOldMessage().replaceAll(MessageEditorConstants.SPECIAL_REGEX_CHARACTERS, "\\\\$0") : messageEditData.getOldMessage(),
+                messageEditData.getOldMessagePattern(),
                 messageEditData.getOldMessagePlace(),
                 messageEditData.getNewMessage(),
                 messageEditData.getNewMessagePlace()
@@ -166,7 +174,13 @@ public final class MessageEditorListener implements Listener {
         event.setCancelled(true);
         String message = event.getMessage();
         if (message.equals("done")) {
-            if (messageEditDataMode == MessageEditData.Mode.EDITTING_NEW_MESSAGE) {
+            if (messageEditDataMode == MessageEditData.Mode.EDITTING_OLD_MESSAGE_PATTERN_KEY || messageEditDataMode == MessageEditData.Mode.EDITTING_OLD_MESSAGE_PATTERN_VALUE) {
+                messageEditData.setMode(MessageEditData.Mode.NONE);
+                messageEditData.setShouldDestroy(true);
+                messageEditData.setOldMessagePatternKey("");
+                this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, messageEditData, true));
+                return;
+            } else if (messageEditDataMode == MessageEditData.Mode.EDITTING_NEW_MESSAGE) {
                 messageEditData.setMode(MessageEditData.Mode.NONE);
                 messageEditData.setShouldDestroy(true);
                 messageEditData.setNewMessage(messageEditData.getNewMessageCache());
@@ -177,12 +191,34 @@ public final class MessageEditorListener implements Listener {
                     messageEditData.setNewMessage(ChatColor.translateAlternateColorCodes('&', messageEditData.getNewMessage()));
                     messageEditData.setNewMessageJson(false);
                 }
-                messageEditData.setNewMessageCache("");
                 this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, messageEditData, true));
                 return;
             }
         }
-        if (messageEditDataMode == MessageEditData.Mode.EDITTING_NEW_MESSAGE) {
+        if (messageEditDataMode == MessageEditData.Mode.EDITTING_OLD_MESSAGE_PATTERN_KEY) {
+            messageEditData.setOldMessagePatternKey(message);
+            messageEditData.setMode(MessageEditData.Mode.EDITTING_OLD_MESSAGE_PATTERN_VALUE);
+            player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
+            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Now enter old message pattern value, that is what you want the key to be replaced into, or enter '" + ChatColor.YELLOW + "done" + ChatColor.GRAY + "' if you are done replacing everything you want.");
+        } else if (messageEditDataMode == MessageEditData.Mode.EDITTING_OLD_MESSAGE_PATTERN_VALUE) {
+            String oldMessagePatternKey = messageEditData.getOldMessagePatternKey();
+            String oldMessagePatternValue = message;
+            messageEditData.setMode(MessageEditData.Mode.EDITTING_OLD_MESSAGE_PATTERN_KEY);
+            messageEditData.setOldMessage(Pattern.compile(oldMessagePatternKey, Pattern.LITERAL).matcher(messageEditData.getOldMessage()).replaceFirst(oldMessagePatternValue));
+            messageEditData.setOldMessagePattern(Pattern.compile(oldMessagePatternKey, Pattern.LITERAL).matcher(messageEditData.getOldMessagePattern()).replaceFirst(oldMessagePatternValue));
+            try {
+                new JSONParser().parse(messageEditData.getOldMessage());
+                messageEditData.setOldMessageJson(true);
+            } catch (ParseException exception) {
+                messageEditData.setOldMessage(ChatColor.translateAlternateColorCodes('&', messageEditData.getOldMessage()));
+                messageEditData.setOldMessagePattern(ChatColor.translateAlternateColorCodes('&', messageEditData.getOldMessagePattern()));
+                messageEditData.setOldMessageJson(false);
+            }
+            messageEditData.setOldMessagePatternKey("");
+            player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
+            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "The first occurence of '" + ChatColor.YELLOW + oldMessagePatternKey + ChatColor.GRAY + "' has been replaced into '" + ChatColor.YELLOW + oldMessagePatternValue + ChatColor.GRAY + "'.");
+            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Enter old message pattern key, that is what you want to replace, or enter '" + ChatColor.YELLOW + "done" + ChatColor.GRAY + "' if you are done replacing everything you want.");
+        } else if (messageEditDataMode == MessageEditData.Mode.EDITTING_NEW_MESSAGE) {
             messageEditData.setNewMessageCache(messageEditData.getNewMessageCache() + message);
             player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Message has been added. Continue if your message is longer and had to divide it into parts. Otherwise enter '" + ChatColor.YELLOW + "done" + ChatColor.GRAY + "' to set the new message.");
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);

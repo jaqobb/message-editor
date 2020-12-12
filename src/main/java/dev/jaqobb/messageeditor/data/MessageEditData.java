@@ -24,10 +24,14 @@
 
 package dev.jaqobb.messageeditor.data;
 
+import dev.jaqobb.messageeditor.MessageEditorConstants;
+
 public final class MessageEditData {
 
     private String oldMessage;
+    private String oldMessagePattern;
     private boolean oldMessageJson;
+    private String oldMessagePatternKey;
     private final MessagePlace oldMessagePlace;
     private String newMessage;
     private boolean newMessageJson;
@@ -56,7 +60,9 @@ public final class MessageEditData {
         final MessagePlace newMessagePlace
     ) {
         this.oldMessage = oldMessage;
+        this.oldMessagePattern = oldMessage.replaceAll(MessageEditorConstants.SPECIAL_REGEX_CHARACTERS, "\\\\$0");
         this.oldMessageJson = oldMessageJson;
+        this.oldMessagePatternKey = "";
         this.oldMessagePlace = oldMessagePlace;
         this.newMessage = newMessage;
         this.newMessageJson = newMessageJson;
@@ -74,12 +80,28 @@ public final class MessageEditData {
         this.oldMessage = oldMessage;
     }
 
+    public String getOldMessagePattern() {
+        return this.oldMessagePattern;
+    }
+
+    public void setOldMessagePattern(final String oldMessagePattern) {
+        this.oldMessagePattern = oldMessagePattern;
+    }
+
     public boolean isOldMessageJson() {
         return this.oldMessageJson;
     }
 
     public void setOldMessageJson(final boolean oldMessageJson) {
         this.oldMessageJson = oldMessageJson;
+    }
+
+    public String getOldMessagePatternKey() {
+        return this.oldMessagePatternKey;
+    }
+
+    public void setOldMessagePatternKey(final String oldMessagePatternKey) {
+        this.oldMessagePatternKey = oldMessagePatternKey;
     }
 
     public MessagePlace getOldMessagePlace() {
@@ -137,6 +159,8 @@ public final class MessageEditData {
     public static enum Mode {
 
         NONE,
+        EDITTING_OLD_MESSAGE_PATTERN_KEY,
+        EDITTING_OLD_MESSAGE_PATTERN_VALUE,
         EDITTING_NEW_MESSAGE,
         EDITTING_NEW_MESSAGE_PLACE
     }
