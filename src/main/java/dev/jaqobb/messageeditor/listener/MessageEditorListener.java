@@ -199,7 +199,7 @@ public final class MessageEditorListener implements Listener {
             messageEditData.setOldMessagePatternKey(message);
             messageEditData.setMode(MessageEditData.Mode.EDITTING_OLD_MESSAGE_PATTERN_VALUE);
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
-            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Now enter old message pattern value, that is what you want the key to be replaced into, or enter '" + ChatColor.YELLOW + "done" + ChatColor.GRAY + "' if you are done replacing everything you want.");
+            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Now enter old message pattern value, that is what you want the key to be replaced with, or enter '" + ChatColor.YELLOW + "done" + ChatColor.GRAY + "' if you are done replacing everything you want.");
         } else if (messageEditDataMode == MessageEditData.Mode.EDITTING_OLD_MESSAGE_PATTERN_VALUE) {
             String oldMessagePatternKey = messageEditData.getOldMessagePatternKey();
             String oldMessagePatternValue = message;
@@ -216,7 +216,7 @@ public final class MessageEditorListener implements Listener {
             }
             messageEditData.setOldMessagePatternKey("");
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
-            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "The first occurence of '" + ChatColor.YELLOW + oldMessagePatternKey + ChatColor.GRAY + "' has been replaced into '" + ChatColor.YELLOW + oldMessagePatternValue + ChatColor.GRAY + "'.");
+            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "The first occurence of '" + ChatColor.YELLOW + oldMessagePatternKey + ChatColor.GRAY + "' has been replaced with '" + ChatColor.YELLOW + oldMessagePatternValue + ChatColor.GRAY + "'.");
             player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Enter old message pattern key, that is what you want to replace, or enter '" + ChatColor.YELLOW + "done" + ChatColor.GRAY + "' if you are done replacing everything you want.");
         } else if (messageEditDataMode == MessageEditData.Mode.EDITTING_NEW_MESSAGE) {
             messageEditData.setNewMessageCache(messageEditData.getNewMessageCache() + message);
