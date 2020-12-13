@@ -191,6 +191,7 @@ public final class MessageEditorListener implements Listener {
                     messageEditData.setNewMessage(ChatColor.translateAlternateColorCodes('&', messageEditData.getNewMessage()));
                     messageEditData.setNewMessageJson(false);
                 }
+                messageEditData.setNewMessageCache("");
                 this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, messageEditData, true));
                 return;
             }
