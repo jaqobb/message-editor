@@ -17,6 +17,7 @@ Message Editor supports:
 * [x] Editing message positions - since 1.4.0
 * [x] Editing scoreboard titles - since 1.5.0
 * [x] Editing scoreboard entries - since 1.6.0
+* [x] Editing messages using built-in GUI - since 2.0.0
 
 ### Showcase
 
