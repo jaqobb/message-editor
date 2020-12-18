@@ -172,8 +172,13 @@ public enum MessagePlace {
         }
     },
     SCOREBOARD_TITLE("ST", "Scoreboard Title", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.SCOREBOARD_OBJECTIVE) {
+        private Boolean useChatComponent;
+
         @Override
         public String getMessage(final PacketContainer packet) {
+            if (!this.shouldUseChatComponent()) {
+                return packet.getStrings().read(1);
+            }
             WrappedChatComponent message = packet.getChatComponents().read(0);
             if (message == null) {
                 return null;
@@ -187,11 +192,22 @@ public enum MessagePlace {
             final String message,
             final boolean messageJson
         ) {
+            if (!this.shouldUseChatComponent()) {
+                packet.getStrings().write(1, message);
+                return;
+            }
             if (messageJson) {
                 packet.getChatComponents().write(0, WrappedChatComponent.fromJson(message));
             } else {
                 packet.getChatComponents().write(0, WrappedChatComponent.fromText(message));
             }
+        }
+
+        private boolean shouldUseChatComponent() {
+            if (this.useChatComponent == null) {
+                this.useChatComponent = MinecraftVersion.atOrAbove(MinecraftVersion.AQUATIC_UPDATE);
+            }
+            return this.useChatComponent;
         }
     },
     SCOREBOARD_ENTRY("SE", "Scoreboard Entry", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.SCOREBOARD_SCORE) {
