@@ -204,13 +204,8 @@ public final class MessageEditorPacketListener extends PacketAdapter {
             } else {
                 messageToSend = new TextComponent(TextComponent.fromLegacyText(message));
             }
-            messageToSend.setHoverEvent(new HoverEvent(
-                HoverEvent.Action.SHOW_TEXT,
-                TextComponent.fromLegacyText(ChatColor.GRAY + "Click to start editing this message.")
-            ));
-            messageToSend.setClickEvent(new ClickEvent(
-                ClickEvent.Action.RUN_COMMAND,
-                "/message-editor edit " + messageId));
+            messageToSend.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(ChatColor.GRAY + "Click to start editing this message.")));
+            messageToSend.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/message-editor edit " + messageId));
             message = ComponentSerializer.toString(messageToSend);
             messageJson = true;
         }
@@ -252,7 +247,11 @@ public final class MessageEditorPacketListener extends PacketAdapter {
             // 2 = update scoreboard objective display name
             int oldAction = oldPacket.getIntegers().read(0);
             newPacket.getStrings().write(0, oldPacket.getStrings().read(0));
-            newPacket.getChatComponents().write(0, oldPacket.getChatComponents().read(0));
+            if (newPacket.getStrings().size() == 2) {
+                newPacket.getStrings().write(1, oldPacket.getStrings().read(1));
+            } else {
+                newPacket.getChatComponents().write(0, oldPacket.getChatComponents().read(0));
+            }
             // A certain tab list plugin seems to be providing null health display mode?
             // The if condition below seems to fix the associated NPE.
             // I didn't notice any bugs when deleting scoreboard objectives

@@ -42,8 +42,8 @@ public enum MessagePlace {
             WrappedChatComponent message = packet.getChatComponents().read(0);
             if (message != null) {
                 return message.getJson();
-            } else {
-                BaseComponent[] messageComponent = packet.getSpecificModifier(BaseComponent[].class).readSafely(0);
+            } else if (packet.getSpecificModifier(BaseComponent[].class).size() == 1) {
+                BaseComponent[] messageComponent = packet.getSpecificModifier(BaseComponent[].class).read(0);
                 if (messageComponent != null) {
                     return ComponentSerializer.toString(messageComponent);
                 }
@@ -63,11 +63,11 @@ public enum MessagePlace {
                 } else {
                     packet.getChatComponents().write(0, WrappedChatComponent.fromText(message));
                 }
-            } else {
+            } else if (packet.getSpecificModifier(BaseComponent[].class).size() == 1) {
                 if (messageJson) {
-                    packet.getSpecificModifier(BaseComponent[].class).writeSafely(0, ComponentSerializer.parse(message));
+                    packet.getSpecificModifier(BaseComponent[].class).write(0, ComponentSerializer.parse(message));
                 } else {
-                    packet.getSpecificModifier(BaseComponent[].class).writeSafely(0, TextComponent.fromLegacyText(message));
+                    packet.getSpecificModifier(BaseComponent[].class).write(0, TextComponent.fromLegacyText(message));
                 }
             }
         }
@@ -105,11 +105,7 @@ public enum MessagePlace {
     KICK("K", "Kick", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.KICK_DISCONNECT) {
         @Override
         public String getMessage(final PacketContainer packet) {
-            WrappedChatComponent message = packet.getChatComponents().read(0);
-            if (message == null) {
-                return null;
-            }
-            return message.getJson();
+            return packet.getChatComponents().read(0).getJson();
         }
 
         @Override
@@ -128,11 +124,7 @@ public enum MessagePlace {
     DISCONNECT("D", "Disconnect", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Login.Server.DISCONNECT) {
         @Override
         public String getMessage(final PacketContainer packet) {
-            WrappedChatComponent message = packet.getChatComponents().read(0);
-            if (message == null) {
-                return null;
-            }
-            return message.getJson();
+            return packet.getChatComponents().read(0).getJson();
         }
 
         @Override
@@ -151,11 +143,7 @@ public enum MessagePlace {
     BOSS_BAR("BB", "Boss Bar", MinecraftVersion.COMBAT_UPDATE, PacketType.Play.Server.BOSS) {
         @Override
         public String getMessage(final PacketContainer packet) {
-            WrappedChatComponent message = packet.getChatComponents().read(0);
-            if (message == null) {
-                return null;
-            }
-            return message.getJson();
+            return packet.getChatComponents().read(0).getJson();
         }
 
         @Override
@@ -172,18 +160,12 @@ public enum MessagePlace {
         }
     },
     SCOREBOARD_TITLE("ST", "Scoreboard Title", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.SCOREBOARD_OBJECTIVE) {
-        private Boolean useChatComponent;
-
         @Override
         public String getMessage(final PacketContainer packet) {
-            if (!this.shouldUseChatComponent()) {
+            if (packet.getStrings().size() == 2) {
                 return packet.getStrings().read(1);
             }
-            WrappedChatComponent message = packet.getChatComponents().read(0);
-            if (message == null) {
-                return null;
-            }
-            return message.getJson();
+            return packet.getChatComponents().read(0).getJson();
         }
 
         @Override
@@ -192,7 +174,7 @@ public enum MessagePlace {
             final String message,
             final boolean messageJson
         ) {
-            if (!this.shouldUseChatComponent()) {
+            if (packet.getStrings().size() == 2) {
                 packet.getStrings().write(1, message);
                 return;
             }
@@ -201,13 +183,6 @@ public enum MessagePlace {
             } else {
                 packet.getChatComponents().write(0, WrappedChatComponent.fromText(message));
             }
-        }
-
-        private boolean shouldUseChatComponent() {
-            if (this.useChatComponent == null) {
-                this.useChatComponent = MinecraftVersion.atOrAbove(MinecraftVersion.AQUATIC_UPDATE);
-            }
-            return this.useChatComponent;
         }
     },
     SCOREBOARD_ENTRY("SE", "Scoreboard Entry", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.SCOREBOARD_SCORE) {
