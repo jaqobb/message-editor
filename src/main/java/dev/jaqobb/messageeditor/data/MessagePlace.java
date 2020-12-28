@@ -50,7 +50,7 @@ public enum MessagePlace {
                         return ComponentSerializer.toString(messageComponents[0]);
                     } else if (messageComponents.length > 1) {
                         // TODO: Make it better?
-                        // Using ComponentSerializer#toString when messageComponent.length > 1
+                        // Using ComponentSerializer#toString when the amount of components is greater than 1
                         // wraps the message into TextComponent and thus can break plugins where the index
                         // of a message component is important.
                         StringJoiner messageComponentsJson = new StringJoiner(",", "[", "]");
