@@ -43,26 +43,26 @@ public final class MessageEditorCommandTabCompleter implements TabCompleter {
         if (!sender.hasPermission("messageeditor.use")) {
             return null;
         }
-        List<String> completion = new LinkedList<>();
+        List<String> completions = new LinkedList<>();
         if (arguments.length == 1) {
             String argument = arguments[0].toLowerCase();
             if ("reload".startsWith(argument)) {
-                completion.add("reload");
+                completions.add("reload");
             }
             if ("edit".startsWith(argument)) {
-                completion.add("edit");
+                completions.add("edit");
             }
             if ("activate".startsWith(argument)) {
-                completion.add("activate");
+                completions.add("activate");
             }
             if ("deactivate".startsWith(argument)) {
-                completion.add("deactivate");
+                completions.add("deactivate");
             }
             if ("deactivate-all".startsWith(argument)) {
-                completion.add("deactivate-all");
+                completions.add("deactivate-all");
             }
             if ("deactivateall".startsWith(argument)) {
-                completion.add("deactivateall");
+                completions.add("deactivateall");
             }
         }
         if (arguments.length > 1 && (arguments[0].equalsIgnoreCase("activate") || (arguments[0].equalsIgnoreCase("deactivate")))) {
@@ -76,11 +76,11 @@ public final class MessageEditorCommandTabCompleter implements TabCompleter {
                     }
                     boolean canMessagePlaceAnalyzingStateBeModified = arguments[0].equalsIgnoreCase("activate") != messagePlace.isAnalyzingActivated();
                     if (canMessagePlaceAnalyzingStateBeModified) {
-                        completion.add(messagePlace.name());
+                        completions.add(messagePlace.name());
                     }
                 }
             }
         }
-        return completion;
+        return completions;
     }
 }
