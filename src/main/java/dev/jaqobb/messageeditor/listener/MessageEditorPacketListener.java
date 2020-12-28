@@ -42,6 +42,7 @@ import dev.jaqobb.messageeditor.data.bossbar.BossBarMessageStyle;
 import dev.jaqobb.messageeditor.data.scoreboard.ScoreboardHealthDisplayMode;
 import dev.jaqobb.messageeditor.util.MessageUtils;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import net.md_5.bungee.api.ChatColor;
@@ -207,15 +208,11 @@ public final class MessageEditorPacketListener extends PacketAdapter {
                 // Using ComponentSerializer#toString when messageComponent.length > 1
                 // wraps the message into TextComponent and thus can break plugins where the index
                 // of a message component is important.
-                String messageComponentJson = "[";
-                for (int index = 0; index < messageToSend.length; index++) {
-                    messageComponentJson += ComponentSerializer.toString(messageToSend[index]);
-                    if (index != messageToSend.length - 1) {
-                        messageComponentJson += ",";
-                    }
+                StringJoiner messageToSendJson = new StringJoiner(",", "[", "]");
+                for (BaseComponent messageToSendComponent : messageToSend) {
+                    messageToSendJson.add(ComponentSerializer.toString(messageToSendComponent));
                 }
-                messageComponentJson += "]";
-                message = messageComponentJson;
+                message = messageToSendJson.toString();
             }
             messageJson = true;
         }

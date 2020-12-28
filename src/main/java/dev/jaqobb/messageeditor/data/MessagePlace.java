@@ -30,6 +30,7 @@ import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import java.util.Arrays;
+import java.util.StringJoiner;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
@@ -43,24 +44,20 @@ public enum MessagePlace {
             if (message != null) {
                 return message.getJson();
             } else if (packet.getSpecificModifier(BaseComponent[].class).size() == 1) {
-                BaseComponent[] messageComponent = packet.getSpecificModifier(BaseComponent[].class).read(0);
-                if (messageComponent != null) {
-                    if (messageComponent.length == 1) {
-                        return ComponentSerializer.toString(messageComponent[0]);
-                    } else if (messageComponent.length > 1) {
+                BaseComponent[] messageComponents = packet.getSpecificModifier(BaseComponent[].class).read(0);
+                if (messageComponents != null) {
+                    if (messageComponents.length == 1) {
+                        return ComponentSerializer.toString(messageComponents[0]);
+                    } else if (messageComponents.length > 1) {
                         // TODO: Make it better?
                         // Using ComponentSerializer#toString when messageComponent.length > 1
                         // wraps the message into TextComponent and thus can break plugins where the index
                         // of a message component is important.
-                        String messageComponentJson = "[";
-                        for (int index = 0; index < messageComponent.length; index++) {
-                            messageComponentJson += ComponentSerializer.toString(messageComponent[index]);
-                            if (index != messageComponent.length - 1) {
-                                messageComponentJson += ",";
-                            }
+                        StringJoiner messageComponentsJson = new StringJoiner(",", "[", "]");
+                        for (BaseComponent messageComponent : messageComponents) {
+                            messageComponentsJson.add(ComponentSerializer.toString(messageComponent));
                         }
-                        messageComponentJson += "]";
-                        return messageComponentJson;
+                        return messageComponentsJson.toString();
                     }
                 }
             }

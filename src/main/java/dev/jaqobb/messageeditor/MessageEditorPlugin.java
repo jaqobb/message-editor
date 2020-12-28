@@ -52,6 +52,7 @@ import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+// TODO: Fix \n not being correctly replaced to a new line?
 public final class MessageEditorPlugin extends JavaPlugin {
 
     static {
