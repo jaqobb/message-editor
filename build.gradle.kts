@@ -46,7 +46,7 @@ tasks {
         exclude("com/cryptomorin/xseries/XEntity*")
         exclude("com/cryptomorin/xseries/XItemStack*")
         exclude("com/cryptomorin/xseries/XPotion*")
-        relocate("com.cryptomorin.xseries", "dev.jaqobb.messageeditor.library.com.cryptomorin.xseries")
+        relocate("com.cryptomorin.xseries", "dev.jaqobb.messageeditor.library.xseries")
         relocate("org.bstats.bukkit", "dev.jaqobb.messageeditor.metrics")
     }
 }
