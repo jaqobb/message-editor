@@ -45,7 +45,23 @@ public enum MessagePlace {
             } else if (packet.getSpecificModifier(BaseComponent[].class).size() == 1) {
                 BaseComponent[] messageComponent = packet.getSpecificModifier(BaseComponent[].class).read(0);
                 if (messageComponent != null) {
-                    return ComponentSerializer.toString(messageComponent);
+                    if (messageComponent.length == 1) {
+                        return ComponentSerializer.toString(messageComponent[0]);
+                    } else if (messageComponent.length > 1) {
+                        // TODO: Make it better?
+                        // Using ComponentSerializer#toString when messageComponent.length > 1
+                        // wraps the message into TextComponent and thus can break plugins where the index
+                        // of a message component is important.
+                        String messageComponentJson = "[";
+                        for (int index = 0; index < messageComponent.length; index++) {
+                            messageComponentJson += ComponentSerializer.toString(messageComponent[index]);
+                            if (index != messageComponent.length - 1) {
+                                messageComponentJson += ",";
+                            }
+                        }
+                        messageComponentJson += "]";
+                        return messageComponentJson;
+                    }
                 }
             }
             return null;

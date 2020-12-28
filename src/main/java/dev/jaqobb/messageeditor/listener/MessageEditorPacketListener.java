@@ -83,6 +83,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
         Player player = event.getPlayer();
         PacketContainer oldPacket = event.getPacket();
         PacketContainer newPacket = this.copyPacketContent(oldPacket, ProtocolLibrary.getProtocolManager().createPacket(oldPacket.getType()));
+        MessagePlace originalMessagePlace = MessagePlace.fromPacket(newPacket);
         MessagePlace messagePlace = MessagePlace.fromPacket(newPacket);
         if (messagePlace == MessagePlace.BOSS_BAR) {
             BossBarMessageAction action = newPacket.getEnumModifier(BossBarMessageAction.class, 1).read(0);
@@ -103,6 +104,7 @@ public final class MessageEditorPacketListener extends PacketAdapter {
                 return;
             }
         }
+        String originalMessage = messagePlace.getMessage(newPacket);
         String message = messagePlace.getMessage(newPacket);
         if (message == null) {
             return;
@@ -126,14 +128,9 @@ public final class MessageEditorPacketListener extends PacketAdapter {
         if (cachedMessage != null || (messageEdit != null && messageEditMatcher != null)) {
             if (cachedMessage != null) {
                 if (messagePlace == MessagePlace.GAME_CHAT || messagePlace == MessagePlace.SYSTEM_CHAT || messagePlace == MessagePlace.ACTION_BAR) {
-                    MessagePlace newMessagePlace = cachedMessage.getKey().getMessageAfterPlace();
-                    if (newMessagePlace != messagePlace && (newMessagePlace == MessagePlace.GAME_CHAT || newMessagePlace == MessagePlace.SYSTEM_CHAT || newMessagePlace == MessagePlace.ACTION_BAR)) {
-                        if (newPacket.getBytes().size() == 1) {
-                            newPacket.getBytes().write(0, newMessagePlace.getChatType());
-                        } else {
-                            newPacket.getChatTypes().write(0, newMessagePlace.getChatTypeEnum());
-                        }
-                        messagePlace = newMessagePlace;
+                    MessagePlace messageAfterPlace = cachedMessage.getKey().getMessageAfterPlace();
+                    if (messageAfterPlace == MessagePlace.GAME_CHAT || messageAfterPlace == MessagePlace.SYSTEM_CHAT || messageAfterPlace == MessagePlace.ACTION_BAR) {
+                        messagePlace = messageAfterPlace;
                     }
                 }
                 if (cachedMessage.getValue().isEmpty() && (messagePlace == MessagePlace.GAME_CHAT || messagePlace == MessagePlace.SYSTEM_CHAT || messagePlace == MessagePlace.ACTION_BAR)) {
@@ -152,14 +149,9 @@ public final class MessageEditorPacketListener extends PacketAdapter {
                 }
                 this.getPlugin().cacheMessage(message, messageEdit, messageAfter);
                 if (messagePlace == MessagePlace.GAME_CHAT || messagePlace == MessagePlace.SYSTEM_CHAT || messagePlace == MessagePlace.ACTION_BAR) {
-                    MessagePlace newMessagePlace = messageEdit.getMessageAfterPlace();
-                    if (newMessagePlace != messagePlace && (newMessagePlace == MessagePlace.GAME_CHAT || newMessagePlace == MessagePlace.SYSTEM_CHAT || newMessagePlace == MessagePlace.ACTION_BAR)) {
-                        if (newPacket.getBytes().size() == 1) {
-                            newPacket.getBytes().write(0, newMessagePlace.getChatType());
-                        } else {
-                            newPacket.getChatTypes().write(0, newMessagePlace.getChatTypeEnum());
-                        }
-                        messagePlace = newMessagePlace;
+                    MessagePlace messageAfterPlace = messageEdit.getMessageAfterPlace();
+                    if (messageAfterPlace == MessagePlace.GAME_CHAT || messageAfterPlace == MessagePlace.SYSTEM_CHAT || messageAfterPlace == MessagePlace.ACTION_BAR) {
+                        messagePlace = messageAfterPlace;
                     }
                 }
                 if (messageAfter.isEmpty() && (messagePlace == MessagePlace.GAME_CHAT || messagePlace == MessagePlace.SYSTEM_CHAT || messagePlace == MessagePlace.ACTION_BAR)) {
@@ -198,19 +190,48 @@ public final class MessageEditorPacketListener extends PacketAdapter {
             this.getPlugin().getLogger().log(Level.INFO, "Message ID: '" + messageId + "'");
         }
         if ((messagePlace == MessagePlace.GAME_CHAT || messagePlace == MessagePlace.SYSTEM_CHAT) && player.hasPermission("messageeditor.use") && this.getPlugin().isAttachingSpecialHoverAndClickEventsEnabled()) {
-            TextComponent messageToSend;
+            BaseComponent[] messageToSend;
             if (messageJson) {
-                messageToSend = new TextComponent(ComponentSerializer.parse(message));
+                messageToSend = ComponentSerializer.parse(message);
             } else {
-                messageToSend = new TextComponent(TextComponent.fromLegacyText(message));
+                messageToSend = TextComponent.fromLegacyText(message);
             }
-            messageToSend.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(ChatColor.GRAY + "Click to start editing this message.")));
-            messageToSend.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/message-editor edit " + messageId));
-            message = ComponentSerializer.toString(messageToSend);
+            for (BaseComponent messageToSendElement : messageToSend) {
+                messageToSendElement.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(ChatColor.GRAY + "Click to start editing this message.")));
+                messageToSendElement.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/message-editor edit " + messageId));
+            }
+            if (messageToSend.length == 1) {
+                message = ComponentSerializer.toString(messageToSend);
+            } else {
+                // TODO: Make it better?
+                // Using ComponentSerializer#toString when messageComponent.length > 1
+                // wraps the message into TextComponent and thus can break plugins where the index
+                // of a message component is important.
+                String messageComponentJson = "[";
+                for (int index = 0; index < messageToSend.length; index++) {
+                    messageComponentJson += ComponentSerializer.toString(messageToSend[index]);
+                    if (index != messageToSend.length - 1) {
+                        messageComponentJson += ",";
+                    }
+                }
+                messageComponentJson += "]";
+                message = messageComponentJson;
+            }
             messageJson = true;
         }
-        messagePlace.setMessage(newPacket, message, messageJson);
-        event.setPacket(newPacket);
+        if (messagePlace != originalMessagePlace) {
+            if (newPacket.getBytes().size() == 1) {
+                newPacket.getBytes().write(0, messagePlace.getChatType());
+            } else {
+                newPacket.getChatTypes().write(0, messagePlace.getChatTypeEnum());
+            }
+        }
+        if (!message.equals(originalMessage)) {
+            messagePlace.setMessage(newPacket, message, messageJson);
+        }
+        if (!message.equals(originalMessage) || messagePlace != originalMessagePlace) {
+            event.setPacket(newPacket);
+        }
     }
 
     private PacketContainer copyPacketContent(
@@ -230,6 +251,9 @@ public final class MessageEditorPacketListener extends PacketAdapter {
                 newPacket.getBytes().write(0, oldPacket.getBytes().read(0));
             } else {
                 newPacket.getChatTypes().write(0, oldPacket.getChatTypes().read(0));
+            }
+            if (newPacket.getUUIDs().size() == 1) {
+                newPacket.getUUIDs().write(0, oldPacket.getUUIDs().read(0));
             }
         } else if (newPacket.getType() == PacketType.Play.Server.BOSS) {
             newPacket.getUUIDs().write(0, oldPacket.getUUIDs().read(0));
