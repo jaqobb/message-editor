@@ -145,6 +145,7 @@ public final class MessageEditorListener implements Listener {
             this.plugin.addMessageEdit(new MessageEdit(
                 messageEditData.getOldMessagePattern(),
                 messageEditData.getOldMessagePlace(),
+                // TODO: Fix as this most likely also escapes variables.
                 Matcher.quoteReplacement(messageEditData.getNewMessage()),
                 messageEditData.getNewMessagePlace()
             ));

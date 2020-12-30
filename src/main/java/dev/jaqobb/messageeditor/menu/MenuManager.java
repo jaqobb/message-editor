@@ -101,6 +101,7 @@ public final class MenuManager {
         this.plugin.setCurrentMessageEdit(player.getUniqueId(), messageEditData);
     }
 
+    // TODO: Fix old and new message not being split correctly?
     public void openMenu(
         final Player player,
         final MessageEditData messageEditData,
