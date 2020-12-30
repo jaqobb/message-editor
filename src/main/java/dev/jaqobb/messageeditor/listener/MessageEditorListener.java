@@ -31,6 +31,7 @@ import dev.jaqobb.messageeditor.data.MessageEdit;
 import dev.jaqobb.messageeditor.data.MessageEditData;
 import dev.jaqobb.messageeditor.data.MessagePlace;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
@@ -144,7 +145,7 @@ public final class MessageEditorListener implements Listener {
             this.plugin.addMessageEdit(new MessageEdit(
                 messageEditData.getOldMessagePattern(),
                 messageEditData.getOldMessagePlace(),
-                messageEditData.getNewMessage(),
+                Matcher.quoteReplacement(messageEditData.getNewMessage()),
                 messageEditData.getNewMessagePlace()
             ));
             this.plugin.clearCachedMessages();
@@ -205,8 +206,8 @@ public final class MessageEditorListener implements Listener {
             String oldMessagePatternKey = messageEditData.getOldMessagePatternKey();
             String oldMessagePatternValue = message;
             messageEditData.setMode(MessageEditData.Mode.EDITTING_OLD_MESSAGE_PATTERN_KEY);
-            messageEditData.setOldMessage(Pattern.compile(oldMessagePatternKey, Pattern.LITERAL).matcher(messageEditData.getOldMessage()).replaceFirst(oldMessagePatternValue));
-            messageEditData.setOldMessagePattern(Pattern.compile(oldMessagePatternKey, Pattern.LITERAL).matcher(messageEditData.getOldMessagePattern()).replaceFirst(oldMessagePatternValue));
+            messageEditData.setOldMessage(messageEditData.getOldMessage().replaceFirst(Pattern.quote(oldMessagePatternKey), Matcher.quoteReplacement(oldMessagePatternValue.replace("\\", "\\\\"))));
+            messageEditData.setOldMessagePattern(messageEditData.getOldMessagePattern().replaceFirst(Pattern.quote(oldMessagePatternKey.replaceAll(MessageEditorConstants.SPECIAL_REGEX_CHARACTERS, "\\\\$0")), Matcher.quoteReplacement(oldMessagePatternValue)));
             try {
                 new JSONParser().parse(messageEditData.getOldMessage());
                 messageEditData.setOldMessageJson(true);
