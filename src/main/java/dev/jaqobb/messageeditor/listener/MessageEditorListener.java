@@ -30,6 +30,7 @@ import dev.jaqobb.messageeditor.MessageEditorPlugin;
 import dev.jaqobb.messageeditor.data.MessageEdit;
 import dev.jaqobb.messageeditor.data.MessageEditData;
 import dev.jaqobb.messageeditor.data.MessagePlace;
+import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -142,12 +143,30 @@ public final class MessageEditorListener implements Listener {
             player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "- " + ChatColor.YELLOW + MessagePlace.SYSTEM_CHAT.name() + ChatColor.GRAY + " (" + ChatColor.YELLOW + MessagePlace.SYSTEM_CHAT.getFriendlyName() + ChatColor.GRAY + ")");
             player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "- " + ChatColor.YELLOW + MessagePlace.ACTION_BAR.name() + ChatColor.GRAY + " (" + ChatColor.YELLOW + MessagePlace.ACTION_BAR.getFriendlyName() + ChatColor.GRAY + ")");
         } else if (slot == 48) {
+            String oldMessagePatternString = messageEditData.getOldMessagePattern();
+            Pattern oldMessagePattern = Pattern.compile(oldMessagePatternString);
+            Matcher oldMessagePatternMatcher = oldMessagePattern.matcher(messageEditData.getOriginalOldMessage());
+            MessagePlace oldMessagePlace = messageEditData.getOldMessagePlace();
+            String newMessage = messageEditData.getNewMessage();
+            newMessage = newMessage.replace("\\", "\\\\");
+            if (oldMessagePatternMatcher.matches()) {
+                StringJoiner excludePattern = new StringJoiner("|", "(?!", ")");
+                excludePattern.add("\\$0");
+                for (int index = 0; index < oldMessagePatternMatcher.groupCount(); index++) {
+                    excludePattern.add("\\$" + (index + 1));
+                }
+                String excludePatternString = excludePattern + "\\$[0-9]+";
+                System.out.println(excludePatternString);
+                newMessage = newMessage.replaceAll(excludePatternString, "\\\\$0");
+            } else {
+                newMessage = newMessage.replace("$", "\\$");
+            }
+            MessagePlace newMessagePlace = messageEditData.getNewMessagePlace();
             this.plugin.addMessageEdit(new MessageEdit(
-                messageEditData.getOldMessagePattern(),
-                messageEditData.getOldMessagePlace(),
-                // TODO: Fix as this most likely also escapes variables.
-                Matcher.quoteReplacement(messageEditData.getNewMessage()),
-                messageEditData.getNewMessagePlace()
+                oldMessagePatternString,
+                oldMessagePlace,
+                newMessage,
+                newMessagePlace
             ));
             this.plugin.clearCachedMessages();
             this.plugin.saveConfig();

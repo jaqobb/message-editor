@@ -28,11 +28,15 @@ import dev.jaqobb.messageeditor.MessageEditorConstants;
 
 public final class MessageEditData {
 
+    private String originalOldMessage;
+    private boolean originalOldMessageJson;
     private String oldMessage;
     private String oldMessagePattern;
     private boolean oldMessageJson;
     private String oldMessagePatternKey;
     private final MessagePlace oldMessagePlace;
+    private String originalNewMessage;
+    private boolean originalNewMessageJson;
     private String newMessage;
     private boolean newMessageJson;
     private String newMessageCache;
@@ -59,17 +63,29 @@ public final class MessageEditData {
         final boolean newMessageJson,
         final MessagePlace newMessagePlace
     ) {
+        this.originalOldMessage = oldMessage;
+        this.originalOldMessageJson = oldMessageJson;
         this.oldMessage = oldMessage;
         this.oldMessagePattern = oldMessage.replaceAll(MessageEditorConstants.SPECIAL_REGEX_CHARACTERS, "\\\\$0");
         this.oldMessageJson = oldMessageJson;
         this.oldMessagePatternKey = "";
         this.oldMessagePlace = oldMessagePlace;
+        this.originalNewMessage = newMessage;
+        this.originalNewMessageJson = newMessageJson;
         this.newMessage = newMessage;
         this.newMessageJson = newMessageJson;
         this.newMessageCache = "";
         this.newMessagePlace = newMessagePlace;
         this.mode = Mode.NONE;
         this.shouldDestroy = true;
+    }
+
+    public String getOriginalOldMessage() {
+        return this.originalOldMessage;
+    }
+
+    public boolean isOriginalOldMessageJson() {
+        return this.originalOldMessageJson;
     }
 
     public String getOldMessage() {
@@ -106,6 +122,14 @@ public final class MessageEditData {
 
     public MessagePlace getOldMessagePlace() {
         return this.oldMessagePlace;
+    }
+
+    public String getOriginalNewMessage() {
+        return this.originalNewMessage;
+    }
+
+    public boolean isOriginalNewMessageJson() {
+        return this.originalNewMessageJson;
     }
 
     public String getNewMessage() {
