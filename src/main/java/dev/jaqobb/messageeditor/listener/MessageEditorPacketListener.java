@@ -204,7 +204,6 @@ public final class MessageEditorPacketListener extends PacketAdapter {
             if (messageToSend.length == 1) {
                 message = ComponentSerializer.toString(messageToSend);
             } else {
-                // TODO: Make it better?
                 // Using ComponentSerializer#toString when the amount of components is greater than 1
                 // wraps the message into TextComponent and thus can break plugins where the index
                 // of a message component is important.

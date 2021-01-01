@@ -166,6 +166,9 @@ public final class MenuManager {
         } else {
             newMessage = messageEditData.getNewMessage();
         }
+        if (newMessage.trim().isEmpty()) {
+            newMessage = ChatColor.RED + "Message removed.";
+        }
         List<String> newMessageLore = new ArrayList<>(10);
         newMessageLore.add("");
         String newMessageChunk = "";

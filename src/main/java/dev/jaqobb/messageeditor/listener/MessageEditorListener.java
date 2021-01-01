@@ -128,7 +128,7 @@ public final class MessageEditorListener implements Listener {
             player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Enter new message. Enter '" + ChatColor.YELLOW + "done" + ChatColor.GRAY + "' once you are done entering the new message.");
             MessagePlace newMessagePlace = messageEditData.getNewMessagePlace();
             if (newMessagePlace == MessagePlace.GAME_CHAT || newMessagePlace == MessagePlace.SYSTEM_CHAT || newMessagePlace == MessagePlace.ACTION_BAR) {
-                player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "You can also enter '" + ChatColor.YELLOW + "remove" + ChatColor.GRAY + "' to remove the message and prevent it from being sent to the players.");
+                player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "You can also enter '" + ChatColor.YELLOW + "remove" + ChatColor.GRAY + "' to remove the message if you do not want it to be sent to the players.");
             }
         } else if (slot == 24) {
             MessagePlace oldMessagePlace = messageEditData.getOldMessagePlace();
