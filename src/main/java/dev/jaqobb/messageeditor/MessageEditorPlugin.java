@@ -52,7 +52,6 @@ import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-// TODO: Make "" be replaced into empty message when editing new message.
 public final class MessageEditorPlugin extends JavaPlugin {
 
     static {

@@ -204,7 +204,11 @@ public final class MessageEditorListener implements Listener {
             } else if (messageEditDataMode == MessageEditData.Mode.EDITTING_NEW_MESSAGE) {
                 messageEditData.setMode(MessageEditData.Mode.NONE);
                 messageEditData.setShouldDestroy(true);
-                messageEditData.setNewMessage(messageEditData.getNewMessageCache());
+                if (messageEditData.getNewMessageCache().equals("\"\"")) {
+                    messageEditData.setNewMessage("");
+                } else {
+                    messageEditData.setNewMessage(messageEditData.getNewMessageCache());
+                }
                 try {
                     new JSONParser().parse(messageEditData.getNewMessage());
                     messageEditData.setNewMessageJson(true);
