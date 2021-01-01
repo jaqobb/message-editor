@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020 Jakub Zagórski (jaqobb)
+ * Copyright (c) 2020-2021 Jakub Zagórski (jaqobb)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -52,6 +52,7 @@ import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+// TODO: Make "" be replaced into empty message when editing new message.
 public final class MessageEditorPlugin extends JavaPlugin {
 
     static {
