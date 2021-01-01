@@ -101,7 +101,6 @@ public final class MenuManager {
         this.plugin.setCurrentMessageEdit(player.getUniqueId(), messageEditData);
     }
 
-    // TODO: Fix old and new message not being split correctly?
     public void openMenu(
         final Player player,
         final MessageEditData messageEditData,
@@ -126,20 +125,22 @@ public final class MenuManager {
         }
         List<String> oldMessageLore = new ArrayList<>(10);
         oldMessageLore.add("");
-        String oldMessageChunk = "";
-        String[] oldMessageData = oldMessage.split(" ");
-        for (int oldMessageDataIndex = 0; oldMessageDataIndex < oldMessageData.length; oldMessageDataIndex++) {
-            if (oldMessageDataIndex > 0 && oldMessageDataIndex < oldMessageData.length && !oldMessageChunk.isEmpty()) {
-                oldMessageChunk += " ";
-            }
-            oldMessageChunk += oldMessageData[oldMessageDataIndex];
-            if (oldMessageDataIndex == oldMessageData.length - 1 || oldMessageChunk.length() >= MessageEditorConstants.MESSAGE_LENGTH) {
-                if (oldMessageLore.size() == 1) {
-                    oldMessageLore.add(oldMessageChunk);
-                } else {
-                    oldMessageLore.add(MessageUtils.getLastColors(oldMessageLore.get(oldMessageLore.size() - 1)) + oldMessageChunk);
+        for (String oldMessageData : oldMessage.split("\\n")) {
+            String oldMessageChunk = "";
+            String[] oldMessageDataChunk = oldMessageData.split(" ");
+            for (int oldMessageDataIndex = 0; oldMessageDataIndex < oldMessageDataChunk.length; oldMessageDataIndex++) {
+                if (oldMessageDataIndex > 0 && oldMessageDataIndex < oldMessageDataChunk.length && !oldMessageChunk.isEmpty()) {
+                    oldMessageChunk += " ";
                 }
-                oldMessageChunk = "";
+                oldMessageChunk += oldMessageDataChunk[oldMessageDataIndex];
+                if (oldMessageDataIndex == oldMessageDataChunk.length - 1 || oldMessageChunk.length() >= MessageEditorConstants.MESSAGE_LENGTH) {
+                    if (oldMessageLore.size() == 1) {
+                        oldMessageLore.add(oldMessageChunk);
+                    } else {
+                        oldMessageLore.add(MessageUtils.getLastColors(oldMessageLore.get(oldMessageLore.size() - 1)) + oldMessageChunk);
+                    }
+                    oldMessageChunk = "";
+                }
             }
         }
         oldMessageLore.add("");
@@ -166,25 +167,29 @@ public final class MenuManager {
         } else {
             newMessage = messageEditData.getNewMessage();
         }
-        if (newMessage.trim().isEmpty()) {
+        if (newMessage.isEmpty()) {
             newMessage = ChatColor.RED + "Message removed.";
+            newMessage += "\n";
+            newMessage += ChatColor.RED + "(this is not an actual message)";
         }
         List<String> newMessageLore = new ArrayList<>(10);
         newMessageLore.add("");
-        String newMessageChunk = "";
-        String[] newMessageData = newMessage.split(" ");
-        for (int newMessageDataIndex = 0; newMessageDataIndex < newMessageData.length; newMessageDataIndex++) {
-            if (newMessageDataIndex > 0 && newMessageDataIndex < newMessageData.length && !newMessageChunk.isEmpty()) {
-                newMessageChunk += " ";
-            }
-            newMessageChunk += newMessageData[newMessageDataIndex];
-            if (newMessageDataIndex == newMessageData.length - 1 || newMessageChunk.length() >= MessageEditorConstants.MESSAGE_LENGTH) {
-                if (newMessageLore.size() == 1) {
-                    newMessageLore.add(newMessageChunk);
-                } else {
-                    newMessageLore.add(MessageUtils.getLastColors(newMessageLore.get(newMessageLore.size() - 1)) + newMessageChunk);
+        for (String newMessageData : newMessage.split("\\n")) {
+            String newMessageChunk = "";
+            String[] newMessageDataChunk = newMessageData.split(" ");
+            for (int newMessageDataChunkIndex = 0; newMessageDataChunkIndex < newMessageDataChunk.length; newMessageDataChunkIndex++) {
+                if (newMessageDataChunkIndex > 0 && newMessageDataChunkIndex < newMessageDataChunk.length && !newMessageChunk.isEmpty()) {
+                    newMessageChunk += " ";
                 }
-                newMessageChunk = "";
+                newMessageChunk += newMessageDataChunk[newMessageDataChunkIndex];
+                if (newMessageDataChunkIndex == newMessageDataChunk.length - 1 || newMessageChunk.length() >= MessageEditorConstants.MESSAGE_LENGTH) {
+                    if (newMessageLore.size() == 1) {
+                        newMessageLore.add(newMessageChunk);
+                    } else {
+                        newMessageLore.add(MessageUtils.getLastColors(newMessageLore.get(newMessageLore.size() - 1)) + newMessageChunk);
+                    }
+                    newMessageChunk = "";
+                }
             }
         }
         newMessageLore.add("");

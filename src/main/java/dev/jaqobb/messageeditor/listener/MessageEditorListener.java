@@ -128,7 +128,7 @@ public final class MessageEditorListener implements Listener {
             player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Enter new message. Enter '" + ChatColor.YELLOW + "done" + ChatColor.GRAY + "' once you are done entering the new message.");
             MessagePlace newMessagePlace = messageEditData.getNewMessagePlace();
             if (newMessagePlace == MessagePlace.GAME_CHAT || newMessagePlace == MessagePlace.SYSTEM_CHAT || newMessagePlace == MessagePlace.ACTION_BAR) {
-                player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "You can also enter '" + ChatColor.YELLOW + "remove" + ChatColor.GRAY + "' to remove the message if you do not want it to be sent to the players.");
+                player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "You can also enter '" + ChatColor.YELLOW + "remove" + ChatColor.GRAY + "' if you do not want the new message to be sent to the players (this will completely remove the message).");
             }
         } else if (slot == 24) {
             MessagePlace oldMessagePlace = messageEditData.getOldMessagePlace();
@@ -205,18 +205,23 @@ public final class MessageEditorListener implements Listener {
                 messageEditData.setOldMessagePatternKey("");
                 this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, messageEditData, true));
             } else if (messageEditDataMode == MessageEditData.Mode.EDITTING_NEW_MESSAGE) {
-                messageEditData.setMode(MessageEditData.Mode.NONE);
-                messageEditData.setShouldDestroy(true);
-                messageEditData.setNewMessage(messageEditData.getNewMessageCache());
-                try {
-                    new JSONParser().parse(messageEditData.getNewMessage());
-                    messageEditData.setNewMessageJson(true);
-                } catch (ParseException exception) {
-                    messageEditData.setNewMessage(ChatColor.translateAlternateColorCodes('&', messageEditData.getNewMessage()));
-                    messageEditData.setNewMessageJson(false);
+                if (messageEditData.getNewMessageCache().isEmpty() && !messageEditData.getNewMessage().isEmpty()) {
+                    player.playSound(player.getLocation(), XSound.ENTITY_ITEM_BREAK.parseSound(), 1.0F, 1.0F);
+                    player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.RED + "The new message is empty. Enter '" + ChatColor.GRAY + "remove" + ChatColor.RED + "' if you do not want the new message to be sent to the players (this will completely remove the message).");
+                } else {
+                    messageEditData.setMode(MessageEditData.Mode.NONE);
+                    messageEditData.setShouldDestroy(true);
+                    messageEditData.setNewMessage(messageEditData.getNewMessageCache());
+                    try {
+                        new JSONParser().parse(messageEditData.getNewMessage());
+                        messageEditData.setNewMessageJson(true);
+                    } catch (ParseException exception) {
+                        messageEditData.setNewMessage(ChatColor.translateAlternateColorCodes('&', messageEditData.getNewMessage()));
+                        messageEditData.setNewMessageJson(false);
+                    }
+                    messageEditData.setNewMessageCache("");
+                    this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, messageEditData, true));
                 }
-                messageEditData.setNewMessageCache("");
-                this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, messageEditData, true));
             }
         } else if (messageEditDataMode == MessageEditData.Mode.EDITTING_OLD_MESSAGE_PATTERN_KEY) {
             messageEditData.setOldMessagePatternKey(message);
@@ -242,7 +247,7 @@ public final class MessageEditorListener implements Listener {
             player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "The first occurence of '" + ChatColor.YELLOW + oldMessagePatternKey + ChatColor.GRAY + "' has been replaced with '" + ChatColor.YELLOW + oldMessagePatternValue + ChatColor.GRAY + "'.");
             player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Enter old message pattern key, that is what you want to replace, or enter '" + ChatColor.YELLOW + "done" + ChatColor.GRAY + "' if you are done replacing everything you want.");
         } else if (messageEditDataMode == MessageEditData.Mode.EDITTING_NEW_MESSAGE) {
-            if (messageEditData.getNewMessageCache().trim().isEmpty() && message.equals("remove")) {
+            if (messageEditData.getNewMessageCache().isEmpty() && message.equals("remove")) {
                 messageEditData.setMode(MessageEditData.Mode.NONE);
                 messageEditData.setShouldDestroy(true);
                 messageEditData.setNewMessage("");
