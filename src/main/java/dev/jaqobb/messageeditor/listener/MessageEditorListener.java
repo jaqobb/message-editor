@@ -160,7 +160,6 @@ public final class MessageEditorListener implements Listener {
                     excludePattern.add("\\$" + (index + 1));
                 }
                 String excludePatternString = excludePattern + "\\$[0-9]+";
-                System.out.println(excludePatternString);
                 newMessage = newMessage.replaceAll(excludePatternString, "\\\\$0");
             } else {
                 newMessage = newMessage.replace("$", "\\$");
