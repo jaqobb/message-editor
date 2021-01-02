@@ -114,14 +114,14 @@ public final class MessageEditorListener implements Listener {
         }
         if (slot == 11) {
             messageEditData.setShouldDestroy(false);
-            messageEditData.setMode(MessageEditData.Mode.EDITTING_OLD_MESSAGE_PATTERN_KEY);
+            messageEditData.setMode(MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_KEY);
             messageEditData.setOldMessagePatternKey("");
             player.closeInventory();
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
             player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Enter old message pattern key, that is what you want to replace, or enter '" + ChatColor.YELLOW + "done" + ChatColor.GRAY + "' if you are done replacing everything you want.");
         } else if (slot == 15) {
             messageEditData.setShouldDestroy(false);
-            messageEditData.setMode(MessageEditData.Mode.EDITTING_NEW_MESSAGE);
+            messageEditData.setMode(MessageEditData.Mode.EDITING_NEW_MESSAGE);
             messageEditData.setNewMessageCache("");
             player.closeInventory();
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
@@ -133,12 +133,12 @@ public final class MessageEditorListener implements Listener {
         } else if (slot == 24) {
             MessagePlace oldMessagePlace = messageEditData.getOldMessagePlace();
             if (oldMessagePlace != MessagePlace.GAME_CHAT && oldMessagePlace != MessagePlace.SYSTEM_CHAT && oldMessagePlace != MessagePlace.ACTION_BAR) {
-                player.playSound(player.getLocation(), XSound.BLOCK_ANVIL_HIT.parseSound(), 1.0F, 1.0F);
+                player.playSound(player.getLocation(), XSound.ENTITY_ITEM_BREAK.parseSound(), 1.0F, 1.0F);
                 player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.RED + "You cannot change new message place of this message.");
                 return;
             }
             messageEditData.setShouldDestroy(false);
-            messageEditData.setMode(MessageEditData.Mode.EDITTING_NEW_MESSAGE_PLACE);
+            messageEditData.setMode(MessageEditData.Mode.EDITING_NEW_MESSAGE_PLACE);
             player.closeInventory();
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
             player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Enter new message place.");
@@ -198,12 +198,12 @@ public final class MessageEditorListener implements Listener {
         event.setCancelled(true);
         String message = event.getMessage();
         if (message.equals("done")) {
-            if (messageEditDataMode == MessageEditData.Mode.EDITTING_OLD_MESSAGE_PATTERN_KEY || messageEditDataMode == MessageEditData.Mode.EDITTING_OLD_MESSAGE_PATTERN_VALUE) {
+            if (messageEditDataMode == MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_KEY || messageEditDataMode == MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_VALUE) {
                 messageEditData.setMode(MessageEditData.Mode.NONE);
                 messageEditData.setShouldDestroy(true);
                 messageEditData.setOldMessagePatternKey("");
                 this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, messageEditData, true));
-            } else if (messageEditDataMode == MessageEditData.Mode.EDITTING_NEW_MESSAGE) {
+            } else if (messageEditDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE) {
                 if (messageEditData.getNewMessageCache().isEmpty() && !messageEditData.getNewMessage().isEmpty()) {
                     player.playSound(player.getLocation(), XSound.ENTITY_ITEM_BREAK.parseSound(), 1.0F, 1.0F);
                     player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.RED + "The new message is empty.");
@@ -226,15 +226,15 @@ public final class MessageEditorListener implements Listener {
                     this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, messageEditData, true));
                 }
             }
-        } else if (messageEditDataMode == MessageEditData.Mode.EDITTING_OLD_MESSAGE_PATTERN_KEY) {
+        } else if (messageEditDataMode == MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_KEY) {
             messageEditData.setOldMessagePatternKey(message);
-            messageEditData.setMode(MessageEditData.Mode.EDITTING_OLD_MESSAGE_PATTERN_VALUE);
+            messageEditData.setMode(MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_VALUE);
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
             player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Now enter old message pattern value, that is what you want the key to be replaced with, or enter '" + ChatColor.YELLOW + "done" + ChatColor.GRAY + "' if you are done replacing everything you want.");
-        } else if (messageEditDataMode == MessageEditData.Mode.EDITTING_OLD_MESSAGE_PATTERN_VALUE) {
+        } else if (messageEditDataMode == MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_VALUE) {
             String oldMessagePatternKey = messageEditData.getOldMessagePatternKey();
             String oldMessagePatternValue = message;
-            messageEditData.setMode(MessageEditData.Mode.EDITTING_OLD_MESSAGE_PATTERN_KEY);
+            messageEditData.setMode(MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_KEY);
             messageEditData.setOldMessage(messageEditData.getOldMessage().replaceFirst(Pattern.quote(oldMessagePatternKey), Matcher.quoteReplacement(oldMessagePatternValue.replace("\\", "\\\\"))));
             messageEditData.setOldMessagePattern(messageEditData.getOldMessagePattern().replaceFirst(Pattern.quote(oldMessagePatternKey.replaceAll(MessageEditorConstants.SPECIAL_REGEX_CHARACTERS, "\\\\$0")), Matcher.quoteReplacement(oldMessagePatternValue)));
             try {
@@ -249,7 +249,7 @@ public final class MessageEditorListener implements Listener {
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
             player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "The first occurence of '" + ChatColor.YELLOW + oldMessagePatternKey + ChatColor.GRAY + "' has been replaced with '" + ChatColor.YELLOW + oldMessagePatternValue + ChatColor.GRAY + "'.");
             player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Enter old message pattern key, that is what you want to replace, or enter '" + ChatColor.YELLOW + "done" + ChatColor.GRAY + "' if you are done replacing everything you want.");
-        } else if (messageEditDataMode == MessageEditData.Mode.EDITTING_NEW_MESSAGE) {
+        } else if (messageEditDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE) {
             MessagePlace newMessagePlace = messageEditData.getNewMessagePlace();
             if ((newMessagePlace == MessagePlace.GAME_CHAT || newMessagePlace == MessagePlace.SYSTEM_CHAT || newMessagePlace == MessagePlace.ACTION_BAR) && messageEditData.getNewMessageCache().isEmpty() && message.equals("remove")) {
                 messageEditData.setMode(MessageEditData.Mode.NONE);
@@ -263,10 +263,10 @@ public final class MessageEditorListener implements Listener {
                 player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Message has been added. Continue if your message is longer and had to divide it into parts. Otherwise enter '" + ChatColor.YELLOW + "done" + ChatColor.GRAY + "' to set the new message.");
                 player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
             }
-        } else if (messageEditDataMode == MessageEditData.Mode.EDITTING_NEW_MESSAGE_PLACE) {
+        } else if (messageEditDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE_PLACE) {
             MessagePlace messagePlace = MessagePlace.fromName(message);
             if (messagePlace == null) {
-                player.playSound(player.getLocation(), XSound.BLOCK_ANVIL_HIT.parseSound(), 1.0F, 1.0F);
+                player.playSound(player.getLocation(), XSound.ENTITY_ITEM_BREAK.parseSound(), 1.0F, 1.0F);
                 player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.RED + "Could not convert '" + ChatColor.GRAY + message + ChatColor.RED + "' to message place.");
                 return;
             }

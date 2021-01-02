@@ -144,7 +144,7 @@ public final class MenuManager {
             }
         }
         oldMessageLore.add("");
-        oldMessageLore.add(ChatColor.GRAY + "Click to change message (pattern).");
+        oldMessageLore.add(ChatColor.GRAY + "Click to edit old message pattern.");
         oldMessageItemMeta.setLore(oldMessageLore);
         oldMessageItem.setItemMeta(oldMessageItemMeta);
         inventory.setItem(11, oldMessageItem);
@@ -193,7 +193,11 @@ public final class MenuManager {
             }
         }
         newMessageLore.add("");
-        newMessageLore.add(ChatColor.GRAY + "Click to change message.");
+        newMessageLore.add(ChatColor.GRAY + "Click LMB to edit new message");
+        newMessageLore.add(ChatColor.GRAY + "in the override mode.");
+        newMessageLore.add("");
+        newMessageLore.add(ChatColor.GRAY + "Click RMB to edit new message");
+        newMessageLore.add(ChatColor.GRAY + "in the replace mode.");
         newMessageItemMeta.setLore(newMessageLore);
         newMessageItem.setItemMeta(newMessageItemMeta);
         inventory.setItem(15, newMessageItem);
@@ -205,7 +209,7 @@ public final class MenuManager {
             ChatColor.GRAY + "ID: " + ChatColor.YELLOW + messageEditData.getNewMessagePlace().name(),
             ChatColor.GRAY + "Friendly name: " + ChatColor.YELLOW + messageEditData.getNewMessagePlace().getFriendlyName(),
             "",
-            ChatColor.GRAY + "Click to change message place."
+            ChatColor.GRAY + "Click to edit new message place."
         ));
         newMessagePlaceItem.setItemMeta(newMessagePlaceItemMeta);
         inventory.setItem(24, newMessagePlaceItem);
