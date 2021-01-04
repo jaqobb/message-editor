@@ -28,21 +28,21 @@ import dev.jaqobb.messageeditor.MessageEditorConstants;
 
 public final class MessageEditData {
 
-    private String originalOldMessage;
-    private boolean originalOldMessageJson;
+    private final String originalOldMessage;
+    private final boolean originalOldMessageJson;
     private String oldMessage;
     private String oldMessagePattern;
     private boolean oldMessageJson;
     private String oldMessagePatternKey;
     private final MessagePlace oldMessagePlace;
-    private String originalNewMessage;
-    private boolean originalNewMessageJson;
+    private final String originalNewMessage;
+    private final boolean originalNewMessageJson;
     private String newMessage;
     private boolean newMessageJson;
     private String newMessageCache;
+    private String newMessageKey;
     private MessagePlace newMessagePlace;
     private Mode mode;
-    private boolean shouldDestroy;
 
     public MessageEditData(final MessageData messageData) {
         this(
@@ -75,9 +75,9 @@ public final class MessageEditData {
         this.newMessage = newMessage;
         this.newMessageJson = newMessageJson;
         this.newMessageCache = "";
+        this.newMessageKey = "";
         this.newMessagePlace = newMessagePlace;
         this.mode = Mode.NONE;
-        this.shouldDestroy = true;
     }
 
     public String getOriginalOldMessage() {
@@ -156,6 +156,14 @@ public final class MessageEditData {
         this.newMessageCache = newMessageCache;
     }
 
+    public String getNewMessageKey() {
+        return this.newMessageKey;
+    }
+
+    public void setNewMessageKey(final String newMessageKey) {
+        this.newMessageKey = newMessageKey;
+    }
+
     public MessagePlace getNewMessagePlace() {
         return this.newMessagePlace;
     }
@@ -172,22 +180,24 @@ public final class MessageEditData {
         this.mode = mode;
     }
 
-    public boolean shouldDestroy() {
-        return this.shouldDestroy;
-    }
-
-    public void setShouldDestroy(final boolean shouldDestroy) {
-        this.shouldDestroy = shouldDestroy;
-    }
-
     public static enum Mode {
 
-        NONE,
-        EDITING_OLD_MESSAGE_PATTERN_KEY,
-        EDITING_OLD_MESSAGE_PATTERN_VALUE,
-        EDITING_NEW_MESSAGE,
-        EDITING_NEW_MESSAGE_KEY,
-        EDITING_NEW_MESSAGE_VALUE,
-        EDITING_NEW_MESSAGE_PLACE
+        NONE(true),
+        EDITING_OLD_MESSAGE_PATTERN_KEY(false),
+        EDITING_OLD_MESSAGE_PATTERN_VALUE(false),
+        EDITING_NEW_MESSAGE(false),
+        EDITING_NEW_MESSAGE_KEY(false),
+        EDITING_NEW_MESSAGE_VALUE(false),
+        EDITING_NEW_MESSAGE_PLACE(false);
+
+        private final boolean destroy;
+
+        private Mode(final boolean destroy) {
+            this.destroy = destroy;
+        }
+
+        public boolean shouldDestroy() {
+            return this.destroy;
+        }
     }
 }
