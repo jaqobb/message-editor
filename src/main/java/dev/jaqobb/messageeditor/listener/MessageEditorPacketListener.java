@@ -42,7 +42,6 @@ import dev.jaqobb.messageeditor.data.bossbar.BossBarMessageStyle;
 import dev.jaqobb.messageeditor.data.scoreboard.ScoreboardHealthDisplayMode;
 import dev.jaqobb.messageeditor.util.MessageUtils;
 import java.util.Map;
-import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import net.md_5.bungee.api.ChatColor;
@@ -195,24 +194,13 @@ public final class MessageEditorPacketListener extends PacketAdapter {
             if (messageJson) {
                 messageToSend = ComponentSerializer.parse(message);
             } else {
-                messageToSend = TextComponent.fromLegacyText(message);
+                messageToSend = MessageUtils.toBaseComponents(message);
             }
             for (BaseComponent messageToSendElement : messageToSend) {
                 messageToSendElement.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(ChatColor.GRAY + "Click to start editing this message.")));
                 messageToSendElement.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/message-editor edit " + messageId));
             }
-            if (messageToSend.length == 1) {
-                message = ComponentSerializer.toString(messageToSend);
-            } else {
-                // Using ComponentSerializer#toString when the amount of components is greater than 1
-                // wraps the message into TextComponent and thus can break plugins where the index
-                // of a message component is important.
-                StringJoiner messageToSendJson = new StringJoiner(",", "[", "]");
-                for (BaseComponent messageToSendComponent : messageToSend) {
-                    messageToSendJson.add(ComponentSerializer.toString(messageToSendComponent));
-                }
-                message = messageToSendJson.toString();
-            }
+            message = MessageUtils.toJson(messageToSend, false);
             messageJson = true;
         }
         if (messagePlace != originalMessagePlace) {

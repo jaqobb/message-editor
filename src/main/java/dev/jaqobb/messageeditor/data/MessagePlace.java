@@ -29,10 +29,9 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
+import dev.jaqobb.messageeditor.util.MessageUtils;
 import java.util.Arrays;
-import java.util.StringJoiner;
 import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 
 public enum MessagePlace {
@@ -46,18 +45,7 @@ public enum MessagePlace {
             } else if (packet.getSpecificModifier(BaseComponent[].class).size() == 1) {
                 BaseComponent[] messageComponents = packet.getSpecificModifier(BaseComponent[].class).read(0);
                 if (messageComponents != null) {
-                    if (messageComponents.length == 1) {
-                        return ComponentSerializer.toString(messageComponents[0]);
-                    } else if (messageComponents.length > 1) {
-                        // Using ComponentSerializer#toString when the amount of components is greater than 1
-                        // wraps the message into TextComponent and thus can break plugins where the index
-                        // of a message component is important.
-                        StringJoiner messageComponentsJson = new StringJoiner(",", "[", "]");
-                        for (BaseComponent messageComponent : messageComponents) {
-                            messageComponentsJson.add(ComponentSerializer.toString(messageComponent));
-                        }
-                        return messageComponentsJson.toString();
-                    }
+                    return MessageUtils.toJson(messageComponents, false);
                 }
             }
             return null;
@@ -73,13 +61,13 @@ public enum MessagePlace {
                 if (messageJson) {
                     packet.getChatComponents().write(0, WrappedChatComponent.fromJson(message));
                 } else {
-                    packet.getChatComponents().write(0, WrappedChatComponent.fromText(message));
+                    packet.getChatComponents().write(0, WrappedChatComponent.fromJson(MessageUtils.toJson(MessageUtils.toBaseComponents(message), true)));
                 }
             } else if (packet.getSpecificModifier(BaseComponent[].class).size() == 1) {
                 if (messageJson) {
                     packet.getSpecificModifier(BaseComponent[].class).write(0, ComponentSerializer.parse(message));
                 } else {
-                    packet.getSpecificModifier(BaseComponent[].class).write(0, TextComponent.fromLegacyText(message));
+                    packet.getSpecificModifier(BaseComponent[].class).write(0, MessageUtils.toBaseComponents(message));
                 }
             }
         }

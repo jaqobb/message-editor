@@ -25,11 +25,19 @@
 package dev.jaqobb.messageeditor.util;
 
 import dev.jaqobb.messageeditor.data.MessagePlace;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringJoiner;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.chat.ComponentSerializer;
 
 public final class MessageUtils {
 
     private static final char[] CHARACTERS = {'q', 'Q', 'w', 'W', 'e', 'E', 'r', 'R', 't', 'T', 'y', 'Y', 'u', 'U', 'i', 'I', 'o', 'O', 'p', 'P', 'a', 'A', 's', 'S', 'd', 'D', 'f', 'F', 'g', 'G', 'h', 'H', 'j', 'J', 'k', 'K', 'l', 'L', 'z', 'Z', 'x', 'X', 'c', 'C', 'v', 'V', 'b', 'B', 'n', 'N', 'm', 'M', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '_'};
+
+    private static final BaseComponent[] EMPTY_BASE_COMPONENT_ARRAY = new BaseComponent[0];
 
     private MessageUtils() {
         throw new UnsupportedOperationException("Cannot create instance of this class");
@@ -78,5 +86,61 @@ public final class MessageUtils {
             }
         }
         return result;
+    }
+
+    public static BaseComponent[] toBaseComponents(
+        final String message
+    ) {
+        List<BaseComponent> messageComponents = new ArrayList<>(10);
+        String messagePart = "";
+        for (int messageIndex = 0; messageIndex < message.length(); messageIndex++) {
+            boolean makeMessageComponent = false;
+            String messagePartNew = "";
+            char messageCharacter = message.charAt(messageIndex);
+            if (messageIndex == message.length() - 1) {
+                makeMessageComponent = true;
+                messagePart += messageCharacter;
+            } else if (messageCharacter != '§') {
+                messagePart += messageCharacter;
+            } else {
+                ChatColor color = ChatColor.getByChar(message.charAt(messageIndex + 1));
+                if (color != null) {
+                    messageIndex++;
+                    if (messagePart.isEmpty() || (color == ChatColor.MAGIC || color == ChatColor.BOLD || color == ChatColor.STRIKETHROUGH || color == ChatColor.UNDERLINE || color == ChatColor.ITALIC || color == ChatColor.RESET)) {
+                        messagePart += color.toString();
+                    } else {
+                        makeMessageComponent = true;
+                        messagePartNew += color.toString();
+                    }
+                } else {
+                    messagePart += messageCharacter;
+                }
+            }
+            if (makeMessageComponent) {
+                messageComponents.add(new TextComponent(messagePart));
+                messagePart = messagePartNew;
+            }
+        }
+        return messageComponents.toArray(EMPTY_BASE_COMPONENT_ARRAY);
+    }
+
+    // Using ComponentSerializer#toString when the amount of components is greater than 1
+    // wraps the message into TextComponent and thus can break plugins where the index
+    // of a message component is important.
+    public static String toJson(
+        final BaseComponent[] messageComponents,
+        final boolean wrapIntoTextComponent
+    ) {
+        if (messageComponents.length == 1) {
+            return ComponentSerializer.toString(messageComponents[0]);
+        } else if (wrapIntoTextComponent) {
+            return ComponentSerializer.toString(messageComponents);
+        } else {
+            StringJoiner messageComponentsJson = new StringJoiner(",", "[", "]");
+            for (BaseComponent messageComponent : messageComponents) {
+                messageComponentsJson.add(ComponentSerializer.toString(messageComponent));
+            }
+            return messageComponentsJson.toString();
+        }
     }
 }
