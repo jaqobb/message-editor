@@ -18,6 +18,7 @@ Message Editor supports:
 * [x] Editing scoreboard titles - since 1.5.0
 * [x] Editing scoreboard entries - since 1.6.0
 * [x] Editing messages with GUI - since 2.0.0
+* [x] Editing inventory titles - since 2.2.0
 
 ### Showcase
 

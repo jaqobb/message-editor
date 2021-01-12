@@ -117,7 +117,7 @@ public enum MessagePlace {
             if (messageJson) {
                 packet.getChatComponents().write(0, WrappedChatComponent.fromJson(message));
             } else {
-                packet.getChatComponents().write(0, WrappedChatComponent.fromText(message));
+                packet.getChatComponents().write(0, WrappedChatComponent.fromJson(MessageUtils.toJson(MessageUtils.toBaseComponents(message), true)));
             }
         }
     },
@@ -136,7 +136,7 @@ public enum MessagePlace {
             if (messageJson) {
                 packet.getChatComponents().write(0, WrappedChatComponent.fromJson(message));
             } else {
-                packet.getChatComponents().write(0, WrappedChatComponent.fromText(message));
+                packet.getChatComponents().write(0, WrappedChatComponent.fromJson(MessageUtils.toJson(MessageUtils.toBaseComponents(message), true)));
             }
         }
     },
@@ -155,7 +155,7 @@ public enum MessagePlace {
             if (messageJson) {
                 packet.getChatComponents().write(0, WrappedChatComponent.fromJson(message));
             } else {
-                packet.getChatComponents().write(0, WrappedChatComponent.fromText(message));
+                packet.getChatComponents().write(0, WrappedChatComponent.fromJson(MessageUtils.toJson(MessageUtils.toBaseComponents(message), true)));
             }
         }
     },
@@ -181,7 +181,7 @@ public enum MessagePlace {
             if (messageJson) {
                 packet.getChatComponents().write(0, WrappedChatComponent.fromJson(message));
             } else {
-                packet.getChatComponents().write(0, WrappedChatComponent.fromText(message));
+                packet.getChatComponents().write(0, WrappedChatComponent.fromJson(MessageUtils.toJson(MessageUtils.toBaseComponents(message), true)));
             }
         }
     },
@@ -201,6 +201,25 @@ public enum MessagePlace {
                 packet.getStrings().write(0, BaseComponent.toLegacyText(ComponentSerializer.parse(message)));
             } else {
                 packet.getStrings().write(0, message);
+            }
+        }
+    },
+    INVENTORY_TITLE("IT", "Inventory Title", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.OPEN_WINDOW) {
+        @Override
+        public String getMessage(final PacketContainer packet) {
+            return packet.getChatComponents().read(0).getJson();
+        }
+
+        @Override
+        public void setMessage(
+            final PacketContainer packet,
+            final String message,
+            final boolean messageJson
+        ) {
+            if (messageJson) {
+                packet.getChatComponents().write(0, WrappedChatComponent.fromJson(message));
+            } else {
+                packet.getChatComponents().write(0, WrappedChatComponent.fromJson(MessageUtils.toJson(MessageUtils.toBaseComponents(message), true)));
             }
         }
     };

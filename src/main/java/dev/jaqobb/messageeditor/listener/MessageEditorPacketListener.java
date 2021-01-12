@@ -65,7 +65,8 @@ public final class MessageEditorPacketListener extends PacketAdapter {
             PacketType.Play.Server.CHAT,
             PacketType.Play.Server.BOSS,
             PacketType.Play.Server.SCOREBOARD_OBJECTIVE,
-            PacketType.Play.Server.SCOREBOARD_SCORE
+            PacketType.Play.Server.SCOREBOARD_SCORE,
+            PacketType.Play.Server.OPEN_WINDOW
         );
     }
 
@@ -274,6 +275,10 @@ public final class MessageEditorPacketListener extends PacketAdapter {
             newPacket.getStrings().write(1, oldPacket.getStrings().read(1));
             newPacket.getIntegers().write(0, oldPacket.getIntegers().read(0));
             newPacket.getScoreboardActions().write(0, oldPacket.getScoreboardActions().read(0));
+        } else if (newPacket.getType() == PacketType.Play.Server.OPEN_WINDOW) {
+            newPacket.getIntegers().write(0, oldPacket.getIntegers().read(0));
+            newPacket.getIntegers().write(1, oldPacket.getIntegers().read(1));
+            newPacket.getChatComponents().write(0, oldPacket.getChatComponents().read(0));
         }
         return newPacket;
     }
