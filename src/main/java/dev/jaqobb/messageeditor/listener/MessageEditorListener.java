@@ -91,7 +91,7 @@ public final class MessageEditorListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onPlayerInventoryCLick(final InventoryClickEvent event) {
+    public void onPlayerInventoryClick(final InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
         Inventory inventory = event.getInventory();
         InventoryView inventoryView = event.getView();
