@@ -24,14 +24,21 @@
 
 package dev.jaqobb.messageeditor.util;
 
+import dev.jaqobb.messageeditor.MessageEditorConstants;
 import dev.jaqobb.messageeditor.message.MessagePlace;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
+import org.bukkit.entity.Player;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public final class MessageUtils {
 
@@ -142,5 +149,38 @@ public final class MessageUtils {
             }
             return messageComponentsJson.toString();
         }
+    }
+
+    public static boolean isJson(final String message) {
+        try {
+            new JSONParser().parse(message);
+            return true;
+        } catch (ParseException exception) {
+            return false;
+        }
+    }
+
+    public static void logMessage(
+        final Logger logger,
+        final MessagePlace messagePlace,
+        final Player player,
+        final String messageId,
+        final boolean messageJson,
+        final String message
+    ) {
+        logger.log(Level.INFO, "Place: " + messagePlace.getFriendlyName() + " (" + messagePlace.name() + ")");
+        logger.log(Level.INFO, "Player: " + player.getName());
+        if (messageJson) {
+            String messageReplaced = message.replaceAll(MessageEditorConstants.SPECIAL_REGEX_CHARACTERS, "\\\\$0");
+            String messageClear = BaseComponent.toLegacyText(ComponentSerializer.parse(message));
+            logger.log(Level.INFO, "Message JSON: '" + messageReplaced + "'");
+            logger.log(Level.INFO, "Message clear: '" + messageClear + "'");
+        } else {
+            Matcher matcher = MessageEditorConstants.CHAT_COLOR_PATTERN.matcher(message);
+            String messageSuffix = matcher.find() ? " (replace & -> § (section sign) in colors)" : "";
+            logger.log(Level.INFO, "Message: '" + matcher.replaceAll("&$1") + "'" + messageSuffix);
+            logger.log(Level.INFO, "Message clear: '" + matcher.replaceAll("") + "'");
+        }
+        logger.log(Level.INFO, "Message ID: '" + messageId + "'");
     }
 }

@@ -25,16 +25,13 @@
 package dev.jaqobb.messageeditor;
 
 import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.utility.MinecraftVersion;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import dev.jaqobb.messageeditor.command.MessageEditorCommand;
 import dev.jaqobb.messageeditor.command.MessageEditorCommandTabCompleter;
-import dev.jaqobb.messageeditor.message.MessageData;
-import dev.jaqobb.messageeditor.message.MessageEdit;
-import dev.jaqobb.messageeditor.message.MessageEditData;
-import dev.jaqobb.messageeditor.message.MessagePlace;
-import dev.jaqobb.messageeditor.listener.MessageEditorPacketListener;
+import dev.jaqobb.messageeditor.listener.message.ChatMessageListener;
 import dev.jaqobb.messageeditor.listener.player.PlayerChatListener;
 import dev.jaqobb.messageeditor.listener.player.PlayerInventoryClickListener;
 import dev.jaqobb.messageeditor.listener.player.PlayerInventoryCloseListener;
@@ -44,6 +41,10 @@ import dev.jaqobb.messageeditor.listener.player.PlayerQuitListener;
 import dev.jaqobb.messageeditor.listener.plugin.PluginDisableListener;
 import dev.jaqobb.messageeditor.listener.plugin.PluginEnableListener;
 import dev.jaqobb.messageeditor.menu.MenuManager;
+import dev.jaqobb.messageeditor.message.MessageData;
+import dev.jaqobb.messageeditor.message.MessageEdit;
+import dev.jaqobb.messageeditor.message.MessageEditData;
+import dev.jaqobb.messageeditor.message.MessagePlace;
 import dev.jaqobb.messageeditor.updater.Updater;
 import java.util.AbstractMap;
 import java.util.Collections;
@@ -134,7 +135,9 @@ public final class MessageEditorPlugin extends JavaPlugin {
         pluginManager.registerEvents(new PlayerInventoryClickListener(this), this);
         pluginManager.registerEvents(new PlayerChatListener(this), this);
         this.getLogger().log(Level.INFO, "Registering packet listeners...");
-        ProtocolLibrary.getProtocolManager().addPacketListener(new MessageEditorPacketListener(this));
+        ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
+        protocolManager.addPacketListener(new ChatMessageListener(this));
+        //ProtocolLibrary.getProtocolManager().addPacketListener(new MessageEditorPacketListener(this));
     }
 
     @SuppressWarnings("unchecked")
