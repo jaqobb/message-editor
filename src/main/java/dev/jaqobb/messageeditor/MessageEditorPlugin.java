@@ -34,8 +34,15 @@ import dev.jaqobb.messageeditor.data.MessageData;
 import dev.jaqobb.messageeditor.data.MessageEdit;
 import dev.jaqobb.messageeditor.data.MessageEditData;
 import dev.jaqobb.messageeditor.data.MessagePlace;
-import dev.jaqobb.messageeditor.listener.MessageEditorListener;
 import dev.jaqobb.messageeditor.listener.MessageEditorPacketListener;
+import dev.jaqobb.messageeditor.listener.player.PlayerChatListener;
+import dev.jaqobb.messageeditor.listener.player.PlayerInventoryClickListener;
+import dev.jaqobb.messageeditor.listener.player.PlayerInventoryCloseListener;
+import dev.jaqobb.messageeditor.listener.player.PlayerJoinListener;
+import dev.jaqobb.messageeditor.listener.player.PlayerKickListener;
+import dev.jaqobb.messageeditor.listener.player.PlayerQuitListener;
+import dev.jaqobb.messageeditor.listener.plugin.PluginDisableListener;
+import dev.jaqobb.messageeditor.listener.plugin.PluginEnableListener;
 import dev.jaqobb.messageeditor.menu.MenuManager;
 import dev.jaqobb.messageeditor.updater.Updater;
 import java.util.AbstractMap;
@@ -116,9 +123,17 @@ public final class MessageEditorPlugin extends JavaPlugin {
         this.getLogger().log(Level.INFO, "Registering command...");
         this.getCommand("message-editor").setExecutor(new MessageEditorCommand(this));
         this.getCommand("message-editor").setTabCompleter(new MessageEditorCommandTabCompleter());
-        this.getLogger().log(Level.INFO, "Registering listener...");
-        this.getServer().getPluginManager().registerEvents(new MessageEditorListener(this), this);
-        this.getLogger().log(Level.INFO, "Registering packet listener...");
+        this.getLogger().log(Level.INFO, "Registering listeners...");
+        PluginManager pluginManager = this.getServer().getPluginManager();
+        pluginManager.registerEvents(new PluginEnableListener(this), this);
+        pluginManager.registerEvents(new PluginDisableListener(this), this);
+        pluginManager.registerEvents(new PlayerJoinListener(this), this);
+        pluginManager.registerEvents(new PlayerQuitListener(this), this);
+        pluginManager.registerEvents(new PlayerKickListener(this), this);
+        pluginManager.registerEvents(new PlayerInventoryCloseListener(this), this);
+        pluginManager.registerEvents(new PlayerInventoryClickListener(this), this);
+        pluginManager.registerEvents(new PlayerChatListener(this), this);
+        this.getLogger().log(Level.INFO, "Registering packet listeners...");
         ProtocolLibrary.getProtocolManager().addPacketListener(new MessageEditorPacketListener(this));
     }
 

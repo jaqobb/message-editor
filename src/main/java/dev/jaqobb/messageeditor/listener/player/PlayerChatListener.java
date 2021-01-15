@@ -22,16 +22,13 @@
  * SOFTWARE.
  */
 
-package dev.jaqobb.messageeditor.listener;
+package dev.jaqobb.messageeditor.listener.player;
 
 import com.cryptomorin.xseries.XSound;
 import dev.jaqobb.messageeditor.MessageEditorConstants;
 import dev.jaqobb.messageeditor.MessageEditorPlugin;
-import dev.jaqobb.messageeditor.data.MessageEdit;
 import dev.jaqobb.messageeditor.data.MessageEditData;
 import dev.jaqobb.messageeditor.data.MessagePlace;
-import java.util.StringJoiner;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.md_5.bungee.api.ChatColor;
@@ -39,154 +36,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.server.PluginDisableEvent;
-import org.bukkit.event.server.PluginEnableEvent;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryView;
-import org.bukkit.plugin.Plugin;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-public final class MessageEditorListener implements Listener {
+public final class PlayerChatListener implements Listener {
 
     private final MessageEditorPlugin plugin;
 
-    public MessageEditorListener(final MessageEditorPlugin plugin) {
+    public PlayerChatListener(final MessageEditorPlugin plugin) {
         this.plugin = plugin;
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerJoin(final PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        if (player.hasPermission("messageeditor.use") && this.plugin.isUpdateNotify()) {
-            player.sendMessage(this.plugin.getUpdater().getUpdateMessage());
-        }
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerQuit(final PlayerQuitEvent event) {
-        this.plugin.removeCurrentMessageEditData(event.getPlayer().getUniqueId());
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerKick(final PlayerQuitEvent event) {
-        this.plugin.removeCurrentMessageEditData(event.getPlayer().getUniqueId());
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerInventoryClose(final InventoryCloseEvent event) {
-        Player player = (Player) event.getPlayer();
-        MessageEditData messageEditData = this.plugin.getCurrentMessageEditData(player.getUniqueId());
-        if (messageEditData != null && messageEditData.getMode().shouldDestroy()) {
-            this.plugin.removeCurrentMessageEditData(player.getUniqueId());
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onPlayerInventoryClick(final InventoryClickEvent event) {
-        Player player = (Player) event.getWhoClicked();
-        Inventory inventory = event.getInventory();
-        InventoryView inventoryView = event.getView();
-        if (!inventoryView.getTitle().equals(ChatColor.DARK_GRAY + "Message Editor")) {
-            return;
-        }
-        event.setCancelled(true);
-        if (event.getSlotType() == InventoryType.SlotType.OUTSIDE) {
-            return;
-        }
-        if (event.getAction() == InventoryAction.NOTHING) {
-            return;
-        }
-        int slot = event.getRawSlot();
-        if (slot < 0 && slot >= inventory.getSize()) {
-            return;
-        }
-        MessageEditData messageEditData = this.plugin.getCurrentMessageEditData(player.getUniqueId());
-        if (messageEditData == null) {
-            return;
-        }
-        if (slot == 11) {
-            messageEditData.setMode(MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_KEY);
-            messageEditData.setOldMessagePatternKey("");
-            player.closeInventory();
-            player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
-            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Enter old message pattern key, that is what you want to replace, or enter '" + ChatColor.YELLOW + "done" + ChatColor.GRAY + "' if you are done replacing everything you want.");
-        } else if (slot == 15) {
-            ClickType click = event.getClick();
-            if (click.isLeftClick()) {
-                messageEditData.setMode(MessageEditData.Mode.EDITING_NEW_MESSAGE);
-                messageEditData.setNewMessageCache("");
-                player.closeInventory();
-                player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
-                player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Enter new message. Enter '" + ChatColor.YELLOW + "done" + ChatColor.GRAY + "' once you are done entering the new message.");
-                MessagePlace newMessagePlace = messageEditData.getNewMessagePlace();
-                if (newMessagePlace == MessagePlace.GAME_CHAT || newMessagePlace == MessagePlace.SYSTEM_CHAT || newMessagePlace == MessagePlace.ACTION_BAR) {
-                    player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "You can also enter '" + ChatColor.YELLOW + "remove" + ChatColor.GRAY + "' if you do not want the new message to be sent to the players (this will completely remove the message).");
-                }
-            } else if (click.isRightClick()) {
-                messageEditData.setMode(MessageEditData.Mode.EDITING_NEW_MESSAGE_KEY);
-                messageEditData.setNewMessageKey("");
-                player.closeInventory();
-                player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
-                player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Enter new message key, that is what you want to replace, or enter '" + ChatColor.YELLOW + "done" + ChatColor.GRAY + "' if you are done replacing everything you want.");
-            }
-        } else if (slot == 24) {
-            MessagePlace oldMessagePlace = messageEditData.getOldMessagePlace();
-            if (oldMessagePlace != MessagePlace.GAME_CHAT && oldMessagePlace != MessagePlace.SYSTEM_CHAT && oldMessagePlace != MessagePlace.ACTION_BAR) {
-                player.playSound(player.getLocation(), XSound.ENTITY_ITEM_BREAK.parseSound(), 1.0F, 1.0F);
-                player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.RED + "You cannot change new message place of this message.");
-                return;
-            }
-            messageEditData.setMode(MessageEditData.Mode.EDITING_NEW_MESSAGE_PLACE);
-            player.closeInventory();
-            player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
-            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Enter new message place.");
-            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Available message places:");
-            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "- " + ChatColor.YELLOW + MessagePlace.GAME_CHAT.name() + ChatColor.GRAY + " (" + ChatColor.YELLOW + MessagePlace.GAME_CHAT.getFriendlyName() + ChatColor.GRAY + ")");
-            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "- " + ChatColor.YELLOW + MessagePlace.SYSTEM_CHAT.name() + ChatColor.GRAY + " (" + ChatColor.YELLOW + MessagePlace.SYSTEM_CHAT.getFriendlyName() + ChatColor.GRAY + ")");
-            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "- " + ChatColor.YELLOW + MessagePlace.ACTION_BAR.name() + ChatColor.GRAY + " (" + ChatColor.YELLOW + MessagePlace.ACTION_BAR.getFriendlyName() + ChatColor.GRAY + ")");
-        } else if (slot == 48) {
-            String oldMessagePatternString = messageEditData.getOldMessagePattern();
-            Pattern oldMessagePattern = Pattern.compile(oldMessagePatternString);
-            Matcher oldMessagePatternMatcher = oldMessagePattern.matcher(messageEditData.getOriginalOldMessage());
-            MessagePlace oldMessagePlace = messageEditData.getOldMessagePlace();
-            String newMessage = messageEditData.getNewMessage();
-            newMessage = newMessage.replace("\\", "\\\\");
-            if (oldMessagePatternMatcher.matches()) {
-                StringJoiner excludePattern = new StringJoiner("|", "(?!", ")");
-                excludePattern.add("\\$0");
-                for (int index = 0; index < oldMessagePatternMatcher.groupCount(); index++) {
-                    excludePattern.add("\\$" + (index + 1));
-                }
-                String excludePatternString = excludePattern + "\\$[0-9]+";
-                newMessage = newMessage.replaceAll(excludePatternString, "\\\\$0");
-            } else {
-                newMessage = newMessage.replace("$", "\\$");
-            }
-            MessagePlace newMessagePlace = messageEditData.getNewMessagePlace();
-            this.plugin.addMessageEdit(new MessageEdit(
-                oldMessagePatternString,
-                oldMessagePlace,
-                newMessage,
-                newMessagePlace
-            ));
-            this.plugin.clearCachedMessages();
-            this.plugin.saveConfig();
-            player.closeInventory();
-            player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
-            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Message edit has been saved and applied.");
-        } else if (slot == 50) {
-            player.closeInventory();
-            player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
-        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -196,7 +55,7 @@ public final class MessageEditorListener implements Listener {
         if (messageEditData == null) {
             return;
         }
-        MessageEditData.Mode messageEditDataMode = messageEditData.getMode();
+        MessageEditData.Mode messageEditDataMode = messageEditData.getCurrentMode();
         if (messageEditDataMode == MessageEditData.Mode.NONE) {
             return;
         }
@@ -204,11 +63,11 @@ public final class MessageEditorListener implements Listener {
         String message = event.getMessage();
         if (message.equals("done")) {
             if (messageEditDataMode == MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_KEY || messageEditDataMode == MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_VALUE) {
-                messageEditData.setMode(MessageEditData.Mode.NONE);
+                messageEditData.setCurrentMode(MessageEditData.Mode.NONE);
                 messageEditData.setOldMessagePatternKey("");
                 this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, messageEditData, true));
             } else if (messageEditDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE) {
-                messageEditData.setMode(MessageEditData.Mode.NONE);
+                messageEditData.setCurrentMode(MessageEditData.Mode.NONE);
                 if (!messageEditData.getNewMessageCache().isEmpty()) {
                     messageEditData.setNewMessage(messageEditData.getNewMessageCache());
                     try {
@@ -222,19 +81,19 @@ public final class MessageEditorListener implements Listener {
                 }
                 this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, messageEditData, true));
             } else if (messageEditDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE_KEY || messageEditDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE_VALUE) {
-                messageEditData.setMode(MessageEditData.Mode.NONE);
+                messageEditData.setCurrentMode(MessageEditData.Mode.NONE);
                 messageEditData.setNewMessageKey("");
                 this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, messageEditData, true));
             }
         } else if (messageEditDataMode == MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_KEY) {
             messageEditData.setOldMessagePatternKey(message);
-            messageEditData.setMode(MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_VALUE);
+            messageEditData.setCurrentMode(MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_VALUE);
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
             player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Now enter old message pattern value, that is what you want the key to be replaced with, or enter '" + ChatColor.YELLOW + "done" + ChatColor.GRAY + "' if you are done replacing everything you want.");
         } else if (messageEditDataMode == MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_VALUE) {
             String oldMessagePatternKey = messageEditData.getOldMessagePatternKey();
             String oldMessagePatternValue = message;
-            messageEditData.setMode(MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_KEY);
+            messageEditData.setCurrentMode(MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_KEY);
             messageEditData.setOldMessage(messageEditData.getOldMessage().replaceFirst(Pattern.quote(oldMessagePatternKey), Matcher.quoteReplacement(oldMessagePatternValue.replace("\\", "\\\\"))));
             messageEditData.setOldMessagePattern(messageEditData.getOldMessagePattern().replaceFirst(Pattern.quote(oldMessagePatternKey.replaceAll(MessageEditorConstants.SPECIAL_REGEX_CHARACTERS, "\\\\$0")), Matcher.quoteReplacement(oldMessagePatternValue)));
             try {
@@ -252,7 +111,7 @@ public final class MessageEditorListener implements Listener {
         } else if (messageEditDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE) {
             MessagePlace newMessagePlace = messageEditData.getNewMessagePlace();
             if ((newMessagePlace == MessagePlace.GAME_CHAT || newMessagePlace == MessagePlace.SYSTEM_CHAT || newMessagePlace == MessagePlace.ACTION_BAR) && messageEditData.getNewMessageCache().isEmpty() && message.equals("remove")) {
-                messageEditData.setMode(MessageEditData.Mode.NONE);
+                messageEditData.setCurrentMode(MessageEditData.Mode.NONE);
                 messageEditData.setNewMessage("");
                 messageEditData.setNewMessageJson(false);
                 messageEditData.setNewMessageCache("");
@@ -264,13 +123,13 @@ public final class MessageEditorListener implements Listener {
             }
         } else if (messageEditDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE_KEY) {
             messageEditData.setNewMessageKey(message);
-            messageEditData.setMode(MessageEditData.Mode.EDITING_NEW_MESSAGE_VALUE);
+            messageEditData.setCurrentMode(MessageEditData.Mode.EDITING_NEW_MESSAGE_VALUE);
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
             player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Now enter new message value, that is what you want the key to be replaced with, or enter '" + ChatColor.YELLOW + "done" + ChatColor.GRAY + "' if you are done replacing everything you want.");
         } else if (messageEditDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE_VALUE) {
             String newMessageKey = messageEditData.getNewMessageKey();
             String newMessageValue = message;
-            messageEditData.setMode(MessageEditData.Mode.EDITING_NEW_MESSAGE_KEY);
+            messageEditData.setCurrentMode(MessageEditData.Mode.EDITING_NEW_MESSAGE_KEY);
             messageEditData.setNewMessage(messageEditData.getNewMessage().replaceFirst(Pattern.quote(newMessageKey), Matcher.quoteReplacement(newMessageValue)));
             try {
                 new JSONParser().parse(messageEditData.getNewMessage());
@@ -299,33 +158,9 @@ public final class MessageEditorListener implements Listener {
                 player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "- " + ChatColor.YELLOW + MessagePlace.ACTION_BAR.name() + ChatColor.GRAY + " (" + ChatColor.YELLOW + MessagePlace.ACTION_BAR.getFriendlyName() + ChatColor.GRAY + ")");
                 return;
             }
-            messageEditData.setMode(MessageEditData.Mode.NONE);
+            messageEditData.setCurrentMode(MessageEditData.Mode.NONE);
             messageEditData.setNewMessagePlace(messagePlace);
             this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, messageEditData, true));
-        }
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPluginEnable(final PluginEnableEvent event) {
-        Plugin plugin = event.getPlugin();
-        if (plugin.getName().equals(MessageEditorConstants.PLACEHOLDER_API_PLUGIN_NAME)) {
-            this.plugin.setPlaceholderApiPresent(true);
-            this.plugin.getLogger().log(Level.INFO, MessageEditorConstants.PLACEHOLDER_API_PLUGIN_NAME + " integration has been enabled.");
-        } else if (plugin.getName().equals(MessageEditorConstants.MVDW_PLACEHOLDER_API_PLUGIN_NAME)) {
-            this.plugin.setMvdwPlaceholderApiPresent(true);
-            this.plugin.getLogger().log(Level.INFO, MessageEditorConstants.MVDW_PLACEHOLDER_API_PLUGIN_NAME + " integration has been enabled.");
-        }
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPluginDisable(final PluginDisableEvent event) {
-        Plugin plugin = event.getPlugin();
-        if (plugin.getName().equals(MessageEditorConstants.PLACEHOLDER_API_PLUGIN_NAME)) {
-            this.plugin.setPlaceholderApiPresent(false);
-            this.plugin.getLogger().log(Level.INFO, MessageEditorConstants.PLACEHOLDER_API_PLUGIN_NAME + " integration has been disabled.");
-        } else if (plugin.getName().equals(MessageEditorConstants.MVDW_PLACEHOLDER_API_PLUGIN_NAME)) {
-            this.plugin.setMvdwPlaceholderApiPresent(false);
-            this.plugin.getLogger().log(Level.INFO, MessageEditorConstants.MVDW_PLACEHOLDER_API_PLUGIN_NAME + " integration has been disabled.");
         }
     }
 }

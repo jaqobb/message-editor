@@ -42,7 +42,7 @@ public final class MessageEditData {
     private String newMessageCache;
     private String newMessageKey;
     private MessagePlace newMessagePlace;
-    private Mode mode;
+    private Mode currentMode;
 
     public MessageEditData(final MessageData messageData) {
         this(
@@ -77,7 +77,7 @@ public final class MessageEditData {
         this.newMessageCache = "";
         this.newMessageKey = "";
         this.newMessagePlace = newMessagePlace;
-        this.mode = Mode.NONE;
+        this.currentMode = Mode.NONE;
     }
 
     public String getOriginalOldMessage() {
@@ -172,12 +172,12 @@ public final class MessageEditData {
         this.newMessagePlace = newMessagePlace;
     }
 
-    public Mode getMode() {
-        return this.mode;
+    public Mode getCurrentMode() {
+        return this.currentMode;
     }
 
-    public void setMode(final Mode mode) {
-        this.mode = mode;
+    public void setCurrentMode(final Mode currentMode) {
+        this.currentMode = currentMode;
     }
 
     public static enum Mode {
@@ -190,14 +190,14 @@ public final class MessageEditData {
         EDITING_NEW_MESSAGE_VALUE(false),
         EDITING_NEW_MESSAGE_PLACE(false);
 
-        private final boolean destroy;
+        private final boolean shouldInvalidateCache;
 
-        private Mode(final boolean destroy) {
-            this.destroy = destroy;
+        private Mode(final boolean shouldInvalidateCache) {
+            this.shouldInvalidateCache = shouldInvalidateCache;
         }
 
-        public boolean shouldDestroy() {
-            return this.destroy;
+        public boolean shouldInvalidateCache() {
+            return this.shouldInvalidateCache;
         }
     }
 }
