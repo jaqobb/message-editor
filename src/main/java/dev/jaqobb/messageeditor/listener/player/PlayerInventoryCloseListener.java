@@ -25,7 +25,7 @@
 package dev.jaqobb.messageeditor.listener.player;
 
 import dev.jaqobb.messageeditor.MessageEditorPlugin;
-import dev.jaqobb.messageeditor.data.MessageEditData;
+import dev.jaqobb.messageeditor.message.MessageEditData;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

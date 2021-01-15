@@ -22,33 +22,13 @@
  * SOFTWARE.
  */
 
-package dev.jaqobb.messageeditor.data;
+package dev.jaqobb.messageeditor.message.bossbar;
 
-public final class MessageData {
+public enum BossBarStyle {
 
-    private final MessagePlace messagePlace;
-    private final String message;
-    private final boolean messageJson;
-
-    public MessageData(
-        final MessagePlace messagePlace,
-        final String message,
-        final boolean messageJson
-    ) {
-        this.messagePlace = messagePlace;
-        this.message = message;
-        this.messageJson = messageJson;
-    }
-
-    public MessagePlace getMessagePlace() {
-        return this.messagePlace;
-    }
-
-    public String getMessage() {
-        return this.message;
-    }
-
-    public boolean isMessageJson() {
-        return this.messageJson;
-    }
+    PROGRESS,
+    NOTCHED_6,
+    NOTCHED_10,
+    NOTCHED_12,
+    NOTCHED_20
 }

@@ -24,7 +24,7 @@
 
 package dev.jaqobb.messageeditor.command;
 
-import dev.jaqobb.messageeditor.data.MessagePlace;
+import dev.jaqobb.messageeditor.message.MessagePlace;
 import java.util.LinkedList;
 import java.util.List;
 import org.bukkit.command.Command;

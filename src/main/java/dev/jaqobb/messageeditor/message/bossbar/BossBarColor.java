@@ -22,10 +22,15 @@
  * SOFTWARE.
  */
 
-package dev.jaqobb.messageeditor.data.scoreboard;
+package dev.jaqobb.messageeditor.message.bossbar;
 
-public enum ScoreboardHealthDisplayMode {
+public enum BossBarColor {
 
-    INTEGER,
-    HEARTS
+    PINK,
+    BLUE,
+    RED,
+    GREEN,
+    YELLOW,
+    PURPLE,
+    WHITE
 }

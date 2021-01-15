@@ -33,13 +33,13 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import dev.jaqobb.messageeditor.MessageEditorConstants;
 import dev.jaqobb.messageeditor.MessageEditorPlugin;
-import dev.jaqobb.messageeditor.data.MessageData;
-import dev.jaqobb.messageeditor.data.MessageEdit;
-import dev.jaqobb.messageeditor.data.MessagePlace;
-import dev.jaqobb.messageeditor.data.bossbar.BossBarMessageAction;
-import dev.jaqobb.messageeditor.data.bossbar.BossBarMessageColor;
-import dev.jaqobb.messageeditor.data.bossbar.BossBarMessageStyle;
-import dev.jaqobb.messageeditor.data.scoreboard.ScoreboardHealthDisplayMode;
+import dev.jaqobb.messageeditor.message.MessageData;
+import dev.jaqobb.messageeditor.message.MessageEdit;
+import dev.jaqobb.messageeditor.message.MessagePlace;
+import dev.jaqobb.messageeditor.message.bossbar.BossBarAction;
+import dev.jaqobb.messageeditor.message.bossbar.BossBarColor;
+import dev.jaqobb.messageeditor.message.bossbar.BossBarStyle;
+import dev.jaqobb.messageeditor.message.scoreboard.ScoreboardHealthDisplayMode;
 import dev.jaqobb.messageeditor.util.MessageUtils;
 import java.util.Map;
 import java.util.logging.Level;
@@ -87,8 +87,8 @@ public final class MessageEditorPacketListener extends PacketAdapter {
         MessagePlace originalMessagePlace = MessagePlace.fromPacket(newPacket);
         MessagePlace messagePlace = MessagePlace.fromPacket(newPacket);
         if (messagePlace == MessagePlace.BOSS_BAR) {
-            BossBarMessageAction action = newPacket.getEnumModifier(BossBarMessageAction.class, 1).read(0);
-            if (action != BossBarMessageAction.ADD && action != BossBarMessageAction.UPDATE_NAME) {
+            BossBarAction action = newPacket.getEnumModifier(BossBarAction.class, 1).read(0);
+            if (action != BossBarAction.ADD && action != BossBarAction.UPDATE_NAME) {
                 return;
             }
         } else if (messagePlace == MessagePlace.SCOREBOARD_TITLE) {
@@ -243,9 +243,9 @@ public final class MessageEditorPacketListener extends PacketAdapter {
         } else if (newPacket.getType() == PacketType.Play.Server.BOSS) {
             newPacket.getUUIDs().write(0, oldPacket.getUUIDs().read(0));
             newPacket.getChatComponents().write(0, oldPacket.getChatComponents().read(0));
-            newPacket.getEnumModifier(BossBarMessageAction.class, 1).write(0, oldPacket.getEnumModifier(BossBarMessageAction.class, 1).read(0));
-            newPacket.getEnumModifier(BossBarMessageColor.class, 4).write(0, oldPacket.getEnumModifier(BossBarMessageColor.class, 4).read(0));
-            newPacket.getEnumModifier(BossBarMessageStyle.class, 5).write(0, oldPacket.getEnumModifier(BossBarMessageStyle.class, 5).read(0));
+            newPacket.getEnumModifier(BossBarAction.class, 1).write(0, oldPacket.getEnumModifier(BossBarAction.class, 1).read(0));
+            newPacket.getEnumModifier(BossBarColor.class, 4).write(0, oldPacket.getEnumModifier(BossBarColor.class, 4).read(0));
+            newPacket.getEnumModifier(BossBarStyle.class, 5).write(0, oldPacket.getEnumModifier(BossBarStyle.class, 5).read(0));
             newPacket.getFloat().write(0, oldPacket.getFloat().read(0));
             newPacket.getBooleans().write(0, oldPacket.getBooleans().read(0));
             newPacket.getBooleans().write(1, oldPacket.getBooleans().read(1));

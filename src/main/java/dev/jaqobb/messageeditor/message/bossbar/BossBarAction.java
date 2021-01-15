@@ -22,13 +22,14 @@
  * SOFTWARE.
  */
 
-package dev.jaqobb.messageeditor.data.bossbar;
+package dev.jaqobb.messageeditor.message.bossbar;
 
-public enum BossBarMessageStyle {
+public enum BossBarAction {
 
-    PROGRESS,
-    NOTCHED_6,
-    NOTCHED_10,
-    NOTCHED_12,
-    NOTCHED_20
+    ADD,
+    REMOVE,
+    UPDATE_PCT,
+    UPDATE_NAME,
+    UPDATE_STYLE,
+    UPDATE_PROPERTIES
 }

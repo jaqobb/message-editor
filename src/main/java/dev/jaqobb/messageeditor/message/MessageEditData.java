@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package dev.jaqobb.messageeditor.data;
+package dev.jaqobb.messageeditor.message;
 
 import dev.jaqobb.messageeditor.MessageEditorConstants;
 

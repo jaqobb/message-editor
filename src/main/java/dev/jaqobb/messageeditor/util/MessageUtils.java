@@ -24,7 +24,7 @@
 
 package dev.jaqobb.messageeditor.util;
 
-import dev.jaqobb.messageeditor.data.MessagePlace;
+import dev.jaqobb.messageeditor.message.MessagePlace;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
