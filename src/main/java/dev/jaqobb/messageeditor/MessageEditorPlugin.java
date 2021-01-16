@@ -31,7 +31,13 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import dev.jaqobb.messageeditor.command.MessageEditorCommand;
 import dev.jaqobb.messageeditor.command.MessageEditorCommandTabCompleter;
-import dev.jaqobb.messageeditor.listener.message.ChatMessageListener;
+import dev.jaqobb.messageeditor.listener.packet.BossBarPacketListener;
+import dev.jaqobb.messageeditor.listener.packet.ChatPacketListener;
+import dev.jaqobb.messageeditor.listener.packet.DisconnectPacketListener;
+import dev.jaqobb.messageeditor.listener.packet.InventoryTitlePacketListener;
+import dev.jaqobb.messageeditor.listener.packet.KickPacketListener;
+import dev.jaqobb.messageeditor.listener.packet.ScoreboardEntryPacketListener;
+import dev.jaqobb.messageeditor.listener.packet.ScoreboardTitlePacketListener;
 import dev.jaqobb.messageeditor.listener.player.PlayerChatListener;
 import dev.jaqobb.messageeditor.listener.player.PlayerInventoryClickListener;
 import dev.jaqobb.messageeditor.listener.player.PlayerInventoryCloseListener;
@@ -136,8 +142,13 @@ public final class MessageEditorPlugin extends JavaPlugin {
         pluginManager.registerEvents(new PlayerChatListener(this), this);
         this.getLogger().log(Level.INFO, "Registering packet listeners...");
         ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
-        protocolManager.addPacketListener(new ChatMessageListener(this));
-        //ProtocolLibrary.getProtocolManager().addPacketListener(new MessageEditorPacketListener(this));
+        protocolManager.addPacketListener(new ChatPacketListener(this));
+        protocolManager.addPacketListener(new KickPacketListener(this));
+        protocolManager.addPacketListener(new DisconnectPacketListener(this));
+        protocolManager.addPacketListener(new BossBarPacketListener(this));
+        protocolManager.addPacketListener(new ScoreboardTitlePacketListener(this));
+        protocolManager.addPacketListener(new ScoreboardEntryPacketListener(this));
+        protocolManager.addPacketListener(new InventoryTitlePacketListener(this));
     }
 
     @SuppressWarnings("unchecked")

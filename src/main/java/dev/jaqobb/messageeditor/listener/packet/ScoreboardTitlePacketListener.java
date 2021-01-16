@@ -22,9 +22,8 @@
  * SOFTWARE.
  */
 
-package dev.jaqobb.messageeditor.listener.message;
+package dev.jaqobb.messageeditor.listener.packet;
 
-import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
@@ -37,17 +36,14 @@ import dev.jaqobb.messageeditor.util.MessageUtils;
 import java.util.Map;
 import java.util.regex.Matcher;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.entity.Player;
 
-public final class ChatMessageListener extends PacketAdapter {
+public final class ScoreboardTitlePacketListener extends PacketAdapter {
 
-    public ChatMessageListener(final MessageEditorPlugin plugin) {
-        super(plugin, ListenerPriority.HIGHEST, PacketType.Play.Server.CHAT);
+    private static final MessagePlace MESSAGE_PLACE = MessagePlace.SCOREBOARD_TITLE;
+
+    public ScoreboardTitlePacketListener(final MessageEditorPlugin plugin) {
+        super(plugin, ListenerPriority.HIGHEST, MESSAGE_PLACE.getPacketType());
     }
 
     @Override
@@ -55,7 +51,6 @@ public final class ChatMessageListener extends PacketAdapter {
         return (MessageEditorPlugin) super.getPlugin();
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public void onPacketSending(final PacketEvent event) {
         if (event.isCancelled()) {
@@ -63,9 +58,14 @@ public final class ChatMessageListener extends PacketAdapter {
         }
         Player player = event.getPlayer();
         PacketContainer packet = event.getPacket().shallowClone();
-        MessagePlace originalMessagePlace = MessagePlace.fromPacket(packet);
-        MessagePlace messagePlace = originalMessagePlace;
-        String originalMessage = messagePlace.getMessage(packet);
+        // 0 = create scoreboard objective
+        // 1 = delete scoreboard objective
+        // 2 = update scoreboard objective display name
+        int action = packet.getIntegers().read(0);
+        if (action != 0 && action != 2) {
+            return;
+        }
+        String originalMessage = MESSAGE_PLACE.getMessage(packet);
         String message = originalMessage;
         if (message == null) {
             return;
@@ -75,7 +75,7 @@ public final class ChatMessageListener extends PacketAdapter {
         Matcher messageEditMatcher = null;
         if (cachedMessage == null) {
             for (MessageEdit currentMessageEdit : this.getPlugin().getMessageEdits()) {
-                if (currentMessageEdit.getMessageBeforePlace() != null && currentMessageEdit.getMessageBeforePlace() != messagePlace) {
+                if (currentMessageEdit.getMessageBeforePlace() != null && currentMessageEdit.getMessageBeforePlace() != MESSAGE_PLACE) {
                     continue;
                 }
                 Matcher currentMessageEditMatcher = currentMessageEdit.getMatcher(message);
@@ -88,14 +88,6 @@ public final class ChatMessageListener extends PacketAdapter {
         }
         if (cachedMessage != null || (messageEdit != null && messageEditMatcher != null)) {
             if (cachedMessage != null) {
-                MessagePlace messageAfterPlace = cachedMessage.getKey().getMessageAfterPlace();
-                if (messageAfterPlace == MessagePlace.GAME_CHAT || messageAfterPlace == MessagePlace.SYSTEM_CHAT || messageAfterPlace == MessagePlace.ACTION_BAR) {
-                    messagePlace = messageAfterPlace;
-                }
-                if (cachedMessage.getValue().isEmpty()) {
-                    event.setCancelled(true);
-                    return;
-                }
                 message = cachedMessage.getValue();
             } else {
                 String messageAfter = messageEditMatcher.replaceAll(messageEdit.getMessageAfter());
@@ -107,55 +99,24 @@ public final class ChatMessageListener extends PacketAdapter {
                     messageAfter = be.maximvdw.placeholderapi.PlaceholderAPI.replacePlaceholders(player, messageAfter);
                 }
                 this.getPlugin().cacheMessage(message, messageEdit, messageAfter);
-                MessagePlace messageAfterPlace = messageEdit.getMessageAfterPlace();
-                if (messageAfterPlace == MessagePlace.GAME_CHAT || messageAfterPlace == MessagePlace.SYSTEM_CHAT || messageAfterPlace == MessagePlace.ACTION_BAR) {
-                    messagePlace = messageAfterPlace;
-                }
-                if (messageAfter.isEmpty()) {
-                    event.setCancelled(true);
-                    return;
-                }
                 message = messageAfter;
             }
         }
         boolean messageJson = MessageUtils.isJson(message);
-        String messageId = MessageUtils.composeMessageId(messagePlace, message);
-        this.getPlugin().cacheMessageData(messageId, new MessageData(messagePlace, message, messageJson));
-        if (messagePlace.isAnalyzingActivated()) {
+        String messageId = MessageUtils.composeMessageId(MESSAGE_PLACE, message);
+        this.getPlugin().cacheMessageData(messageId, new MessageData(MESSAGE_PLACE, message, messageJson));
+        if (MESSAGE_PLACE.isAnalyzingActivated()) {
             MessageUtils.logMessage(
                 this.getPlugin().getLogger(),
-                messagePlace,
+                MESSAGE_PLACE,
                 player,
                 messageId,
                 messageJson,
                 message
             );
         }
-        if (this.getPlugin().isAttachingSpecialHoverAndClickEventsEnabled()) {
-            BaseComponent[] messageToSend;
-            if (messageJson) {
-                messageToSend = ComponentSerializer.parse(message);
-            } else {
-                messageToSend = MessageUtils.toBaseComponents(message);
-            }
-            for (BaseComponent messageToSendElement : messageToSend) {
-                messageToSendElement.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(ChatColor.GRAY + "Click to start editing this message.")));
-                messageToSendElement.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/message-editor edit " + messageId));
-            }
-            message = MessageUtils.toJson(messageToSend, false);
-            messageJson = true;
-        }
-        if (messagePlace != originalMessagePlace) {
-            if (packet.getBytes().size() == 1) {
-                packet.getBytes().write(0, messagePlace.getChatType());
-            } else {
-                packet.getChatTypes().write(0, messagePlace.getChatTypeEnum());
-            }
-        }
         if (!message.equals(originalMessage)) {
-            messagePlace.setMessage(packet, message, messageJson);
-        }
-        if (!message.equals(originalMessage) || messagePlace != originalMessagePlace) {
+            MESSAGE_PLACE.setMessage(packet, message, messageJson);
             event.setPacket(packet);
         }
     }

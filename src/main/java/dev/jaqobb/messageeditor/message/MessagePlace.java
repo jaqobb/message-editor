@@ -222,6 +222,40 @@ public enum MessagePlace {
                 packet.getChatComponents().write(0, WrappedChatComponent.fromJson(MessageUtils.toJson(MessageUtils.toBaseComponents(message), true)));
             }
         }
+    },
+    INVENTORY_ITEM_NAME("ITN", "Inventory Item Name", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.WINDOW_ITEMS) {
+        // Items are an exception and do not use this.
+        @Override
+        public String getMessage(final PacketContainer packet) {
+            throw new UnsupportedOperationException();
+        }
+
+        // Items are an exception and do not use this.
+        @Override
+        public void setMessage(
+            final PacketContainer packet,
+            final String message,
+            final boolean messageJson
+        ) {
+            throw new UnsupportedOperationException();
+        }
+    },
+    INVENTORY_ITEM_LORE("ITL", "Inventory Item Lore", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.WINDOW_ITEMS) {
+        // Items are an exception and do not use this.
+        @Override
+        public String getMessage(final PacketContainer packet) {
+            throw new UnsupportedOperationException();
+        }
+
+        // Items are an exception and do not use this.
+        @Override
+        public void setMessage(
+            final PacketContainer packet,
+            final String message,
+            final boolean messageJson
+        ) {
+            throw new UnsupportedOperationException();
+        }
     };
 
     public static final MessagePlace[] VALUES = values();
