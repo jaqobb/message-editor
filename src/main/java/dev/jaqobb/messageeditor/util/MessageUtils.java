@@ -179,7 +179,7 @@ public final class MessageUtils {
             Matcher matcher = MessageEditorConstants.CHAT_COLOR_PATTERN.matcher(message);
             String messageSuffix = matcher.find() ? " (replace & -> § (section sign) in colors)" : "";
             logger.log(Level.INFO, "Message: '" + matcher.replaceAll("&$1").replace("\\", "\\\\") + "'" + messageSuffix);
-            logger.log(Level.INFO, "Message clear: '" + matcher.replaceAll("").replace("\\", "\\\\") + "'");
+            logger.log(Level.INFO, "Message clear: '" + matcher.replaceAll("") + "'");
         }
         logger.log(Level.INFO, "Message ID: '" + messageId + "'");
     }
