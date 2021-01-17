@@ -21,6 +21,7 @@ Message Editor supports:
 * [x] Editing inventory titles - since 2.2.0
 * [x] Editing inventory item names - since 2.3.0
 * [x] Editing inventory item lores - since 2.3.0
+* [x] Editing entity names - since 2.4.0
 
 ### Showcase
 

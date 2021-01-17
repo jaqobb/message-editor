@@ -34,6 +34,7 @@ import dev.jaqobb.messageeditor.command.MessageEditorCommandTabCompleter;
 import dev.jaqobb.messageeditor.listener.packet.BossBarPacketListener;
 import dev.jaqobb.messageeditor.listener.packet.ChatPacketListener;
 import dev.jaqobb.messageeditor.listener.packet.DisconnectPacketListener;
+import dev.jaqobb.messageeditor.listener.packet.EntityNamePacketListener;
 import dev.jaqobb.messageeditor.listener.packet.InventoryItemsPacketListener;
 import dev.jaqobb.messageeditor.listener.packet.InventoryTitlePacketListener;
 import dev.jaqobb.messageeditor.listener.packet.KickPacketListener;
@@ -151,6 +152,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
         protocolManager.addPacketListener(new ScoreboardEntryPacketListener(this));
         protocolManager.addPacketListener(new InventoryTitlePacketListener(this));
         protocolManager.addPacketListener(new InventoryItemsPacketListener(this));
+        protocolManager.addPacketListener(new EntityNamePacketListener(this));
     }
 
     @SuppressWarnings("unchecked")

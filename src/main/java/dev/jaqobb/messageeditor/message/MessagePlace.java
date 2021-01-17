@@ -29,8 +29,11 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
+import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import dev.jaqobb.messageeditor.util.MessageUtils;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 
@@ -255,6 +258,45 @@ public enum MessagePlace {
             final boolean messageJson
         ) {
             throw new UnsupportedOperationException();
+        }
+    },
+    ENTITY_NAME("EN", "Entity Name", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.ENTITY_METADATA) {
+        @Override
+        public String getMessage(final PacketContainer packet) {
+            List<WrappedWatchableObject> watchableObjects = packet.getWatchableCollectionModifier().read(0);
+            for (WrappedWatchableObject watchableObject : watchableObjects) {
+                if (watchableObject.getIndex() != 2) {
+                    continue;
+                }
+                Object value = watchableObject.getValue();
+                if (!(value instanceof Optional)) {
+                    continue;
+                }
+                Optional<?> nameOptional = (Optional<?>) value;
+                if (nameOptional.isPresent()) {
+                    return WrappedChatComponent.fromHandle(nameOptional.get()).getJson();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        public void setMessage(
+            final PacketContainer packet,
+            final String message,
+            final boolean messageJson
+        ) {
+            List<WrappedWatchableObject> watchableObjects = packet.getWatchableCollectionModifier().read(0);
+            for (WrappedWatchableObject watchableObject : watchableObjects) {
+                if (watchableObject.getIndex() == 2) {
+                    if (messageJson) {
+                        watchableObject.setValue(Optional.of(WrappedChatComponent.fromJson(message).getHandle()));
+                    } else {
+                        watchableObject.setValue(Optional.of(WrappedChatComponent.fromJson(MessageUtils.toJson(MessageUtils.toBaseComponents(message), true)).getHandle()));
+                    }
+                    return;
+                }
+            }
         }
     };
 
