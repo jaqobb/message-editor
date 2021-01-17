@@ -125,7 +125,7 @@ public final class MenuManager {
         }
         List<String> oldMessageLore = new ArrayList<>(10);
         oldMessageLore.add("");
-        for (String oldMessageData : oldMessage.split("\\n")) {
+        for (String oldMessageData : oldMessage.split(messageEditData.isOldMessageJson() ? "\\n" : "\\\\n")) {
             String oldMessageChunk = "";
             String[] oldMessageDataChunk = oldMessageData.split(" ");
             for (int oldMessageDataIndex = 0; oldMessageDataIndex < oldMessageDataChunk.length; oldMessageDataIndex++) {
@@ -174,7 +174,7 @@ public final class MenuManager {
         }
         List<String> newMessageLore = new ArrayList<>(10);
         newMessageLore.add("");
-        for (String newMessageData : newMessage.split("\\n")) {
+        for (String newMessageData : newMessage.split(messageEditData.isNewMessageJson() ? "\\n" : "\\\\n")) {
             String newMessageChunk = "";
             String[] newMessageDataChunk = newMessageData.split(" ");
             for (int newMessageDataChunkIndex = 0; newMessageDataChunkIndex < newMessageDataChunk.length; newMessageDataChunkIndex++) {

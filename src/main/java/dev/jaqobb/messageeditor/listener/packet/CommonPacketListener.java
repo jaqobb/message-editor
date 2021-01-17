@@ -38,11 +38,11 @@ import java.util.regex.Matcher;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 
-public class CommonPacketListener extends PacketAdapter {
+class CommonPacketListener extends PacketAdapter {
 
     private final MessagePlace messagePlace;
 
-    public CommonPacketListener(
+    CommonPacketListener(
         final MessageEditorPlugin plugin,
         final MessagePlace messagePlace
     ) {
