@@ -288,14 +288,15 @@ public enum MessagePlace {
         ) {
             List<WrappedWatchableObject> watchableObjects = packet.getWatchableCollectionModifier().read(0);
             for (WrappedWatchableObject watchableObject : watchableObjects) {
-                if (watchableObject.getIndex() == 2) {
-                    if (messageJson) {
-                        watchableObject.setValue(Optional.of(WrappedChatComponent.fromJson(message).getHandle()));
-                    } else {
-                        watchableObject.setValue(Optional.of(WrappedChatComponent.fromJson(MessageUtils.toJson(MessageUtils.toBaseComponents(message), true)).getHandle()));
-                    }
-                    return;
+                if (watchableObject.getIndex() != 2) {
+                    continue;
                 }
+                if (messageJson) {
+                    watchableObject.setValue(Optional.of(WrappedChatComponent.fromJson(message).getHandle()));
+                } else {
+                    watchableObject.setValue(Optional.of(WrappedChatComponent.fromJson(MessageUtils.toJson(MessageUtils.toBaseComponents(message), true)).getHandle()));
+                }
+                return;
             }
         }
     };
