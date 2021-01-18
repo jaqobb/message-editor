@@ -131,7 +131,7 @@ public final class ChatPacketListener extends PacketAdapter {
                 message
             );
         }
-        if (this.getPlugin().isAttachingSpecialHoverAndClickEventsEnabled()) {
+        if (this.getPlugin().isAttachingSpecialHoverAndClickEventsEnabled() && player.hasPermission("messageeditor.use")) {
             BaseComponent[] messageToSend;
             if (messageJson) {
                 messageToSend = ComponentSerializer.parse(message);
