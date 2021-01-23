@@ -35,7 +35,6 @@ import dev.jaqobb.messageeditor.message.MessageData;
 import dev.jaqobb.messageeditor.message.MessageEdit;
 import dev.jaqobb.messageeditor.message.MessagePlace;
 import dev.jaqobb.messageeditor.util.MessageUtils;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.logging.Level;
@@ -66,7 +65,7 @@ public final class InventoryItemsPacketListener extends PacketAdapter {
         PacketContainer packet = event.getPacket().shallowClone();
         Iterable<ItemStack> items;
         if (packet.getItemArrayModifier().size() == 1) {
-            items = new ArrayList<>(Arrays.asList(packet.getItemArrayModifier().read(0)));
+            items = Arrays.asList(packet.getItemArrayModifier().read(0));
         } else {
             items = packet.getItemListModifier().read(0);
         }
