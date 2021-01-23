@@ -35,8 +35,8 @@ import dev.jaqobb.messageeditor.message.MessageData;
 import dev.jaqobb.messageeditor.message.MessageEdit;
 import dev.jaqobb.messageeditor.message.MessagePlace;
 import dev.jaqobb.messageeditor.util.MessageUtils;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
@@ -64,7 +64,12 @@ public final class InventoryItemsPacketListener extends PacketAdapter {
         }
         Player player = event.getPlayer();
         PacketContainer packet = event.getPacket().shallowClone();
-        List<ItemStack> items = packet.getItemListModifier().read(0);
+        Iterable<ItemStack> items;
+        if (packet.getItemArrayModifier().size() == 1) {
+            items = new ArrayList<>(Arrays.asList(packet.getItemArrayModifier().read(0)));
+        } else {
+            items = packet.getItemListModifier().read(0);
+        }
         boolean updateItems = false;
         for (ItemStack item : items) {
             if (item == null) {
