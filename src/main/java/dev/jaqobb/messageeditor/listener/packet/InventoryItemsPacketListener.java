@@ -67,6 +67,9 @@ public final class InventoryItemsPacketListener extends PacketAdapter {
         List<ItemStack> items = packet.getItemListModifier().read(0);
         boolean updateItems = false;
         for (ItemStack item : items) {
+            if (item == null) {
+                continue;
+            }
             if (!item.hasItemMeta()) {
                 continue;
             }
