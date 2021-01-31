@@ -162,15 +162,14 @@ public final class MenuManager {
         ItemMeta newMessageItemMeta = newMessageItem.getItemMeta();
         newMessageItemMeta.setDisplayName(ChatColor.WHITE + "New message");
         String newMessage;
-        if (messageEditData.isNewMessageJson()) {
+        if (messageEditData.getNewMessage().isEmpty()) {
+            newMessage = ChatColor.RED + "Message removed.";
+            newMessage += "\\n";
+            newMessage += ChatColor.RED + "(this is not an actual message)";
+        } else if (messageEditData.isNewMessageJson()) {
             newMessage = BaseComponent.toLegacyText(ComponentSerializer.parse(messageEditData.getNewMessage()));
         } else {
             newMessage = messageEditData.getNewMessage();
-        }
-        if (newMessage.isEmpty()) {
-            newMessage = ChatColor.RED + "Message removed.";
-            newMessage += "\n";
-            newMessage += ChatColor.RED + "(this is not an actual message)";
         }
         List<String> newMessageLore = new ArrayList<>(10);
         newMessageLore.add("");
