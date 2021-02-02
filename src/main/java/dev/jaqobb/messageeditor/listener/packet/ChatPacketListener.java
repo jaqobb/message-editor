@@ -88,15 +88,16 @@ public final class ChatPacketListener extends PacketAdapter {
         }
         if (cachedMessage != null || (messageEdit != null && messageEditMatcher != null)) {
             if (cachedMessage != null) {
+                String cachedMessageValue = cachedMessage.getValue();
+                if (cachedMessageValue.isEmpty()) {
+                    event.setCancelled(true);
+                    return;
+                }
                 MessagePlace messageAfterPlace = cachedMessage.getKey().getMessageAfterPlace();
                 if (messageAfterPlace == MessagePlace.GAME_CHAT || messageAfterPlace == MessagePlace.SYSTEM_CHAT || messageAfterPlace == MessagePlace.ACTION_BAR) {
                     messagePlace = messageAfterPlace;
                 }
-                if (cachedMessage.getValue().isEmpty()) {
-                    event.setCancelled(true);
-                    return;
-                }
-                message = cachedMessage.getValue();
+                message = cachedMessageValue;
             } else {
                 String messageAfter = messageEditMatcher.replaceAll(messageEdit.getMessageAfter());
                 messageAfter = ChatColor.translateAlternateColorCodes('&', messageAfter);
@@ -107,13 +108,13 @@ public final class ChatPacketListener extends PacketAdapter {
                     messageAfter = be.maximvdw.placeholderapi.PlaceholderAPI.replacePlaceholders(player, messageAfter);
                 }
                 this.getPlugin().cacheMessage(message, messageEdit, messageAfter);
-                MessagePlace messageAfterPlace = messageEdit.getMessageAfterPlace();
-                if (messageAfterPlace == MessagePlace.GAME_CHAT || messageAfterPlace == MessagePlace.SYSTEM_CHAT || messageAfterPlace == MessagePlace.ACTION_BAR) {
-                    messagePlace = messageAfterPlace;
-                }
                 if (messageAfter.isEmpty()) {
                     event.setCancelled(true);
                     return;
+                }
+                MessagePlace messageAfterPlace = messageEdit.getMessageAfterPlace();
+                if (messageAfterPlace == MessagePlace.GAME_CHAT || messageAfterPlace == MessagePlace.SYSTEM_CHAT || messageAfterPlace == MessagePlace.ACTION_BAR) {
+                    messagePlace = messageAfterPlace;
                 }
                 message = messageAfter;
             }
