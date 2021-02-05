@@ -52,7 +52,7 @@ tasks {
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/") {
         content {
             includeGroup("org.spigotmc")
