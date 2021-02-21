@@ -264,6 +264,9 @@ public enum MessagePlace {
         @Override
         public String getMessage(final PacketContainer packet) {
             List<WrappedWatchableObject> watchableObjects = packet.getWatchableCollectionModifier().read(0);
+            if (watchableObjects == null) {
+                return null;
+            }
             for (WrappedWatchableObject watchableObject : watchableObjects) {
                 if (watchableObject.getIndex() != 2) {
                     continue;
@@ -287,6 +290,9 @@ public enum MessagePlace {
             final boolean messageJson
         ) {
             List<WrappedWatchableObject> watchableObjects = packet.getWatchableCollectionModifier().read(0);
+            if (watchableObjects == null) {
+                return;
+            }
             for (WrappedWatchableObject watchableObject : watchableObjects) {
                 if (watchableObject.getIndex() != 2) {
                     continue;
