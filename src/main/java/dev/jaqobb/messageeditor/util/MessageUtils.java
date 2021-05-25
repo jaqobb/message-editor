@@ -26,6 +26,7 @@ package dev.jaqobb.messageeditor.util;
 
 import dev.jaqobb.messageeditor.MessageEditorConstants;
 import dev.jaqobb.messageeditor.message.MessagePlace;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
@@ -45,6 +46,18 @@ public final class MessageUtils {
     private static final char[] CHARACTERS = {'q', 'Q', 'w', 'W', 'e', 'E', 'r', 'R', 't', 'T', 'y', 'Y', 'u', 'U', 'i', 'I', 'o', 'O', 'p', 'P', 'a', 'A', 's', 'S', 'd', 'D', 'f', 'F', 'g', 'G', 'h', 'H', 'j', 'J', 'k', 'K', 'l', 'L', 'z', 'Z', 'x', 'X', 'c', 'C', 'v', 'V', 'b', 'B', 'n', 'N', 'm', 'M', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '_'};
 
     private static final BaseComponent[] EMPTY_BASE_COMPONENT_ARRAY = new BaseComponent[0];
+    private static final boolean         HEX_COLORS_SUPPORTED;
+    
+    static {
+        boolean hexColorsSupported;
+        try {
+            ChatColor.class.getDeclaredMethod("of", Color.class);
+            hexColorsSupported = true;
+        } catch (NoSuchMethodException exception) {
+            hexColorsSupported = false;
+        }
+        HEX_COLORS_SUPPORTED = hexColorsSupported;
+    }
 
     private MessageUtils() {
         throw new UnsupportedOperationException("Cannot create instance of this class");
@@ -83,8 +96,27 @@ public final class MessageUtils {
             char section = message.charAt(index);
             if (section == ChatColor.COLOR_CHAR && index < messageLength - 1) {
                 char character = message.charAt(index + 1);
+                if (index - 12 >= 0) {
+                    char hexColorSection = message.charAt(index - 12);
+                    if (hexColorSection == ChatColor.COLOR_CHAR) {
+                        char hexColorCharacter = message.charAt(index - 11);
+                        if ((hexColorCharacter == 'x' || hexColorCharacter == 'X') && HEX_COLORS_SUPPORTED) {
+                            String hexColor = "";
+                            for (int hexColorIndex = -9; hexColorIndex <= 1; hexColorIndex += 2) {
+                                hexColor += message.charAt(index + hexColorIndex);
+                            }
+                            try {
+                                ChatColor color = ChatColor.of("#" + hexColor);
+                                index -= 13;
+                                result = color + result;
+                            } catch (IllegalArgumentException ignored) {
+                            }
+                        }
+                    }
+                }
                 ChatColor color = ChatColor.getByChar(character);
                 if (color != null) {
+                    index--;
                     result = color + result;
                     if (color == ChatColor.RESET || (color != ChatColor.MAGIC && color != ChatColor.BOLD && color != ChatColor.STRIKETHROUGH && color != ChatColor.UNDERLINE && color != ChatColor.ITALIC)) {
                         break;
