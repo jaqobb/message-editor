@@ -26,7 +26,6 @@ package dev.jaqobb.messageeditor.util;
 
 import dev.jaqobb.messageeditor.MessageEditorConstants;
 import dev.jaqobb.messageeditor.message.MessagePlace;
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
@@ -51,7 +50,7 @@ public final class MessageUtils {
     static {
         boolean hexColorsSupported;
         try {
-            ChatColor.class.getDeclaredMethod("of", Color.class);
+            ChatColor.class.getDeclaredMethod("of", String.class);
             hexColorsSupported = true;
         } catch (NoSuchMethodException exception) {
             hexColorsSupported = false;
