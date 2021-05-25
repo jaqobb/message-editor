@@ -1,7 +1,7 @@
 plugins {
     java
-    id("net.minecrell.plugin-yml.bukkit") version "0.3.0"
-    id("com.github.johnrengelman.shadow") version "5.2.0"
+    id("net.minecrell.plugin-yml.bukkit") version "0.4.0"
+    id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
 group = "dev.jaqobb"
@@ -47,6 +47,10 @@ tasks {
         exclude("com/cryptomorin/xseries/XItemStack*")
         exclude("com/cryptomorin/xseries/XPotion*")
         relocate("com.cryptomorin.xseries", "dev.jaqobb.messageeditor.library.xseries")
+        relocate("org.hamcrest", "dev.jaqobb.messageeditor.library.hamcrest")
+        relocate("org.json", "dev.jaqobb.messageeditor.library.json")
+        relocate("org.junit", "dev.jaqobb.messageeditor.library.junit")
+        relocate("junit", "dev.jaqobb.messageeditor.library.junit_test")
         relocate("org.bstats.bukkit", "dev.jaqobb.messageeditor.metrics")
     }
 }
@@ -79,6 +83,7 @@ repositories {
         }
     }
     maven("http://repo.mvdw-software.be/content/groups/public/") {
+        isAllowInsecureProtocol = true
         content {
             includeGroup("be.maximvdw")
         }
@@ -98,6 +103,7 @@ dependencies {
     compileOnly("be.maximvdw:MVdWPlaceholderAPI:3.1.1-SNAPSHOT") {
         exclude("org.spigotmc")
     }
+    implementation("com.googlecode.json-simple:json-simple:1.1.1")
     implementation("com.github.cryptomorin:XSeries:7.6.0.0.1")
     implementation("org.bstats:bstats-bukkit:1.7")
 }
