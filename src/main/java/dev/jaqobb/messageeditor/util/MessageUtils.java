@@ -108,6 +108,7 @@ public final class MessageUtils {
                                 ChatColor color = ChatColor.of("#" + hexColor);
                                 index -= 13;
                                 result = color + result;
+                                continue;
                             } catch (IllegalArgumentException ignored) {
                             }
                         }
@@ -141,6 +142,20 @@ public final class MessageUtils {
             } else if (messageCharacter != '§') {
                 messagePart += messageCharacter;
             } else {
+                char messageHexColorCharacter = message.charAt(messageIndex + 1);
+                if ((messageHexColorCharacter == 'x' || messageHexColorCharacter == 'X') && HEX_COLORS_SUPPORTED) {
+                    String hexColor = "";
+                    for (int messageHexColorIndex = 3; messageHexColorIndex <= 13; messageHexColorIndex += 2) {
+                        hexColor += message.charAt(messageIndex + messageHexColorIndex);
+                    }
+                    try {
+                        ChatColor color = ChatColor.of("#" + hexColor);
+                        messageIndex += 13;
+                        messagePart += color;
+                        continue;
+                    } catch (IllegalArgumentException ignored) {
+                    }
+                }
                 ChatColor color = ChatColor.getByChar(message.charAt(messageIndex + 1));
                 if (color != null) {
                     messageIndex++;
