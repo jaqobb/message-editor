@@ -24,8 +24,8 @@
 
 package dev.jaqobb.messageeditor.updater;
 
-import dev.jaqobb.messageeditor.MessageEditorConstants;
 import dev.jaqobb.messageeditor.MessageEditorPlugin;
+import dev.jaqobb.messageeditor.util.MessageUtils;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -33,24 +33,20 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import javax.net.ssl.HttpsURLConnection;
-import net.md_5.bungee.api.ChatColor;
 
 public final class Updater implements Runnable {
 
     private final MessageEditorPlugin plugin;
-    private final int pluginId;
-    private final String currentVersion;
-    private String latestVersion;
-    private Integer versionDifference;
+    private final int                 pluginId;
+    private final String              currentVersion;
+    private       String              latestVersion;
+    private       Integer             versionDifference;
 
-    public Updater(
-        final MessageEditorPlugin plugin,
-        final int pluginId
-    ) {
-        this.plugin = plugin;
-        this.pluginId = pluginId;
-        this.currentVersion = this.plugin.getDescription().getVersion();
-        this.latestVersion = null;
+    public Updater(MessageEditorPlugin plugin, int pluginId) {
+        this.plugin            = plugin;
+        this.pluginId          = pluginId;
+        this.currentVersion    = this.plugin.getDescription().getVersion();
+        this.latestVersion     = null;
         this.versionDifference = null;
     }
 
@@ -67,19 +63,17 @@ public final class Updater implements Runnable {
     }
 
     public String getUpdateMessage() {
-        String message = MessageEditorConstants.PREFIX;
         if (this.currentVersion.contains("-SNAPSHOT")) {
-            message += ChatColor.RED + "You are running a development version (" + ChatColor.GRAY + this.currentVersion + ChatColor.RED + "). It is not advised to run development versions on production servers as they are very likely to not work as intended.";
+            return MessageUtils.composeMessageWithPrefix("&cYou are running a development version (&7" + this.currentVersion + "&c) It is not advised to run development versions on production servers as they are very likely to not work as intended.");
         } else if (this.latestVersion == null || this.versionDifference == null) {
-            message += ChatColor.RED + "Could not retrieve the latest version data. Make sure that you have internet access.";
+            return MessageUtils.composeMessageWithPrefix("&cCould not retrieve the latest version data. Make sure that you have internet access.");
         } else if (this.versionDifference > 0) {
-            message += ChatColor.GRAY + "You are running a future version (" + ChatColor.YELLOW + this.currentVersion + ChatColor.GRAY + " > " + ChatColor.YELLOW + this.latestVersion + ChatColor.GRAY + "). This version is safe to use but is yet to be officially uploaded or the latest version data is yet to be updated.";
+            return MessageUtils.composeMessageWithPrefix("&7You are running a future version (&e" + this.currentVersion + " &7> &e" + this.latestVersion + "&7). This version is safe to use but is yet to be officially uploaded or the latest version data is yet to be updated.");
         } else if (this.versionDifference < 0) {
-            message += ChatColor.GRAY + "You are running a past version (" + ChatColor.YELLOW + this.currentVersion + ChatColor.GRAY + " < " + ChatColor.YELLOW + this.latestVersion + ChatColor.GRAY + "). Updating is recommended to receive new features, bug fixes and more.";
+            return MessageUtils.composeMessageWithPrefix("&7You are running a past version (&e" + this.currentVersion + " &7< &e" + this.latestVersion + "&7). Updating is recommended to receive new features, bug fixes and more.");
         } else {
-            message += ChatColor.GRAY + "You are running the latest version (" + ChatColor.YELLOW + this.latestVersion + ChatColor.GRAY + ").";
+            return MessageUtils.composeMessageWithPrefix("&7You are running the latest version (&e" + this.currentVersion + "&7).");
         }
-        return message;
     }
 
     @Override
@@ -88,9 +82,7 @@ public final class Updater implements Runnable {
             return;
         }
         try {
-            HttpsURLConnection connection = (HttpsURLConnection) new URL(
-                "https://api.spigotmc.org/legacy/update.php?resource=" + this.pluginId
-            ).openConnection();
+            HttpsURLConnection connection = (HttpsURLConnection) new URL("https://api.spigotmc.org/legacy/update.php?resource=" + this.pluginId).openConnection();
             connection.setRequestMethod("GET");
             try (
                 InputStream input = connection.getInputStream();
@@ -98,26 +90,17 @@ public final class Updater implements Runnable {
             ) {
                 this.latestVersion = reader.readLine();
                 String[] currentVersionData = this.currentVersion.split("\\.");
-                String[] latestVersionData = this.latestVersion.split("\\.");
+                String[] latestVersionData  = this.latestVersion.split("\\.");
                 if (currentVersionData.length == 3 && latestVersionData.length == 3) {
-                    int majorVersionDifference = Integer.compare(
-                        Integer.parseInt(currentVersionData[0]),
-                        Integer.parseInt(latestVersionData[0])
-                    );
+                    int majorVersionDifference = Integer.compare(Integer.parseInt(currentVersionData[0]), Integer.parseInt(latestVersionData[0]));
                     if (majorVersionDifference != 0) {
                         this.versionDifference = majorVersionDifference;
                     } else {
-                        int minorVersionDifference = Integer.compare(
-                            Integer.parseInt(currentVersionData[1]),
-                            Integer.parseInt(latestVersionData[1])
-                        );
+                        int minorVersionDifference = Integer.compare(Integer.parseInt(currentVersionData[1]), Integer.parseInt(latestVersionData[1]));
                         if (minorVersionDifference != 0) {
                             this.versionDifference = minorVersionDifference;
                         } else {
-                            this.versionDifference = Integer.compare(
-                                Integer.parseInt(currentVersionData[2]),
-                                Integer.parseInt(latestVersionData[2])
-                            );
+                            this.versionDifference = Integer.compare(Integer.parseInt(currentVersionData[2]), Integer.parseInt(latestVersionData[2]));
                         }
                     }
                 }

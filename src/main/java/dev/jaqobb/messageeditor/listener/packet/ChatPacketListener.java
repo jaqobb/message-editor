@@ -46,7 +46,7 @@ import org.bukkit.entity.Player;
 
 public final class ChatPacketListener extends PacketAdapter {
 
-    public ChatPacketListener(final MessageEditorPlugin plugin) {
+    public ChatPacketListener(MessageEditorPlugin plugin) {
         super(plugin, ListenerPriority.HIGHEST, PacketType.Play.Server.CHAT);
     }
 
@@ -57,22 +57,22 @@ public final class ChatPacketListener extends PacketAdapter {
 
     @SuppressWarnings("deprecation")
     @Override
-    public void onPacketSending(final PacketEvent event) {
+    public void onPacketSending(PacketEvent event) {
         if (event.isCancelled()) {
             return;
         }
-        Player player = event.getPlayer();
-        PacketContainer packet = event.getPacket().shallowClone();
-        MessagePlace originalMessagePlace = MessagePlace.fromPacket(packet);
-        MessagePlace messagePlace = originalMessagePlace;
-        String originalMessage = messagePlace.getMessage(packet);
-        String message = originalMessage;
+        Player          player               = event.getPlayer();
+        PacketContainer packet               = event.getPacket().shallowClone();
+        MessagePlace    originalMessagePlace = MessagePlace.fromPacket(packet);
+        MessagePlace    messagePlace         = originalMessagePlace;
+        String          originalMessage      = messagePlace.getMessage(packet);
+        String          message              = originalMessage;
         if (message == null) {
             return;
         }
-        Map.Entry<MessageEdit, String> cachedMessage = this.getPlugin().getCachedMessage(message);
-        MessageEdit messageEdit = null;
-        Matcher messageEditMatcher = null;
+        Map.Entry<MessageEdit, String> cachedMessage      = this.getPlugin().getCachedMessage(message);
+        MessageEdit                    messageEdit        = null;
+        Matcher                        messageEditMatcher = null;
         if (cachedMessage == null) {
             for (MessageEdit currentMessageEdit : this.getPlugin().getMessageEdits()) {
                 if (currentMessageEdit.getMessageBeforePlace() != null && currentMessageEdit.getMessageBeforePlace() != messagePlace) {
@@ -80,7 +80,7 @@ public final class ChatPacketListener extends PacketAdapter {
                 }
                 Matcher currentMessageEditMatcher = currentMessageEdit.getMatcher(message);
                 if (currentMessageEditMatcher != null) {
-                    messageEdit = currentMessageEdit;
+                    messageEdit        = currentMessageEdit;
                     messageEditMatcher = currentMessageEditMatcher;
                     break;
                 }
@@ -120,17 +120,10 @@ public final class ChatPacketListener extends PacketAdapter {
             }
         }
         boolean messageJson = MessageUtils.isJson(message);
-        String messageId = MessageUtils.composeMessageId(messagePlace, message);
+        String  messageId   = MessageUtils.composeMessageId(messagePlace, message);
         this.getPlugin().cacheMessageData(messageId, new MessageData(messagePlace, message, messageJson));
         if (messagePlace.isAnalyzingActivated()) {
-            MessageUtils.logMessage(
-                this.getPlugin().getLogger(),
-                messagePlace,
-                player,
-                messageId,
-                messageJson,
-                message
-            );
+            MessageUtils.logMessage(this.getPlugin().getLogger(), messagePlace, player, messageId, messageJson, message);
         }
         if (this.getPlugin().isAttachingSpecialHoverAndClickEventsEnabled() && player.hasPermission("messageeditor.use")) {
             BaseComponent[] messageToSend;
@@ -140,10 +133,12 @@ public final class ChatPacketListener extends PacketAdapter {
                 messageToSend = MessageUtils.toBaseComponents(message);
             }
             for (BaseComponent messageToSendElement : messageToSend) {
-                messageToSendElement.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(ChatColor.GRAY + "Click to start editing this message.")));
+                messageToSendElement.setHoverEvent(
+                    new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(MessageUtils.composeMessage("&7Click to start editing this message.")))
+                );
                 messageToSendElement.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/message-editor edit " + messageId));
             }
-            message = MessageUtils.toJson(messageToSend, false);
+            message     = MessageUtils.toJson(messageToSend, false);
             messageJson = true;
         }
         if (messagePlace != originalMessagePlace) {

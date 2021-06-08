@@ -30,12 +30,12 @@ import dev.jaqobb.messageeditor.message.MessagePlace;
 
 public final class ScoreboardTitlePacketListener extends CommonPacketListener {
 
-    public ScoreboardTitlePacketListener(final MessageEditorPlugin plugin) {
+    public ScoreboardTitlePacketListener(MessageEditorPlugin plugin) {
         super(plugin, MessagePlace.SCOREBOARD_TITLE);
     }
 
     @Override
-    public boolean shouldProcess(final PacketContainer packet) {
+    public boolean shouldProcess(PacketContainer packet) {
         // 0 = create scoreboard objective
         // 1 = delete scoreboard objective
         // 2 = update scoreboard objective display name

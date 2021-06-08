@@ -31,12 +31,12 @@ import dev.jaqobb.messageeditor.message.bossbar.BossBarAction;
 
 public final class BossBarPacketListener extends CommonPacketListener {
 
-    public BossBarPacketListener(final MessageEditorPlugin plugin) {
+    public BossBarPacketListener(MessageEditorPlugin plugin) {
         super(plugin, MessagePlace.BOSS_BAR);
     }
 
     @Override
-    public boolean shouldProcess(final PacketContainer packet) {
+    public boolean shouldProcess(PacketContainer packet) {
         BossBarAction action = packet.getEnumModifier(BossBarAction.class, 1).read(0);
         return action == BossBarAction.ADD || action == BossBarAction.UPDATE_NAME;
     }

@@ -31,12 +31,12 @@ import dev.jaqobb.messageeditor.message.MessagePlace;
 
 public final class ScoreboardEntryPacketListener extends CommonPacketListener {
 
-    public ScoreboardEntryPacketListener(final MessageEditorPlugin plugin) {
+    public ScoreboardEntryPacketListener(MessageEditorPlugin plugin) {
         super(plugin, MessagePlace.SCOREBOARD_ENTRY);
     }
 
     @Override
-    public boolean shouldProcess(final PacketContainer packet) {
+    public boolean shouldProcess(PacketContainer packet) {
         return packet.getScoreboardActions().read(0) != EnumWrappers.ScoreboardAction.REMOVE;
     }
 }

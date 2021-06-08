@@ -47,7 +47,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public final class InventoryItemsPacketListener extends PacketAdapter {
 
-    public InventoryItemsPacketListener(final MessageEditorPlugin plugin) {
+    public InventoryItemsPacketListener(MessageEditorPlugin plugin) {
         super(plugin, ListenerPriority.HIGHEST, PacketType.Play.Server.WINDOW_ITEMS);
     }
 
@@ -57,12 +57,12 @@ public final class InventoryItemsPacketListener extends PacketAdapter {
     }
 
     @Override
-    public void onPacketSending(final PacketEvent event) {
+    public void onPacketSending(PacketEvent event) {
         if (event.isCancelled()) {
             return;
         }
-        Player player = event.getPlayer();
-        PacketContainer packet = event.getPacket().shallowClone();
+        Player              player = event.getPlayer();
+        PacketContainer     packet = event.getPacket().shallowClone();
         Iterable<ItemStack> items;
         if (packet.getItemArrayModifier().size() == 1) {
             items = Arrays.asList(packet.getItemArrayModifier().read(0));
@@ -79,11 +79,11 @@ public final class InventoryItemsPacketListener extends PacketAdapter {
             }
             ItemMeta itemMeta = item.getItemMeta();
             if (itemMeta.hasDisplayName()) {
-                String originalMessage = itemMeta.getDisplayName();
-                String message = originalMessage;
-                Map.Entry<MessageEdit, String> cachedMessage = this.getPlugin().getCachedMessage(message);
-                MessageEdit messageEdit = null;
-                Matcher messageEditMatcher = null;
+                String                         originalMessage    = itemMeta.getDisplayName();
+                String                         message            = originalMessage;
+                Map.Entry<MessageEdit, String> cachedMessage      = this.getPlugin().getCachedMessage(message);
+                MessageEdit                    messageEdit        = null;
+                Matcher                        messageEditMatcher = null;
                 if (cachedMessage == null) {
                     for (MessageEdit currentMessageEdit : this.getPlugin().getMessageEdits()) {
                         if (currentMessageEdit.getMessageBeforePlace() != null && currentMessageEdit.getMessageBeforePlace() != MessagePlace.INVENTORY_ITEM_NAME) {
@@ -91,7 +91,7 @@ public final class InventoryItemsPacketListener extends PacketAdapter {
                         }
                         Matcher currentMessageEditMatcher = currentMessageEdit.getMatcher(message);
                         if (currentMessageEditMatcher != null) {
-                            messageEdit = currentMessageEdit;
+                            messageEdit        = currentMessageEdit;
                             messageEditMatcher = currentMessageEditMatcher;
                             break;
                         }
@@ -115,20 +115,13 @@ public final class InventoryItemsPacketListener extends PacketAdapter {
                 }
                 boolean messageJson = MessageUtils.isJson(message);
                 if (messageJson) {
-                    message = BaseComponent.toLegacyText(MessageUtils.toBaseComponents(message));
+                    message     = BaseComponent.toLegacyText(MessageUtils.toBaseComponents(message));
                     messageJson = false;
                 }
                 String messageId = MessageUtils.composeMessageId(MessagePlace.INVENTORY_ITEM_NAME, message);
                 this.getPlugin().cacheMessageData(messageId, new MessageData(MessagePlace.INVENTORY_ITEM_NAME, message, messageJson));
                 if (MessagePlace.INVENTORY_ITEM_NAME.isAnalyzingActivated()) {
-                    MessageUtils.logMessage(
-                        this.getPlugin().getLogger(),
-                        MessagePlace.INVENTORY_ITEM_NAME,
-                        player,
-                        messageId,
-                        messageJson,
-                        message
-                    );
+                    MessageUtils.logMessage(this.getPlugin().getLogger(), MessagePlace.INVENTORY_ITEM_NAME, player, messageId, messageJson, message);
                 }
                 if (!message.equals(originalMessage)) {
                     itemMeta.setDisplayName(message);
@@ -137,11 +130,11 @@ public final class InventoryItemsPacketListener extends PacketAdapter {
                 }
             }
             if (itemMeta.hasLore()) {
-                String originalMessage = String.join("\\n", itemMeta.getLore());
-                String message = originalMessage;
-                Map.Entry<MessageEdit, String> cachedMessage = this.getPlugin().getCachedMessage(message);
-                MessageEdit messageEdit = null;
-                Matcher messageEditMatcher = null;
+                String                         originalMessage    = String.join("\\n", itemMeta.getLore());
+                String                         message            = originalMessage;
+                Map.Entry<MessageEdit, String> cachedMessage      = this.getPlugin().getCachedMessage(message);
+                MessageEdit                    messageEdit        = null;
+                Matcher                        messageEditMatcher = null;
                 if (cachedMessage == null) {
                     for (MessageEdit currentMessageEdit : this.getPlugin().getMessageEdits()) {
                         if (currentMessageEdit.getMessageBeforePlace() != null && currentMessageEdit.getMessageBeforePlace() != MessagePlace.INVENTORY_ITEM_LORE) {
@@ -149,7 +142,7 @@ public final class InventoryItemsPacketListener extends PacketAdapter {
                         }
                         Matcher currentMessageEditMatcher = currentMessageEdit.getMatcher(message);
                         if (currentMessageEditMatcher != null) {
-                            messageEdit = currentMessageEdit;
+                            messageEdit        = currentMessageEdit;
                             messageEditMatcher = currentMessageEditMatcher;
                             break;
                         }
@@ -173,20 +166,13 @@ public final class InventoryItemsPacketListener extends PacketAdapter {
                 }
                 boolean messageJson = MessageUtils.isJson(message);
                 if (messageJson) {
-                    message = BaseComponent.toLegacyText(MessageUtils.toBaseComponents(message));
+                    message     = BaseComponent.toLegacyText(MessageUtils.toBaseComponents(message));
                     messageJson = false;
                 }
                 String messageId = MessageUtils.composeMessageId(MessagePlace.INVENTORY_ITEM_LORE, message);
                 this.getPlugin().cacheMessageData(messageId, new MessageData(MessagePlace.INVENTORY_ITEM_LORE, message, messageJson));
                 if (MessagePlace.INVENTORY_ITEM_LORE.isAnalyzingActivated()) {
-                    MessageUtils.logMessage(
-                        this.getPlugin().getLogger(),
-                        MessagePlace.INVENTORY_ITEM_LORE,
-                        player,
-                        messageId,
-                        messageJson,
-                        message
-                    );
+                    MessageUtils.logMessage(this.getPlugin().getLogger(), MessagePlace.INVENTORY_ITEM_LORE, player, messageId, messageJson, message);
                 }
                 if (!message.equals(originalMessage)) {
                     itemMeta.setLore(Arrays.asList(message.split("\\\\n")));

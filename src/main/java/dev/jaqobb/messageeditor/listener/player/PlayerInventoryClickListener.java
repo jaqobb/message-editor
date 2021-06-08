@@ -25,15 +25,15 @@
 package dev.jaqobb.messageeditor.listener.player;
 
 import com.cryptomorin.xseries.XSound;
-import dev.jaqobb.messageeditor.MessageEditorConstants;
 import dev.jaqobb.messageeditor.MessageEditorPlugin;
 import dev.jaqobb.messageeditor.message.MessageEdit;
 import dev.jaqobb.messageeditor.message.MessageEditData;
 import dev.jaqobb.messageeditor.message.MessagePlace;
+import dev.jaqobb.messageeditor.util.MessageUtils;
+import java.util.Arrays;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -49,16 +49,16 @@ public final class PlayerInventoryClickListener implements Listener {
 
     private final MessageEditorPlugin plugin;
 
-    public PlayerInventoryClickListener(final MessageEditorPlugin plugin) {
+    public PlayerInventoryClickListener(MessageEditorPlugin plugin) {
         this.plugin = plugin;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onPlayerInventoryClick(final InventoryClickEvent event) {
-        Player player = (Player) event.getWhoClicked();
-        Inventory inventory = event.getInventory();
+    public void onPlayerInventoryClick(InventoryClickEvent event) {
+        Player        player        = (Player) event.getWhoClicked();
+        Inventory     inventory     = event.getInventory();
         InventoryView inventoryView = event.getView();
-        if (!inventoryView.getTitle().equals(ChatColor.DARK_GRAY + "Message Editor")) {
+        if (!inventoryView.getTitle().equals(MessageUtils.composeMessage("&8Message Editor"))) {
             return;
         }
         event.setCancelled(true);
@@ -81,7 +81,7 @@ public final class PlayerInventoryClickListener implements Listener {
             messageEditData.setOldMessagePatternKey("");
             player.closeInventory();
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
-            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Enter old message pattern key, that is what you want to replace, or enter '" + ChatColor.YELLOW + "done" + ChatColor.GRAY + "' if you are done replacing everything you want.");
+            player.sendMessage(MessageUtils.composeMessageWithPrefix("&7Enter old message pattern key, that is what you want to replace, or enter '&edone&7' if you are done replacing everything you want."));
         } else if (slot == 15) {
             ClickType click = event.getClick();
             if (click.isLeftClick()) {
@@ -89,39 +89,39 @@ public final class PlayerInventoryClickListener implements Listener {
                 messageEditData.setNewMessageCache("");
                 player.closeInventory();
                 player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
-                player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Enter new message. Enter '" + ChatColor.YELLOW + "done" + ChatColor.GRAY + "' once you are done entering the new message.");
+                player.sendMessage(MessageUtils.composeMessageWithPrefix("&7Enter new message. Enter '&edone&7' once you are done entering the new message."));
                 MessagePlace newMessagePlace = messageEditData.getNewMessagePlace();
                 if (newMessagePlace == MessagePlace.GAME_CHAT || newMessagePlace == MessagePlace.SYSTEM_CHAT || newMessagePlace == MessagePlace.ACTION_BAR) {
-                    player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "You can also enter '" + ChatColor.YELLOW + "remove" + ChatColor.GRAY + "' if you do not want the new message to be sent to the players (this will completely remove the message).");
+                    player.sendMessage(MessageUtils.composeMessageWithPrefix("&7You can also enter '&eremove&7' if you do not want the new message to be sent to the players (this will completely remove the message)."));
                 }
             } else if (click.isRightClick()) {
                 messageEditData.setCurrentMode(MessageEditData.Mode.EDITING_NEW_MESSAGE_KEY);
                 messageEditData.setNewMessageKey("");
                 player.closeInventory();
                 player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
-                player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Enter new message key, that is what you want to replace, or enter '" + ChatColor.YELLOW + "done" + ChatColor.GRAY + "' if you are done replacing everything you want.");
+                player.sendMessage(MessageUtils.composeMessageWithPrefix("&7Enter new message key, that is what you want to replace, or enter '&edone&7' if you are done replacing everything you want."));
             }
         } else if (slot == 24) {
             MessagePlace oldMessagePlace = messageEditData.getOldMessagePlace();
             if (oldMessagePlace != MessagePlace.GAME_CHAT && oldMessagePlace != MessagePlace.SYSTEM_CHAT && oldMessagePlace != MessagePlace.ACTION_BAR) {
                 player.playSound(player.getLocation(), XSound.ENTITY_ITEM_BREAK.parseSound(), 1.0F, 1.0F);
-                player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.RED + "You cannot change new message place of this message.");
+                player.sendMessage(MessageUtils.composeMessageWithPrefix("&cYou cannot change new message place of this message."));
                 return;
             }
             messageEditData.setCurrentMode(MessageEditData.Mode.EDITING_NEW_MESSAGE_PLACE);
             player.closeInventory();
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
-            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Enter new message place.");
-            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Available message places:");
-            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "- " + ChatColor.YELLOW + MessagePlace.GAME_CHAT.name() + ChatColor.GRAY + " (" + ChatColor.YELLOW + MessagePlace.GAME_CHAT.getFriendlyName() + ChatColor.GRAY + ")");
-            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "- " + ChatColor.YELLOW + MessagePlace.SYSTEM_CHAT.name() + ChatColor.GRAY + " (" + ChatColor.YELLOW + MessagePlace.SYSTEM_CHAT.getFriendlyName() + ChatColor.GRAY + ")");
-            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "- " + ChatColor.YELLOW + MessagePlace.ACTION_BAR.name() + ChatColor.GRAY + " (" + ChatColor.YELLOW + MessagePlace.ACTION_BAR.getFriendlyName() + ChatColor.GRAY + ")");
+            player.sendMessage(MessageUtils.composeMessageWithPrefix("&7Enter new message place."));
+            player.sendMessage(MessageUtils.composeMessageWithPrefix("&7Available message places:"));
+            for (MessagePlace availableMessagePlace : Arrays.asList(MessagePlace.GAME_CHAT, MessagePlace.SYSTEM_CHAT, MessagePlace.ACTION_BAR)) {
+                player.sendMessage(MessageUtils.composeMessageWithPrefix("&7- &e" + availableMessagePlace.name() + " &7(&e" + availableMessagePlace.getFriendlyName() + "&7)"));
+            }
         } else if (slot == 48) {
-            String oldMessagePatternString = messageEditData.getOldMessagePattern();
-            Pattern oldMessagePattern = Pattern.compile(oldMessagePatternString);
-            Matcher oldMessagePatternMatcher = oldMessagePattern.matcher(messageEditData.getOriginalOldMessage());
-            MessagePlace oldMessagePlace = messageEditData.getOldMessagePlace();
-            String newMessage = messageEditData.getNewMessage();
+            String       oldMessagePatternString  = messageEditData.getOldMessagePattern();
+            Pattern      oldMessagePattern        = Pattern.compile(oldMessagePatternString);
+            Matcher      oldMessagePatternMatcher = oldMessagePattern.matcher(messageEditData.getOriginalOldMessage());
+            MessagePlace oldMessagePlace          = messageEditData.getOldMessagePlace();
+            String       newMessage               = messageEditData.getNewMessage();
             newMessage = newMessage.replace("\\", "\\\\");
             if (oldMessagePatternMatcher.matches()) {
                 StringJoiner excludePattern = new StringJoiner("|", "(?!", ")");
@@ -135,17 +135,12 @@ public final class PlayerInventoryClickListener implements Listener {
                 newMessage = newMessage.replace("$", "\\$");
             }
             MessagePlace newMessagePlace = messageEditData.getNewMessagePlace();
-            this.plugin.addMessageEdit(new MessageEdit(
-                oldMessagePatternString,
-                oldMessagePlace,
-                newMessage,
-                newMessagePlace
-            ));
+            this.plugin.addMessageEdit(new MessageEdit(oldMessagePatternString, oldMessagePlace, newMessage, newMessagePlace));
             this.plugin.clearCachedMessages();
             this.plugin.saveConfig();
             player.closeInventory();
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
-            player.sendMessage(MessageEditorConstants.PREFIX + ChatColor.GRAY + "Message edit has been saved and applied.");
+            player.sendMessage(MessageUtils.composeMessageWithPrefix("&7Message edit has been saved and applied."));
         } else if (slot == 50) {
             player.closeInventory();
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);

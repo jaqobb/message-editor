@@ -32,10 +32,15 @@ case "${1}" in
 		else
 			set -e
 			cd "${base_folder}"
+			mkdir -p "server/BuildTools"
 			mkdir -p "server/plugins"
-			echo "Downloading the latest version of Paper for the Minecraft version ${2}..."
-			curl "https://papermc.io/api/v1/paper/${2}/latest/download" --output "server/Paper.jar"
-			echo "The latest version of Paper for the Minecraft version ${2} has been downloaded."
+			echo "Downloading the latest version of Spigot for the Minecraft version ${2}..."
+			curl "https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar" --output "server/BuildTools/BuildTools.jar"
+			cd "${base_folder}/server/BuildTools"
+			java -jar BuildTools.jar --rev "${2}"
+			cp "spigot-${2}.jar" "../Spigot.jar"
+			cd "${base_folder}"
+			echo "The latest version of Spigot for the Minecraft version ${2} has been downloaded."
 		fi
 	)
 	;;
@@ -63,7 +68,7 @@ case "${1}" in
 	(
 		set -e
 		cd "${base_folder}/server"
-		java -Dcom.mojang.eula.agree=true -jar "Paper.jar" --nogui --nojline
+		java -Dcom.mojang.eula.agree=true -jar "Spigot.jar" --nogui --nojline
 	)
 	;;
 	"clean")
@@ -71,6 +76,7 @@ case "${1}" in
 		set -e
 		cd "${base_folder}"
 		rm -rf "server"
+		mkdir -p "server/BuildTools"
 		mkdir -p "server/plugins"
 		echo "The test server files have been cleaned."
 	)
@@ -79,7 +85,7 @@ case "${1}" in
 		echo "This script provides a variety of commands to build and manage the test server."
 		echo ""
 		echo "Available commands:"
-		echo " * download <Minecraft version> | Downloads the latest version of Paper for the specified Minecraft version."
+		echo " * download <Minecraft version> | Downloads the latest version of Spigot for the specified Minecraft version."
 		echo " * copy                         | Compiles and copies the plugin to the test server files."
 		echo " * start                        | Starts the test server."
 		echo " * clean                        | Cleans the test server files."

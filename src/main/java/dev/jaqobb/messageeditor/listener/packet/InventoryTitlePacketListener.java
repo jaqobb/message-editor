@@ -29,7 +29,7 @@ import dev.jaqobb.messageeditor.message.MessagePlace;
 
 public final class InventoryTitlePacketListener extends CommonPacketListener {
 
-    public InventoryTitlePacketListener(final MessageEditorPlugin plugin) {
+    public InventoryTitlePacketListener(MessageEditorPlugin plugin) {
         super(plugin, MessagePlace.INVENTORY_TITLE);
     }
 }

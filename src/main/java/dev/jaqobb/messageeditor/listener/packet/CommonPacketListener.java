@@ -42,10 +42,7 @@ class CommonPacketListener extends PacketAdapter {
 
     private final MessagePlace messagePlace;
 
-    CommonPacketListener(
-        final MessageEditorPlugin plugin,
-        final MessagePlace messagePlace
-    ) {
+    CommonPacketListener(MessageEditorPlugin plugin, MessagePlace messagePlace) {
         super(plugin, ListenerPriority.HIGHEST, messagePlace.getPacketType());
         this.messagePlace = messagePlace;
     }
@@ -55,28 +52,28 @@ class CommonPacketListener extends PacketAdapter {
         return (MessageEditorPlugin) this.plugin;
     }
 
-    public boolean shouldProcess(final PacketContainer packet) {
+    public boolean shouldProcess(PacketContainer packet) {
         return true;
     }
 
     @Override
-    public void onPacketSending(final PacketEvent event) {
+    public void onPacketSending(PacketEvent event) {
         if (event.isCancelled()) {
             return;
         }
-        Player player = event.getPlayer();
+        Player          player = event.getPlayer();
         PacketContainer packet = event.getPacket().shallowClone();
         if (!this.shouldProcess(packet)) {
             return;
         }
         String originalMessage = this.messagePlace.getMessage(packet);
-        String message = originalMessage;
+        String message         = originalMessage;
         if (message == null) {
             return;
         }
-        Map.Entry<MessageEdit, String> cachedMessage = this.getPlugin().getCachedMessage(message);
-        MessageEdit messageEdit = null;
-        Matcher messageEditMatcher = null;
+        Map.Entry<MessageEdit, String> cachedMessage      = this.getPlugin().getCachedMessage(message);
+        MessageEdit                    messageEdit        = null;
+        Matcher                        messageEditMatcher = null;
         if (cachedMessage == null) {
             for (MessageEdit currentMessageEdit : this.getPlugin().getMessageEdits()) {
                 if (currentMessageEdit.getMessageBeforePlace() != null && currentMessageEdit.getMessageBeforePlace() != this.messagePlace) {
@@ -84,7 +81,7 @@ class CommonPacketListener extends PacketAdapter {
                 }
                 Matcher currentMessageEditMatcher = currentMessageEdit.getMatcher(message);
                 if (currentMessageEditMatcher != null) {
-                    messageEdit = currentMessageEdit;
+                    messageEdit        = currentMessageEdit;
                     messageEditMatcher = currentMessageEditMatcher;
                     break;
                 }
@@ -107,17 +104,10 @@ class CommonPacketListener extends PacketAdapter {
             }
         }
         boolean messageJson = MessageUtils.isJson(message);
-        String messageId = MessageUtils.composeMessageId(this.messagePlace, message);
+        String  messageId   = MessageUtils.composeMessageId(this.messagePlace, message);
         this.getPlugin().cacheMessageData(messageId, new MessageData(this.messagePlace, message, messageJson));
         if (this.messagePlace.isAnalyzingActivated()) {
-            MessageUtils.logMessage(
-                this.getPlugin().getLogger(),
-                this.messagePlace,
-                player,
-                messageId,
-                messageJson,
-                message
-            );
+            MessageUtils.logMessage(this.getPlugin().getLogger(), this.messagePlace, player, messageId, messageJson, message);
         }
         if (!message.equals(originalMessage)) {
             this.messagePlace.setMessage(packet, message, messageJson);

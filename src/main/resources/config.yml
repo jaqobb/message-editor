@@ -13,7 +13,7 @@ message-edits:
 - ==: MessageEdit
   message-before-pattern: '\{"extra":\[\{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"yellow","text":"([a-zA-Z0-9_]{3,16}) joined the game"\}\],"text":""\}'
   message-before-place: SYSTEM_CHAT
-  message-after: '{"extra":[{"bold":true,"italic":true,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"red","text":"$1 joined the game"}],"text":""}'
+  message-after: §x§4§6§b§4§5§f$1 §fjoined the game
   message-after-place: ACTION_BAR
 - ==: MessageEdit
   message-before-pattern: '\{"extra":\[\{"text":"You are (\d+) version\(s\) behind"\}\],"text":""\}'

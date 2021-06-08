@@ -34,12 +34,12 @@ public final class PlayerQuitListener implements Listener {
 
     private final MessageEditorPlugin plugin;
 
-    public PlayerQuitListener(final MessageEditorPlugin plugin) {
+    public PlayerQuitListener(MessageEditorPlugin plugin) {
         this.plugin = plugin;
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerQuit(final PlayerQuitEvent event) {
+    public void onPlayerQuit(PlayerQuitEvent event) {
         this.plugin.removeCurrentMessageEditData(event.getPlayer().getUniqueId());
     }
 }

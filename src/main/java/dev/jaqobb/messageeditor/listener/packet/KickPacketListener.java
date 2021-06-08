@@ -29,7 +29,7 @@ import dev.jaqobb.messageeditor.message.MessagePlace;
 
 public final class KickPacketListener extends CommonPacketListener {
 
-    public KickPacketListener(final MessageEditorPlugin plugin) {
+    public KickPacketListener(MessageEditorPlugin plugin) {
         super(plugin, MessagePlace.KICK);
     }
 }

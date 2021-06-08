@@ -37,12 +37,12 @@ public final class PluginDisableListener implements Listener {
 
     private final MessageEditorPlugin plugin;
 
-    public PluginDisableListener(final MessageEditorPlugin plugin) {
+    public PluginDisableListener(MessageEditorPlugin plugin) {
         this.plugin = plugin;
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onPluginDisable(final PluginDisableEvent event) {
+    public void onPluginDisable(PluginDisableEvent event) {
         Plugin plugin = event.getPlugin();
         if (plugin.getName().equals(MessageEditorConstants.PLACEHOLDER_API_PLUGIN_NAME)) {
             this.plugin.setPlaceholderApiPresent(false);

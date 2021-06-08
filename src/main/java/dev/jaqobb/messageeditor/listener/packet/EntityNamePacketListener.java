@@ -29,7 +29,7 @@ import dev.jaqobb.messageeditor.message.MessagePlace;
 
 public final class EntityNamePacketListener extends CommonPacketListener {
 
-    public EntityNamePacketListener(final MessageEditorPlugin plugin) {
+    public EntityNamePacketListener(MessageEditorPlugin plugin) {
         super(plugin, MessagePlace.ENTITY_NAME);
     }
 }

@@ -27,17 +27,13 @@ package dev.jaqobb.messageeditor.message;
 public final class MessageData {
 
     private final MessagePlace messagePlace;
-    private final String message;
-    private final boolean messageJson;
+    private final String       message;
+    private final boolean      messageJson;
 
-    public MessageData(
-        final MessagePlace messagePlace,
-        final String message,
-        final boolean messageJson
-    ) {
+    public MessageData(MessagePlace messagePlace, String message, boolean messageJson) {
         this.messagePlace = messagePlace;
-        this.message = message;
-        this.messageJson = messageJson;
+        this.message      = message;
+        this.messageJson  = messageJson;
     }
 
     public MessagePlace getMessagePlace() {

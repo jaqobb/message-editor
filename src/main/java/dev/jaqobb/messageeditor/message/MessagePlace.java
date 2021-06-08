@@ -41,7 +41,7 @@ public enum MessagePlace {
 
     GAME_CHAT("GC", "Game Chat", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 0, EnumWrappers.ChatType.CHAT) {
         @Override
-        public String getMessage(final PacketContainer packet) {
+        public String getMessage(PacketContainer packet) {
             WrappedChatComponent message = packet.getChatComponents().read(0);
             if (message != null) {
                 return message.getJson();
@@ -55,11 +55,7 @@ public enum MessagePlace {
         }
 
         @Override
-        public void setMessage(
-            final PacketContainer packet,
-            final String message,
-            final boolean messageJson
-        ) {
+        public void setMessage(PacketContainer packet, String message, boolean messageJson) {
             if (packet.getChatComponents().read(0) != null) {
                 if (messageJson) {
                     packet.getChatComponents().write(0, WrappedChatComponent.fromJson(message));
@@ -77,46 +73,38 @@ public enum MessagePlace {
     },
     SYSTEM_CHAT("SC", "System Chat", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 1, EnumWrappers.ChatType.SYSTEM) {
         @Override
-        public String getMessage(final PacketContainer packet) {
+        public String getMessage(PacketContainer packet) {
             return GAME_CHAT.getMessage(packet);
         }
 
         @Override
-        public void setMessage(
-            final PacketContainer packet,
-            final String message,
-            final boolean messageJson
-        ) {
+        public void setMessage(PacketContainer packet, String message, boolean messageJson) {
             GAME_CHAT.setMessage(packet, message, messageJson);
         }
     },
     ACTION_BAR("AB", "Action Bar", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 2, EnumWrappers.ChatType.GAME_INFO) {
         @Override
-        public String getMessage(final PacketContainer packet) {
+        public String getMessage(PacketContainer packet) {
             return GAME_CHAT.getMessage(packet);
         }
 
         @Override
         public void setMessage(
-            final PacketContainer packet,
-            final String message,
-            final boolean messageJson
+            PacketContainer packet,
+            String message,
+            boolean messageJson
         ) {
             GAME_CHAT.setMessage(packet, message, messageJson);
         }
     },
     KICK("K", "Kick", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.KICK_DISCONNECT) {
         @Override
-        public String getMessage(final PacketContainer packet) {
+        public String getMessage(PacketContainer packet) {
             return packet.getChatComponents().read(0).getJson();
         }
 
         @Override
-        public void setMessage(
-            final PacketContainer packet,
-            final String message,
-            final boolean messageJson
-        ) {
+        public void setMessage(PacketContainer packet, String message, boolean messageJson) {
             if (messageJson) {
                 packet.getChatComponents().write(0, WrappedChatComponent.fromJson(message));
             } else {
@@ -126,16 +114,12 @@ public enum MessagePlace {
     },
     DISCONNECT("D", "Disconnect", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Login.Server.DISCONNECT) {
         @Override
-        public String getMessage(final PacketContainer packet) {
+        public String getMessage(PacketContainer packet) {
             return packet.getChatComponents().read(0).getJson();
         }
 
         @Override
-        public void setMessage(
-            final PacketContainer packet,
-            final String message,
-            final boolean messageJson
-        ) {
+        public void setMessage(PacketContainer packet, String message, boolean messageJson) {
             if (messageJson) {
                 packet.getChatComponents().write(0, WrappedChatComponent.fromJson(message));
             } else {
@@ -145,16 +129,12 @@ public enum MessagePlace {
     },
     BOSS_BAR("BB", "Boss Bar", MinecraftVersion.COMBAT_UPDATE, PacketType.Play.Server.BOSS) {
         @Override
-        public String getMessage(final PacketContainer packet) {
+        public String getMessage(PacketContainer packet) {
             return packet.getChatComponents().read(0).getJson();
         }
 
         @Override
-        public void setMessage(
-            final PacketContainer packet,
-            final String message,
-            final boolean messageJson
-        ) {
+        public void setMessage(PacketContainer packet, String message, boolean messageJson) {
             if (messageJson) {
                 packet.getChatComponents().write(0, WrappedChatComponent.fromJson(message));
             } else {
@@ -164,7 +144,7 @@ public enum MessagePlace {
     },
     SCOREBOARD_TITLE("ST", "Scoreboard Title", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.SCOREBOARD_OBJECTIVE) {
         @Override
-        public String getMessage(final PacketContainer packet) {
+        public String getMessage(PacketContainer packet) {
             if (packet.getStrings().size() == 2) {
                 return packet.getStrings().read(1);
             }
@@ -172,11 +152,7 @@ public enum MessagePlace {
         }
 
         @Override
-        public void setMessage(
-            final PacketContainer packet,
-            final String message,
-            final boolean messageJson
-        ) {
+        public void setMessage(PacketContainer packet, String message, boolean messageJson) {
             if (packet.getStrings().size() == 2) {
                 packet.getStrings().write(1, message);
                 return;
@@ -190,16 +166,12 @@ public enum MessagePlace {
     },
     SCOREBOARD_ENTRY("SE", "Scoreboard Entry", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.SCOREBOARD_SCORE) {
         @Override
-        public String getMessage(final PacketContainer packet) {
+        public String getMessage(PacketContainer packet) {
             return packet.getStrings().read(0);
         }
 
         @Override
-        public void setMessage(
-            final PacketContainer packet,
-            final String message,
-            final boolean messageJson
-        ) {
+        public void setMessage(PacketContainer packet, String message, boolean messageJson) {
             if (messageJson) {
                 packet.getStrings().write(0, BaseComponent.toLegacyText(ComponentSerializer.parse(message)));
             } else {
@@ -209,16 +181,12 @@ public enum MessagePlace {
     },
     INVENTORY_TITLE("IT", "Inventory Title", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.OPEN_WINDOW) {
         @Override
-        public String getMessage(final PacketContainer packet) {
+        public String getMessage(PacketContainer packet) {
             return packet.getChatComponents().read(0).getJson();
         }
 
         @Override
-        public void setMessage(
-            final PacketContainer packet,
-            final String message,
-            final boolean messageJson
-        ) {
+        public void setMessage(PacketContainer packet, String message, boolean messageJson) {
             if (messageJson) {
                 packet.getChatComponents().write(0, WrappedChatComponent.fromJson(message));
             } else {
@@ -229,40 +197,32 @@ public enum MessagePlace {
     INVENTORY_ITEM_NAME("ITN", "Inventory Item Name", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.WINDOW_ITEMS) {
         // Items are an exception and do not use this.
         @Override
-        public String getMessage(final PacketContainer packet) {
+        public String getMessage(PacketContainer packet) {
             throw new UnsupportedOperationException();
         }
 
         // Items are an exception and do not use this.
         @Override
-        public void setMessage(
-            final PacketContainer packet,
-            final String message,
-            final boolean messageJson
-        ) {
+        public void setMessage(PacketContainer packet, String message, boolean messageJson) {
             throw new UnsupportedOperationException();
         }
     },
     INVENTORY_ITEM_LORE("ITL", "Inventory Item Lore", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.WINDOW_ITEMS) {
         // Items are an exception and do not use this.
         @Override
-        public String getMessage(final PacketContainer packet) {
+        public String getMessage(PacketContainer packet) {
             throw new UnsupportedOperationException();
         }
 
         // Items are an exception and do not use this.
         @Override
-        public void setMessage(
-            final PacketContainer packet,
-            final String message,
-            final boolean messageJson
-        ) {
+        public void setMessage(PacketContainer packet, String message, boolean messageJson) {
             throw new UnsupportedOperationException();
         }
     },
     ENTITY_NAME("EN", "Entity Name", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.ENTITY_METADATA) {
         @Override
-        public String getMessage(final PacketContainer packet) {
+        public String getMessage(PacketContainer packet) {
             List<WrappedWatchableObject> watchableObjects = packet.getWatchableCollectionModifier().read(0);
             if (watchableObjects == null) {
                 return null;
@@ -284,11 +244,7 @@ public enum MessagePlace {
         }
 
         @Override
-        public void setMessage(
-            final PacketContainer packet,
-            final String message,
-            final boolean messageJson
-        ) {
+        public void setMessage(PacketContainer packet, String message, boolean messageJson) {
             List<WrappedWatchableObject> watchableObjects = packet.getWatchableCollectionModifier().read(0);
             if (watchableObjects == null) {
                 return;
@@ -309,47 +265,40 @@ public enum MessagePlace {
 
     public static final MessagePlace[] VALUES = values();
 
-    private final String id;
-    private final String friendlyName;
-    private final MinecraftVersion minimumRequiredMinecraftVersion;
-    private final PacketType packetType;
-    private final Byte chatType;
+    private final String                id;
+    private final String                friendlyName;
+    private final MinecraftVersion      minimumRequiredMinecraftVersion;
+    private final PacketType            packetType;
+    private final Byte                  chatType;
     private final EnumWrappers.ChatType chatTypeEnum;
-    private final boolean supported;
-    private boolean analyzingActivated;
+    private final boolean               supported;
+    private       boolean               analyzingActivated;
 
     private MessagePlace(
-        final String id,
-        final String friendlyName,
-        final MinecraftVersion minimumRequiredMinecraftVersion,
-        final PacketType packetType
+        String id,
+        String friendlyName,
+        MinecraftVersion minimumRequiredMinecraftVersion,
+        PacketType packetType
     ) {
-        this(
-            id,
-            friendlyName,
-            minimumRequiredMinecraftVersion,
-            packetType,
-            null,
-            null
-        );
+        this(id, friendlyName, minimumRequiredMinecraftVersion, packetType, null, null);
     }
 
     private MessagePlace(
-        final String id,
-        final String friendlyName,
-        final MinecraftVersion minimumRequiredMinecraftVersion,
-        final PacketType packetType,
-        final Byte chatType,
-        final EnumWrappers.ChatType chatTypeEnum
+        String id,
+        String friendlyName,
+        MinecraftVersion minimumRequiredMinecraftVersion,
+        PacketType packetType,
+        Byte chatType,
+        EnumWrappers.ChatType chatTypeEnum
     ) {
-        this.id = id;
-        this.friendlyName = friendlyName;
+        this.id                              = id;
+        this.friendlyName                    = friendlyName;
         this.minimumRequiredMinecraftVersion = minimumRequiredMinecraftVersion;
-        this.packetType = packetType;
-        this.chatType = chatType;
-        this.chatTypeEnum = chatTypeEnum;
-        this.supported = MinecraftVersion.atOrAbove(this.minimumRequiredMinecraftVersion);
-        this.analyzingActivated = false;
+        this.packetType                      = packetType;
+        this.chatType                        = chatType;
+        this.chatTypeEnum                    = chatTypeEnum;
+        this.supported                       = MinecraftVersion.atOrAbove(this.minimumRequiredMinecraftVersion);
+        this.analyzingActivated              = false;
     }
 
     public String getId() {
@@ -384,7 +333,7 @@ public enum MessagePlace {
         return this.analyzingActivated;
     }
 
-    public void setAnalyzingActivated(final boolean activated) {
+    public void setAnalyzingActivated(boolean activated) {
         this.analyzingActivated = activated;
     }
 
@@ -396,14 +345,14 @@ public enum MessagePlace {
         boolean messageJson
     );
 
-    public static MessagePlace fromName(final String name) {
+    public static MessagePlace fromName(String name) {
         return Arrays.stream(VALUES)
             .filter(place -> place.name().equalsIgnoreCase(name) || place.friendlyName.equalsIgnoreCase(name))
             .findFirst()
             .orElse(null);
     }
 
-    public static MessagePlace fromPacket(final PacketContainer packet) {
+    public static MessagePlace fromPacket(PacketContainer packet) {
         if (packet.getType() != PacketType.Play.Server.CHAT) {
             return fromPacketType(packet.getType());
         }
@@ -413,17 +362,14 @@ public enum MessagePlace {
         return fromPacketType(packet.getType(), packet.getChatTypes().read(0));
     }
 
-    public static MessagePlace fromPacketType(final PacketType packetType) {
+    public static MessagePlace fromPacketType(PacketType packetType) {
         return Arrays.stream(VALUES)
             .filter(place -> place.packetType == packetType)
             .findFirst()
             .orElse(null);
     }
 
-    public static MessagePlace fromPacketType(
-        final PacketType packetType,
-        final byte chatType
-    ) {
+    public static MessagePlace fromPacketType(PacketType packetType, byte chatType) {
         return Arrays.stream(VALUES)
             .filter(place -> place.packetType == packetType)
             .filter(place -> place.chatType != null && place.chatType == chatType)
@@ -431,10 +377,7 @@ public enum MessagePlace {
             .orElse(null);
     }
 
-    public static MessagePlace fromPacketType(
-        final PacketType packetType,
-        final EnumWrappers.ChatType chatTypeEnum
-    ) {
+    public static MessagePlace fromPacketType(PacketType packetType, EnumWrappers.ChatType chatTypeEnum) {
         return Arrays.stream(VALUES)
             .filter(place -> place.packetType == packetType)
             .filter(place -> place.chatTypeEnum != null && place.chatTypeEnum == chatTypeEnum)

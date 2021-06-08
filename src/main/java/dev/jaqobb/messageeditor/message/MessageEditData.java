@@ -28,23 +28,23 @@ import dev.jaqobb.messageeditor.MessageEditorConstants;
 
 public final class MessageEditData {
 
-    private final String originalOldMessage;
-    private final boolean originalOldMessageJson;
-    private String oldMessage;
-    private String oldMessagePattern;
-    private boolean oldMessageJson;
-    private String oldMessagePatternKey;
+    private final String       originalOldMessage;
+    private final boolean      originalOldMessageJson;
+    private       String       oldMessage;
+    private       String       oldMessagePattern;
+    private       boolean      oldMessageJson;
+    private       String       oldMessagePatternKey;
     private final MessagePlace oldMessagePlace;
-    private final String originalNewMessage;
-    private final boolean originalNewMessageJson;
-    private String newMessage;
-    private boolean newMessageJson;
-    private String newMessageCache;
-    private String newMessageKey;
-    private MessagePlace newMessagePlace;
-    private Mode currentMode;
+    private final String       originalNewMessage;
+    private final boolean      originalNewMessageJson;
+    private       String       newMessage;
+    private       boolean      newMessageJson;
+    private       String       newMessageCache;
+    private       String       newMessageKey;
+    private       MessagePlace newMessagePlace;
+    private       Mode         currentMode;
 
-    public MessageEditData(final MessageData messageData) {
+    public MessageEditData(MessageData messageData) {
         this(
             messageData.getMessage(),
             messageData.isMessageJson(),
@@ -56,28 +56,28 @@ public final class MessageEditData {
     }
 
     public MessageEditData(
-        final String oldMessage,
-        final boolean oldMessageJson,
-        final MessagePlace oldMessagePlace,
-        final String newMessage,
-        final boolean newMessageJson,
-        final MessagePlace newMessagePlace
+        String oldMessage,
+        boolean oldMessageJson,
+        MessagePlace oldMessagePlace,
+        String newMessage,
+        boolean newMessageJson,
+        MessagePlace newMessagePlace
     ) {
-        this.originalOldMessage = oldMessage;
+        this.originalOldMessage     = oldMessage;
         this.originalOldMessageJson = oldMessageJson;
-        this.oldMessage = oldMessage;
-        this.oldMessagePattern = oldMessage.replaceAll(MessageEditorConstants.SPECIAL_REGEX_CHARACTERS, "\\\\$0");
-        this.oldMessageJson = oldMessageJson;
-        this.oldMessagePatternKey = "";
-        this.oldMessagePlace = oldMessagePlace;
-        this.originalNewMessage = newMessage;
+        this.oldMessage             = oldMessage;
+        this.oldMessagePattern      = oldMessage.replaceAll(MessageEditorConstants.SPECIAL_REGEX_CHARACTERS, "\\\\$0");
+        this.oldMessageJson         = oldMessageJson;
+        this.oldMessagePatternKey   = "";
+        this.oldMessagePlace        = oldMessagePlace;
+        this.originalNewMessage     = newMessage;
         this.originalNewMessageJson = newMessageJson;
-        this.newMessage = newMessage;
-        this.newMessageJson = newMessageJson;
-        this.newMessageCache = "";
-        this.newMessageKey = "";
-        this.newMessagePlace = newMessagePlace;
-        this.currentMode = Mode.NONE;
+        this.newMessage             = newMessage;
+        this.newMessageJson         = newMessageJson;
+        this.newMessageCache        = "";
+        this.newMessageKey          = "";
+        this.newMessagePlace        = newMessagePlace;
+        this.currentMode            = Mode.NONE;
     }
 
     public String getOriginalOldMessage() {
@@ -92,7 +92,7 @@ public final class MessageEditData {
         return this.oldMessage;
     }
 
-    public void setOldMessage(final String oldMessage) {
+    public void setOldMessage(String oldMessage) {
         this.oldMessage = oldMessage;
     }
 
@@ -100,7 +100,7 @@ public final class MessageEditData {
         return this.oldMessagePattern;
     }
 
-    public void setOldMessagePattern(final String oldMessagePattern) {
+    public void setOldMessagePattern(String oldMessagePattern) {
         this.oldMessagePattern = oldMessagePattern;
     }
 
@@ -108,7 +108,7 @@ public final class MessageEditData {
         return this.oldMessageJson;
     }
 
-    public void setOldMessageJson(final boolean oldMessageJson) {
+    public void setOldMessageJson(boolean oldMessageJson) {
         this.oldMessageJson = oldMessageJson;
     }
 
@@ -116,7 +116,7 @@ public final class MessageEditData {
         return this.oldMessagePatternKey;
     }
 
-    public void setOldMessagePatternKey(final String oldMessagePatternKey) {
+    public void setOldMessagePatternKey(String oldMessagePatternKey) {
         this.oldMessagePatternKey = oldMessagePatternKey;
     }
 
@@ -136,7 +136,7 @@ public final class MessageEditData {
         return this.newMessage;
     }
 
-    public void setNewMessage(final String newMessage) {
+    public void setNewMessage(String newMessage) {
         this.newMessage = newMessage;
     }
 
@@ -144,7 +144,7 @@ public final class MessageEditData {
         return this.newMessageJson;
     }
 
-    public void setNewMessageJson(final boolean newMessageJson) {
+    public void setNewMessageJson(boolean newMessageJson) {
         this.newMessageJson = newMessageJson;
     }
 
@@ -152,7 +152,7 @@ public final class MessageEditData {
         return this.newMessageCache;
     }
 
-    public void setNewMessageCache(final String newMessageCache) {
+    public void setNewMessageCache(String newMessageCache) {
         this.newMessageCache = newMessageCache;
     }
 
@@ -160,7 +160,7 @@ public final class MessageEditData {
         return this.newMessageKey;
     }
 
-    public void setNewMessageKey(final String newMessageKey) {
+    public void setNewMessageKey(String newMessageKey) {
         this.newMessageKey = newMessageKey;
     }
 
@@ -168,7 +168,7 @@ public final class MessageEditData {
         return this.newMessagePlace;
     }
 
-    public void setNewMessagePlace(final MessagePlace newMessagePlace) {
+    public void setNewMessagePlace(MessagePlace newMessagePlace) {
         this.newMessagePlace = newMessagePlace;
     }
 
@@ -176,7 +176,7 @@ public final class MessageEditData {
         return this.currentMode;
     }
 
-    public void setCurrentMode(final Mode currentMode) {
+    public void setCurrentMode(Mode currentMode) {
         this.currentMode = currentMode;
     }
 
@@ -190,14 +190,14 @@ public final class MessageEditData {
         EDITING_NEW_MESSAGE_VALUE(false),
         EDITING_NEW_MESSAGE_PLACE(false);
 
-        private final boolean shouldInvalidateCache;
+        private final boolean invalidateCache;
 
-        private Mode(final boolean shouldInvalidateCache) {
-            this.shouldInvalidateCache = shouldInvalidateCache;
+        private Mode(boolean shouldInvalidateCache) {
+            this.invalidateCache = shouldInvalidateCache;
         }
 
         public boolean shouldInvalidateCache() {
-            return this.shouldInvalidateCache;
+            return this.invalidateCache;
         }
     }
 }

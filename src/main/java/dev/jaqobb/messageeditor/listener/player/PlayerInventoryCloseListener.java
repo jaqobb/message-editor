@@ -36,13 +36,13 @@ public final class PlayerInventoryCloseListener implements Listener {
 
     private final MessageEditorPlugin plugin;
 
-    public PlayerInventoryCloseListener(final MessageEditorPlugin plugin) {
+    public PlayerInventoryCloseListener(MessageEditorPlugin plugin) {
         this.plugin = plugin;
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerInventoryClose(final InventoryCloseEvent event) {
-        Player player = (Player) event.getPlayer();
+    public void onPlayerInventoryClose(InventoryCloseEvent event) {
+        Player          player          = (Player) event.getPlayer();
         MessageEditData messageEditData = this.plugin.getCurrentMessageEditData(player.getUniqueId());
         if (messageEditData != null && messageEditData.getCurrentMode().shouldInvalidateCache()) {
             this.plugin.removeCurrentMessageEditData(player.getUniqueId());

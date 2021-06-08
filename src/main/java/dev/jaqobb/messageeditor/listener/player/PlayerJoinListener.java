@@ -35,12 +35,12 @@ public final class PlayerJoinListener implements Listener {
 
     private final MessageEditorPlugin plugin;
 
-    public PlayerJoinListener(final MessageEditorPlugin plugin) {
+    public PlayerJoinListener(MessageEditorPlugin plugin) {
         this.plugin = plugin;
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerJoin(final PlayerJoinEvent event) {
+    public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         if (player.hasPermission("messageeditor.use") && this.plugin.isUpdateNotify()) {
             player.sendMessage(this.plugin.getUpdater().getUpdateMessage());

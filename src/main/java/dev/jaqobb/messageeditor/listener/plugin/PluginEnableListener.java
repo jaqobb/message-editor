@@ -37,12 +37,12 @@ public final class PluginEnableListener implements Listener {
 
     private final MessageEditorPlugin plugin;
 
-    public PluginEnableListener(final MessageEditorPlugin plugin) {
+    public PluginEnableListener(MessageEditorPlugin plugin) {
         this.plugin = plugin;
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onPluginEnable(final PluginEnableEvent event) {
+    public void onPluginEnable(PluginEnableEvent event) {
         Plugin plugin = event.getPlugin();
         if (plugin.getName().equals(MessageEditorConstants.PLACEHOLDER_API_PLUGIN_NAME)) {
             this.plugin.setPlaceholderApiPresent(true);

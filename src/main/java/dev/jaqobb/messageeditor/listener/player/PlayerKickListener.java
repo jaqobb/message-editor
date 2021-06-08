@@ -34,12 +34,12 @@ public final class PlayerKickListener implements Listener {
 
     private final MessageEditorPlugin plugin;
 
-    public PlayerKickListener(final MessageEditorPlugin plugin) {
+    public PlayerKickListener(MessageEditorPlugin plugin) {
         this.plugin = plugin;
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerKick(final PlayerKickEvent event) {
+    public void onPlayerKick(PlayerKickEvent event) {
         this.plugin.removeCurrentMessageEditData(event.getPlayer().getUniqueId());
     }
 }

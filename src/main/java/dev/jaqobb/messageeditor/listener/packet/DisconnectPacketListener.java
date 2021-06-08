@@ -29,7 +29,7 @@ import dev.jaqobb.messageeditor.message.MessagePlace;
 
 public final class DisconnectPacketListener extends CommonPacketListener {
 
-    public DisconnectPacketListener(final MessageEditorPlugin plugin) {
+    public DisconnectPacketListener(MessageEditorPlugin plugin) {
         super(plugin, MessagePlace.DISCONNECT);
     }
 }

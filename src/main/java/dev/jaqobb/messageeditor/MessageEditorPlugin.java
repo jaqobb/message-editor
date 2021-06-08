@@ -74,17 +74,17 @@ public final class MessageEditorPlugin extends JavaPlugin {
         ConfigurationSerialization.registerClass(MessageEdit.class);
     }
 
-    private Metrics metrics;
-    private boolean updateNotify;
-    private Updater updater;
-    private List<MessageEdit> messageEdits;
-    private boolean attachSpecialHoverAndClickEvents;
-    private boolean placeholderApiPresent;
-    private boolean mvdwPlaceholderApiPresent;
-    private MenuManager menuManager;
+    private Metrics                                       metrics;
+    private boolean                                       updateNotify;
+    private Updater                                       updater;
+    private List<MessageEdit>                             messageEdits;
+    private boolean                                       attachSpecialHoverAndClickEvents;
+    private boolean                                       placeholderApiPresent;
+    private boolean                                       mvdwPlaceholderApiPresent;
+    private MenuManager                                   menuManager;
     private Cache<String, Map.Entry<MessageEdit, String>> cachedMessages;
-    private Cache<String, MessageData> cachedMessagesData;
-    private Map<UUID, MessageEditData> currentMessageEditsData;
+    private Cache<String, MessageData>                    cachedMessagesData;
+    private Map<UUID, MessageEditData>                    currentMessageEditsData;
 
     @Override
     public void onLoad() {
@@ -109,14 +109,14 @@ public final class MessageEditorPlugin extends JavaPlugin {
         this.reloadConfig();
         this.getLogger().log(Level.INFO, "Checking for placeholder APIs...");
         PluginManager pluginManager = this.getServer().getPluginManager();
-        this.placeholderApiPresent = pluginManager.getPlugin(MessageEditorConstants.PLACEHOLDER_API_PLUGIN_NAME) != null;
+        this.placeholderApiPresent     = pluginManager.getPlugin(MessageEditorConstants.PLACEHOLDER_API_PLUGIN_NAME) != null;
         this.mvdwPlaceholderApiPresent = pluginManager.getPlugin(MessageEditorConstants.MVDW_PLACEHOLDER_API_PLUGIN_NAME) != null;
         this.getLogger().log(Level.INFO, MessageEditorConstants.PLACEHOLDER_API_PLUGIN_NAME + ": " + (this.placeholderApiPresent ? "present" : "not present") + ".");
         this.getLogger().log(Level.INFO, MessageEditorConstants.MVDW_PLACEHOLDER_API_PLUGIN_NAME + ": " + (this.mvdwPlaceholderApiPresent ? "present" : "not present") + ".");
-        this.cachedMessages = CacheBuilder.newBuilder()
+        this.cachedMessages          = CacheBuilder.newBuilder()
             .expireAfterAccess(15L, TimeUnit.MINUTES)
             .build();
-        this.cachedMessagesData = CacheBuilder.newBuilder()
+        this.cachedMessagesData      = CacheBuilder.newBuilder()
             .expireAfterAccess(15L, TimeUnit.MINUTES)
             .build();
         this.currentMessageEditsData = new HashMap<>(16);
@@ -159,9 +159,9 @@ public final class MessageEditorPlugin extends JavaPlugin {
     @Override
     public void reloadConfig() {
         super.reloadConfig();
-        this.updateNotify = this.getConfig().getBoolean("update.notify", true);
+        this.updateNotify                     = this.getConfig().getBoolean("update.notify", true);
         this.attachSpecialHoverAndClickEvents = this.getConfig().getBoolean("attach-special-hover-and-click-events", true);
-        this.messageEdits = (List<MessageEdit>) this.getConfig().getList("message-edits");
+        this.messageEdits                     = (List<MessageEdit>) this.getConfig().getList("message-edits");
     }
 
     public Metrics getMetrics() {
@@ -180,7 +180,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
         return Collections.unmodifiableList(this.messageEdits);
     }
 
-    public void addMessageEdit(final MessageEdit messageEdit) {
+    public void addMessageEdit(MessageEdit messageEdit) {
         this.messageEdits.add(messageEdit);
     }
 
@@ -192,7 +192,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
         return this.placeholderApiPresent;
     }
 
-    public void setPlaceholderApiPresent(final boolean present) {
+    public void setPlaceholderApiPresent(boolean present) {
         this.placeholderApiPresent = present;
     }
 
@@ -200,7 +200,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
         return this.mvdwPlaceholderApiPresent;
     }
 
-    public void setMvdwPlaceholderApiPresent(final boolean present) {
+    public void setMvdwPlaceholderApiPresent(boolean present) {
         this.mvdwPlaceholderApiPresent = present;
     }
 
@@ -212,19 +212,15 @@ public final class MessageEditorPlugin extends JavaPlugin {
         return Collections.unmodifiableSet(this.cachedMessages.asMap().keySet());
     }
 
-    public Map.Entry<MessageEdit, String> getCachedMessage(final String messageBefore) {
+    public Map.Entry<MessageEdit, String> getCachedMessage(String messageBefore) {
         return this.cachedMessages.getIfPresent(messageBefore);
     }
 
-    public void cacheMessage(
-        final String messageBefore,
-        final MessageEdit messageEdit,
-        final String messageAfter
-    ) {
+    public void cacheMessage(String messageBefore, MessageEdit messageEdit, String messageAfter) {
         this.cachedMessages.put(messageBefore, new AbstractMap.SimpleEntry<>(messageEdit, messageAfter));
     }
 
-    public void uncacheMessage(final String messageBefore) {
+    public void uncacheMessage(String messageBefore) {
         this.cachedMessages.invalidate(messageBefore);
     }
 
@@ -236,18 +232,15 @@ public final class MessageEditorPlugin extends JavaPlugin {
         return Collections.unmodifiableSet(this.cachedMessagesData.asMap().keySet());
     }
 
-    public MessageData getCachedMessageData(final String messageId) {
+    public MessageData getCachedMessageData(String messageId) {
         return this.cachedMessagesData.getIfPresent(messageId);
     }
 
-    public void cacheMessageData(
-        final String messageId,
-        final MessageData messageData
-    ) {
+    public void cacheMessageData(String messageId, MessageData messageData) {
         this.cachedMessagesData.put(messageId, messageData);
     }
 
-    public void uncacheMessageData(final String messageId) {
+    public void uncacheMessageData(String messageId) {
         this.cachedMessagesData.invalidate(messageId);
     }
 
@@ -259,18 +252,15 @@ public final class MessageEditorPlugin extends JavaPlugin {
         return Collections.unmodifiableMap(this.currentMessageEditsData);
     }
 
-    public MessageEditData getCurrentMessageEditData(final UUID uuid) {
+    public MessageEditData getCurrentMessageEditData(UUID uuid) {
         return this.currentMessageEditsData.get(uuid);
     }
 
-    public void setCurrentMessageEdit(
-        final UUID uuid,
-        final MessageEditData messageEditData
-    ) {
+    public void setCurrentMessageEdit(UUID uuid, MessageEditData messageEditData) {
         this.currentMessageEditsData.put(uuid, messageEditData);
     }
 
-    public void removeCurrentMessageEditData(final UUID uuid) {
+    public void removeCurrentMessageEditData(UUID uuid) {
         this.currentMessageEditsData.remove(uuid);
     }
 
