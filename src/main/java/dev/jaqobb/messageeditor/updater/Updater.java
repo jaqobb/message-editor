@@ -84,10 +84,7 @@ public final class Updater implements Runnable {
         try {
             HttpsURLConnection connection = (HttpsURLConnection) new URL("https://api.spigotmc.org/legacy/update.php?resource=" + this.pluginId).openConnection();
             connection.setRequestMethod("GET");
-            try (
-                InputStream input = connection.getInputStream();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8))
-            ) {
+            try (InputStream input = connection.getInputStream(); BufferedReader reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8))) {
                 this.latestVersion = reader.readLine();
                 String[] currentVersionData = this.currentVersion.split("\\.");
                 String[] latestVersionData  = this.latestVersion.split("\\.");
