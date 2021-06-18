@@ -35,6 +35,7 @@ tasks {
     shadowJar {
         exclude("com/cryptomorin/xseries/messages/*")
         exclude("com/cryptomorin/xseries/particles/*")
+        exclude("com/cryptomorin/xseries/unused/*")
         exclude("com/cryptomorin/xseries/NMSExtras*")
         exclude("com/cryptomorin/xseries/NoteBlockMusic*")
         exclude("com/cryptomorin/xseries/ReflectionUtils*")
@@ -47,7 +48,7 @@ tasks {
         exclude("com/cryptomorin/xseries/XItemStack*")
         exclude("com/cryptomorin/xseries/XPotion*")
         relocate("com.cryptomorin.xseries", "dev.jaqobb.messageeditor.library.xseries")
-        relocate("org.bstats.bukkit", "dev.jaqobb.messageeditor.metrics")
+        relocate("org.bstats", "dev.jaqobb.messageeditor.metrics")
     }
 }
 
@@ -92,13 +93,13 @@ repositories {
 }
 
 dependencies {
-    compileOnly("org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:1.17-R0.1-SNAPSHOT")
     compileOnly("com.mojang:authlib:2.0.27")
-    compileOnly("com.comphenix.protocol:ProtocolLib:4.6.0")
+    compileOnly("com.comphenix.protocol:ProtocolLib:4.7.0-SNAPSHOT")
     compileOnly("me.clip:placeholderapi:2.10.9")
     compileOnly("be.maximvdw:MVdWPlaceholderAPI:3.1.1-SNAPSHOT") {
         exclude("org.spigotmc")
     }
-    implementation("com.github.cryptomorin:XSeries:7.6.0.0.1")
-    implementation("org.bstats:bstats-bukkit:1.7")
+    implementation("com.github.cryptomorin:XSeries:8.1.0")
+    implementation("org.bstats:bstats-bukkit:2.2.1")
 }
