@@ -28,7 +28,7 @@ case "${1}" in
 	"download")
 	(
 		if [ -z "${2}" ]; then
-			echo "You have to specify a Minecraft version you want to download the latest version of Paper for."
+			echo "You have to specify a Minecraft version you want to download the latest version of Spigot for."
 		else
 			set -e
 			cd "${base_folder}"
