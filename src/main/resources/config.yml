@@ -6,6 +6,20 @@ update:
 # Whether special hover and click events should be attached to chat messages.
 attach-special-hover-and-click-events: true
 
+# Enabled packet listeners
+# Disable unused contexts to save resources
+# NOTE: Below listeners require a server restart for changes to take effect
+packet-listeners:
+  chat: true
+  kick: true
+  disconnect: true
+  bossbar: true
+  scoreboard-title: true
+  scoreboard-entry: true
+  inventory-title: true
+  inventory-item: true
+  entity-name: true
+
 # Messages that should be edited.
 # For more in-depth tutorial check here:
 # https://github.com/jaqobb/message-editor#usage

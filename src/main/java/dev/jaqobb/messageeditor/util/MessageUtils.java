@@ -143,7 +143,7 @@ public final class MessageUtils {
             if (messageIndex == message.length() - 1) {
                 makeMessageComponent = true;
                 messagePart += messageCharacter;
-            } else if (messageCharacter != '§') {
+            } else if (messageCharacter != "§".charAt(0)) {
                 messagePart += messageCharacter;
             } else {
                 char messageHexColorCharacter = message.charAt(messageIndex + 1);
