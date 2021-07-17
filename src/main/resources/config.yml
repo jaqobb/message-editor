@@ -6,9 +6,8 @@ update:
 # Whether special hover and click events should be attached to chat messages.
 attach-special-hover-and-click-events: true
 
-# Enabled packet listeners
-# Disable unused contexts to save resources
-# NOTE: Below listeners require a server restart for changes to take effect
+# Enabled packet listeners. You can disable the ones you do not use to save resources.
+# NOTE: Each edit in this section requires a full server restart to take effect.
 packet-listeners:
   chat: true
   kick: true
