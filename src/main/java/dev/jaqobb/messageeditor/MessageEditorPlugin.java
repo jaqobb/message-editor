@@ -144,15 +144,15 @@ public final class MessageEditorPlugin extends JavaPlugin {
         pluginManager.registerEvents(new PlayerChatListener(this), this);
         this.getLogger().log(Level.INFO, "Registering packet listeners...");
         ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
-        protocolManager.addPacketListener(new ChatPacketListener(this));
-        protocolManager.addPacketListener(new KickPacketListener(this));
-        protocolManager.addPacketListener(new DisconnectPacketListener(this));
-        protocolManager.addPacketListener(new BossBarPacketListener(this));
-        protocolManager.addPacketListener(new ScoreboardTitlePacketListener(this));
-        protocolManager.addPacketListener(new ScoreboardEntryPacketListener(this));
-        protocolManager.addPacketListener(new InventoryTitlePacketListener(this));
-        protocolManager.addPacketListener(new InventoryItemsPacketListener(this));
-        protocolManager.addPacketListener(new EntityNamePacketListener(this));
+        if(getConfig().getBoolean("packet-listeners.chat")) protocolManager.addPacketListener(new ChatPacketListener(this));
+        if(getConfig().getBoolean("packet-listeners.kick")) protocolManager.addPacketListener(new KickPacketListener(this));
+        if(getConfig().getBoolean("packet-listeners.disconnect")) protocolManager.addPacketListener(new DisconnectPacketListener(this));
+        if(getConfig().getBoolean("packet-listeners.bossbar")) protocolManager.addPacketListener(new BossBarPacketListener(this));
+        if(getConfig().getBoolean("packet-listeners.scoreboard-title")) protocolManager.addPacketListener(new ScoreboardTitlePacketListener(this));
+        if(getConfig().getBoolean("packet-listeners.scoreboard-entry")) protocolManager.addPacketListener(new ScoreboardEntryPacketListener(this));
+        if(getConfig().getBoolean("packet-listeners.inventory-title")) protocolManager.addPacketListener(new InventoryTitlePacketListener(this));
+        if(getConfig().getBoolean("packet-listeners.inventory-item")) protocolManager.addPacketListener(new InventoryItemsPacketListener(this));
+        if(getConfig().getBoolean("packet-listeners.entity-name")) protocolManager.addPacketListener(new EntityNamePacketListener(this));
     }
 
     @SuppressWarnings("unchecked")
