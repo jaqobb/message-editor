@@ -144,15 +144,33 @@ public final class MessageEditorPlugin extends JavaPlugin {
         pluginManager.registerEvents(new PlayerChatListener(this), this);
         this.getLogger().log(Level.INFO, "Registering packet listeners...");
         ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
-        if(getConfig().getBoolean("packet-listeners.chat")) protocolManager.addPacketListener(new ChatPacketListener(this));
-        if(getConfig().getBoolean("packet-listeners.kick")) protocolManager.addPacketListener(new KickPacketListener(this));
-        if(getConfig().getBoolean("packet-listeners.disconnect")) protocolManager.addPacketListener(new DisconnectPacketListener(this));
-        if(getConfig().getBoolean("packet-listeners.bossbar")) protocolManager.addPacketListener(new BossBarPacketListener(this));
-        if(getConfig().getBoolean("packet-listeners.scoreboard-title")) protocolManager.addPacketListener(new ScoreboardTitlePacketListener(this));
-        if(getConfig().getBoolean("packet-listeners.scoreboard-entry")) protocolManager.addPacketListener(new ScoreboardEntryPacketListener(this));
-        if(getConfig().getBoolean("packet-listeners.inventory-title")) protocolManager.addPacketListener(new InventoryTitlePacketListener(this));
-        if(getConfig().getBoolean("packet-listeners.inventory-item")) protocolManager.addPacketListener(new InventoryItemsPacketListener(this));
-        if(getConfig().getBoolean("packet-listeners.entity-name")) protocolManager.addPacketListener(new EntityNamePacketListener(this));
+        if(this.getConfig().getBoolean("packet-listeners.chat", true)) {
+            protocolManager.addPacketListener(new ChatPacketListener(this));
+        }
+        if(this.getConfig().getBoolean("packet-listeners.kick", true)) {
+            protocolManager.addPacketListener(new KickPacketListener(this));
+        }
+        if(this.getConfig().getBoolean("packet-listeners.disconnect", true)) {
+            protocolManager.addPacketListener(new DisconnectPacketListener(this));
+        }
+        if(this.getConfig().getBoolean("packet-listeners.bossbar", true)) {
+            protocolManager.addPacketListener(new BossBarPacketListener(this));
+        }
+        if(this.getConfig().getBoolean("packet-listeners.scoreboard-title", true)) {
+            protocolManager.addPacketListener(new ScoreboardTitlePacketListener(this));
+        }
+        if(this.getConfig().getBoolean("packet-listeners.scoreboard-entry", true)) {
+            protocolManager.addPacketListener(new ScoreboardEntryPacketListener(this));
+        }
+        if(this.getConfig().getBoolean("packet-listeners.inventory-title", true)) {
+            protocolManager.addPacketListener(new InventoryTitlePacketListener(this));
+        }
+        if(this.getConfig().getBoolean("packet-listeners.inventory-item", true)) {
+            protocolManager.addPacketListener(new InventoryItemsPacketListener(this));
+        }
+        if(this.getConfig().getBoolean("packet-listeners.entity-name", true)) {
+            protocolManager.addPacketListener(new EntityNamePacketListener(this));
+        }
     }
 
     @SuppressWarnings("unchecked")
