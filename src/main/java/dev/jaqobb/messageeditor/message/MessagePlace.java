@@ -26,11 +26,13 @@ package dev.jaqobb.messageeditor.message;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.reflect.FuzzyReflection;
 import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import dev.jaqobb.messageeditor.util.MessageUtils;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -130,15 +132,49 @@ public enum MessagePlace {
     BOSS_BAR("BB", "Boss Bar", MinecraftVersion.COMBAT_UPDATE, PacketType.Play.Server.BOSS) {
         @Override
         public String getMessage(PacketContainer packet) {
-            return packet.getChatComponents().read(0).getJson();
+            if (!MinecraftVersion.CAVES_CLIFFS_1.atOrAbove()) {
+                return packet.getChatComponents().read(0).getJson();
+            }
+            // Really bad way to do it but has to do for now.
+            Object          bossBarData = packet.getModifier().read(1);
+            FuzzyReflection reflection  = FuzzyReflection.fromObject(bossBarData, true);
+            try {
+                Field field = reflection.getFieldByName("a");
+                field.setAccessible(true);
+                return WrappedChatComponent.fromHandle(field.get(bossBarData)).getJson();
+            } catch (IllegalAccessException exception) {
+                throw new RuntimeException("Could not get boss bar message", exception);
+            }
         }
 
         @Override
         public void setMessage(PacketContainer packet, String message, boolean messageJson) {
+            if (!MinecraftVersion.CAVES_CLIFFS_1.atOrAbove()) {
+                if (messageJson) {
+                    packet.getChatComponents().write(0, WrappedChatComponent.fromJson(message));
+                } else {
+                    packet.getChatComponents().write(0, WrappedChatComponent.fromJson(MessageUtils.toJson(MessageUtils.toBaseComponents(message), true)));
+                }
+            }
+            // Really bad way to do it but has to do for now.
+            Object          bossBarData = packet.getModifier().read(1);
+            FuzzyReflection reflection  = FuzzyReflection.fromObject(bossBarData, true);
             if (messageJson) {
-                packet.getChatComponents().write(0, WrappedChatComponent.fromJson(message));
+                try {
+                    Field field = reflection.getFieldByName("a");
+                    field.setAccessible(true);
+                    field.set(bossBarData, WrappedChatComponent.fromJson(message).getHandle());
+                } catch (IllegalAccessException exception) {
+                    throw new RuntimeException("Could not update boss bar message", exception);
+                }
             } else {
-                packet.getChatComponents().write(0, WrappedChatComponent.fromJson(MessageUtils.toJson(MessageUtils.toBaseComponents(message), true)));
+                try {
+                    Field field = reflection.getFieldByName("a");
+                    field.setAccessible(true);
+                    field.set(bossBarData, WrappedChatComponent.fromJson(MessageUtils.toJson(MessageUtils.toBaseComponents(message), true)).getHandle());
+                } catch (IllegalAccessException exception) {
+                    throw new RuntimeException("Could not update boss bar message", exception);
+                }
             }
         }
     },
