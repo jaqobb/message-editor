@@ -43,11 +43,11 @@ public final class BossBarPacketListener extends CommonPacketListener {
             BossBarAction action = packet.getEnumModifier(BossBarAction.class, 1).read(0);
             return action == BossBarAction.ADD || action == BossBarAction.UPDATE_NAME;
         }
+        // Really bad way to do it but has to do for now.
         FuzzyReflection reflection             = FuzzyReflection.fromObject(packet.getModifier().read(1), true);
         int             reflectionFieldsAmount = reflection.getFields().size();
         // 7 = add action.
         // 1 = update name action.
-        // Really bad way to do it but has to do for now.
         return reflectionFieldsAmount == 7 || reflectionFieldsAmount == 1 && !reflection.getFieldByName("a").getType().isPrimitive();
     }
 }
