@@ -135,16 +135,7 @@ public enum MessagePlace {
             if (!MinecraftVersion.CAVES_CLIFFS_1.atOrAbove()) {
                 return packet.getChatComponents().read(0).getJson();
             }
-            // Really bad way to do it but has to do for now.
-            Object          bossBarData = packet.getModifier().read(1);
-            FuzzyReflection reflection  = FuzzyReflection.fromObject(bossBarData, true);
-            try {
-                Field field = reflection.getFieldByName("a");
-                field.setAccessible(true);
-                return WrappedChatComponent.fromHandle(field.get(bossBarData)).getJson();
-            } catch (IllegalAccessException exception) {
-                throw new RuntimeException("Could not get boss bar message", exception);
-            }
+            return packet.getStructures().read(1).getChatComponents().read(0).getJson();
         }
 
         @Override
