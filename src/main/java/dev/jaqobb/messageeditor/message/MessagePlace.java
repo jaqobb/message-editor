@@ -150,6 +150,7 @@ public enum MessagePlace {
             } else {
                 packet.getStructures().read(1).getChatComponents().write(0, WrappedChatComponent.fromJson(MessageUtils.toJson(MessageUtils.toBaseComponents(message), true)));
             }
+            // Test
         }
     },
     SCOREBOARD_TITLE("ST", "Scoreboard Title", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.SCOREBOARD_OBJECTIVE) {
