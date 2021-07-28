@@ -42,6 +42,6 @@ public final class BossBarPacketListener extends CommonPacketListener {
             BossBarAction action = packet.getEnumModifier(BossBarAction.class, 1).read(0);
             return action == BossBarAction.ADD || action == BossBarAction.UPDATE_NAME;
         }
-        return packet.getStructures().read(1).getChatComponents().readSafely(0) != null;
+        return packet.getStructures().read(1).getChatComponents().size() == 1;
     }
 }
