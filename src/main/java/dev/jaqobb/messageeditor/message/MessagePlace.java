@@ -26,13 +26,11 @@ package dev.jaqobb.messageeditor.message;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.reflect.FuzzyReflection;
 import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import dev.jaqobb.messageeditor.util.MessageUtils;
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -147,25 +145,10 @@ public enum MessagePlace {
                     packet.getChatComponents().write(0, WrappedChatComponent.fromJson(MessageUtils.toJson(MessageUtils.toBaseComponents(message), true)));
                 }
             }
-            // Really bad way to do it but has to do for now.
-            Object          bossBarData = packet.getModifier().read(1);
-            FuzzyReflection reflection  = FuzzyReflection.fromObject(bossBarData, true);
             if (messageJson) {
-                try {
-                    Field field = reflection.getFieldByName("a");
-                    field.setAccessible(true);
-                    field.set(bossBarData, WrappedChatComponent.fromJson(message).getHandle());
-                } catch (IllegalAccessException exception) {
-                    throw new RuntimeException("Could not update boss bar message", exception);
-                }
+                packet.getStructures().read(1).getChatComponents().write(0, WrappedChatComponent.fromJson(message));
             } else {
-                try {
-                    Field field = reflection.getFieldByName("a");
-                    field.setAccessible(true);
-                    field.set(bossBarData, WrappedChatComponent.fromJson(MessageUtils.toJson(MessageUtils.toBaseComponents(message), true)).getHandle());
-                } catch (IllegalAccessException exception) {
-                    throw new RuntimeException("Could not update boss bar message", exception);
-                }
+                packet.getStructures().read(1).getChatComponents().write(0, WrappedChatComponent.fromJson(MessageUtils.toJson(MessageUtils.toBaseComponents(message), true)));
             }
         }
     },
