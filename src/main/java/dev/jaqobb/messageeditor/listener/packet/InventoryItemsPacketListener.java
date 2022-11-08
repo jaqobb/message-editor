@@ -106,9 +106,6 @@ public final class InventoryItemsPacketListener extends PacketAdapter {
                         if (this.getPlugin().isPlaceholderApiPresent()) {
                             messageAfter = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, messageAfter);
                         }
-                        if (this.getPlugin().isMvdwPlaceholderApiPresent()) {
-                            messageAfter = be.maximvdw.placeholderapi.PlaceholderAPI.replacePlaceholders(player, messageAfter);
-                        }
                         this.getPlugin().cacheMessage(message, messageEdit, messageAfter);
                         message = messageAfter;
                     }
@@ -156,9 +153,6 @@ public final class InventoryItemsPacketListener extends PacketAdapter {
                         messageAfter = ChatColor.translateAlternateColorCodes('&', messageAfter);
                         if (this.getPlugin().isPlaceholderApiPresent()) {
                             messageAfter = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, messageAfter);
-                        }
-                        if (this.getPlugin().isMvdwPlaceholderApiPresent()) {
-                            messageAfter = be.maximvdw.placeholderapi.PlaceholderAPI.replacePlaceholders(player, messageAfter);
                         }
                         this.getPlugin().cacheMessage(message, messageEdit, messageAfter);
                         message = messageAfter;

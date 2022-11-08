@@ -25,6 +25,8 @@
 package dev.jaqobb.messageeditor.listener.player;
 
 import com.cryptomorin.xseries.XSound;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import dev.jaqobb.messageeditor.MessageEditorConstants;
 import dev.jaqobb.messageeditor.MessageEditorPlugin;
 import dev.jaqobb.messageeditor.message.MessageEditData;
@@ -38,8 +40,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 public final class PlayerChatListener implements Listener {
 
@@ -72,9 +72,9 @@ public final class PlayerChatListener implements Listener {
                 if (!messageEditData.getNewMessageCache().isEmpty()) {
                     messageEditData.setNewMessage(messageEditData.getNewMessageCache());
                     try {
-                        new JSONParser().parse(messageEditData.getNewMessage());
+                        JsonParser.parseString(messageEditData.getNewMessage());
                         messageEditData.setNewMessageJson(true);
-                    } catch (ParseException exception) {
+                    } catch (JsonSyntaxException exception) {
                         messageEditData.setNewMessage(MessageUtils.composeMessage(messageEditData.getNewMessage()));
                         messageEditData.setNewMessageJson(false);
                     }
@@ -98,9 +98,9 @@ public final class PlayerChatListener implements Listener {
             messageEditData.setOldMessage(messageEditData.getOldMessage().replaceFirst(Pattern.quote(oldMessagePatternKey), Matcher.quoteReplacement(oldMessagePatternValue.replace("\\", "\\\\"))));
             messageEditData.setOldMessagePattern(messageEditData.getOldMessagePattern().replaceFirst(Pattern.quote(oldMessagePatternKey.replaceAll(MessageEditorConstants.SPECIAL_REGEX_CHARACTERS, "\\\\$0")), Matcher.quoteReplacement(oldMessagePatternValue)));
             try {
-                new JSONParser().parse(messageEditData.getOldMessage());
+                JsonParser.parseString(messageEditData.getOldMessage());
                 messageEditData.setOldMessageJson(true);
-            } catch (ParseException exception) {
+            } catch (JsonSyntaxException exception) {
                 messageEditData.setOldMessage(MessageUtils.composeMessage(messageEditData.getOldMessage()));
                 messageEditData.setOldMessagePattern(MessageUtils.composeMessage(messageEditData.getOldMessagePattern()));
                 messageEditData.setOldMessageJson(false);
@@ -133,9 +133,9 @@ public final class PlayerChatListener implements Listener {
             messageEditData.setCurrentMode(MessageEditData.Mode.EDITING_NEW_MESSAGE_KEY);
             messageEditData.setNewMessage(messageEditData.getNewMessage().replaceFirst(Pattern.quote(newMessageKey), Matcher.quoteReplacement(newMessageValue)));
             try {
-                new JSONParser().parse(messageEditData.getNewMessage());
+                JsonParser.parseString(messageEditData.getNewMessage());
                 messageEditData.setNewMessageJson(true);
-            } catch (ParseException exception) {
+            } catch (JsonSyntaxException exception) {
                 messageEditData.setNewMessage(MessageUtils.composeMessage(messageEditData.getNewMessage()));
                 messageEditData.setNewMessageJson(false);
             }

@@ -24,6 +24,8 @@
 
 package dev.jaqobb.messageeditor.util;
 
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import dev.jaqobb.messageeditor.MessageEditorConstants;
 import dev.jaqobb.messageeditor.message.MessagePlace;
 import java.util.ArrayList;
@@ -38,8 +40,6 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.entity.Player;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 public final class MessageUtils {
 
@@ -200,9 +200,9 @@ public final class MessageUtils {
 
     public static boolean isJson(String message) {
         try {
-            new JSONParser().parse(message);
+            JsonParser.parseString(message);
             return true;
-        } catch (ParseException exception) {
+        } catch (JsonSyntaxException exception) {
             return false;
         }
     }

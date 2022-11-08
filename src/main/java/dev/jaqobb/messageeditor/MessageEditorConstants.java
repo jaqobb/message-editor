@@ -31,8 +31,7 @@ public final class MessageEditorConstants {
 
     public static final String PREFIX = "&8[&6Message Editor&8] ";
 
-    public static final String PLACEHOLDER_API_PLUGIN_NAME      = "PlaceholderAPI";
-    public static final String MVDW_PLACEHOLDER_API_PLUGIN_NAME = "MVdWPlaceholderAPI";
+    public static final String PLACEHOLDER_API_PLUGIN_NAME = "PlaceholderAPI";
 
     public static final int MESSAGE_LENGTH = 40;
 

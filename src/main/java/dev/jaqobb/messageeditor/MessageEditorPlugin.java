@@ -80,7 +80,6 @@ public final class MessageEditorPlugin extends JavaPlugin {
     private List<MessageEdit>                             messageEdits;
     private boolean                                       attachSpecialHoverAndClickEvents;
     private boolean                                       placeholderApiPresent;
-    private boolean                                       mvdwPlaceholderApiPresent;
     private MenuManager                                   menuManager;
     private Cache<String, Map.Entry<MessageEdit, String>> cachedMessages;
     private Cache<String, MessageData>                    cachedMessagesData;
@@ -110,9 +109,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
         this.getLogger().log(Level.INFO, "Checking for placeholder APIs...");
         PluginManager pluginManager = this.getServer().getPluginManager();
         this.placeholderApiPresent     = pluginManager.getPlugin(MessageEditorConstants.PLACEHOLDER_API_PLUGIN_NAME) != null;
-        this.mvdwPlaceholderApiPresent = pluginManager.getPlugin(MessageEditorConstants.MVDW_PLACEHOLDER_API_PLUGIN_NAME) != null;
         this.getLogger().log(Level.INFO, MessageEditorConstants.PLACEHOLDER_API_PLUGIN_NAME + ": " + (this.placeholderApiPresent ? "present" : "not present") + ".");
-        this.getLogger().log(Level.INFO, MessageEditorConstants.MVDW_PLACEHOLDER_API_PLUGIN_NAME + ": " + (this.mvdwPlaceholderApiPresent ? "present" : "not present") + ".");
         this.cachedMessages          = CacheBuilder.newBuilder()
             .expireAfterAccess(15L, TimeUnit.MINUTES)
             .build();
@@ -212,14 +209,6 @@ public final class MessageEditorPlugin extends JavaPlugin {
 
     public void setPlaceholderApiPresent(boolean present) {
         this.placeholderApiPresent = present;
-    }
-
-    public boolean isMvdwPlaceholderApiPresent() {
-        return this.mvdwPlaceholderApiPresent;
-    }
-
-    public void setMvdwPlaceholderApiPresent(boolean present) {
-        this.mvdwPlaceholderApiPresent = present;
     }
 
     public MenuManager getMenuManager() {

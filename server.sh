@@ -63,7 +63,7 @@ case "${1}" in
 	(
 		set -e
 		cd "${base_folder}/server"
-		java -Dcom.mojang.eula.agree=true -jar "Paper.jar" --nogui --nojline
+		java -Dcom.mojang.eula.agree=true -jar "server.jar" --nogui --nojline
 	)
 	;;
 	"clean")

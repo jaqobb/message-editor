@@ -284,7 +284,7 @@ public enum MessagePlace {
     private final boolean               supported;
     private       boolean               analyzingActivated;
 
-    private MessagePlace(
+    MessagePlace(
         String id,
         String friendlyName,
         MinecraftVersion minimumRequiredMinecraftVersion,
@@ -293,7 +293,7 @@ public enum MessagePlace {
         this(id, friendlyName, minimumRequiredMinecraftVersion, packetType, null, null);
     }
 
-    private MessagePlace(
+    MessagePlace(
         String id,
         String friendlyName,
         MinecraftVersion minimumRequiredMinecraftVersion,

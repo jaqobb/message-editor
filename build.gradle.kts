@@ -1,7 +1,7 @@
 plugins {
     java
-    id("net.minecrell.plugin-yml.bukkit") version "0.4.0"
-    id("com.github.johnrengelman.shadow") version "7.0.0"
+    id("net.minecrell.plugin-yml.bukkit") version "0.5.2"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 group = "dev.jaqobb"
@@ -19,7 +19,7 @@ bukkit {
     version = project.version as String
     apiVersion = "1.13"
     depend = listOf("ProtocolLib")
-    softDepend = listOf("PlaceholderAPI", "MVdWPlaceholderAPI")
+    softDepend = listOf("PlaceholderAPI")
     description = project.description
     author = "jaqobb"
     website = "https://jaqobb.dev"
@@ -47,6 +47,7 @@ tasks {
         exclude("com/cryptomorin/xseries/XEntity*")
         exclude("com/cryptomorin/xseries/XItemStack*")
         exclude("com/cryptomorin/xseries/XPotion*")
+        exclude("com/cryptomorin/xseries/XTag*")
         relocate("com.cryptomorin.xseries", "dev.jaqobb.messageeditor.library.xseries")
         relocate("org.bstats", "dev.jaqobb.messageeditor.metrics")
     }
@@ -64,11 +65,6 @@ repositories {
             includeGroup("net.md-5")
         }
     }
-    maven("https://libraries.minecraft.net") {
-        content {
-            includeGroup("com.mojang")
-        }
-    }
     maven("https://repo.dmulloy2.net/nexus/repository/public/") {
         content {
             includeGroup("com.comphenix.protocol")
@@ -79,12 +75,6 @@ repositories {
             includeGroup("me.clip")
         }
     }
-    maven("http://repo.mvdw-software.be/content/groups/public/") {
-        isAllowInsecureProtocol = true
-        content {
-            includeGroup("be.maximvdw")
-        }
-    }
     maven("https://repo.codemc.org/repository/maven-public/") {
         content {
             includeGroup("org.bstats")
@@ -93,13 +83,9 @@ repositories {
 }
 
 dependencies {
-    compileOnly("org.spigotmc:spigot-api:1.17-R0.1-SNAPSHOT")
-    compileOnly("com.mojang:authlib:2.0.27")
-    compileOnly("com.comphenix.protocol:ProtocolLib:4.7.0")
-    compileOnly("me.clip:placeholderapi:2.10.9")
-    compileOnly("be.maximvdw:MVdWPlaceholderAPI:3.1.1-SNAPSHOT") {
-        exclude("org.spigotmc")
-    }
-    implementation("com.github.cryptomorin:XSeries:8.1.0")
-    implementation("org.bstats:bstats-bukkit:2.2.1")
+    compileOnly("org.spigotmc:spigot-api:1.19.2-R0.1-SNAPSHOT")
+    compileOnly("com.comphenix.protocol:ProtocolLib:5.0.0-SNAPSHOT")
+    compileOnly("me.clip:placeholderapi:2.11.2")
+    implementation("com.github.cryptomorin:XSeries:9.1.0")
+    implementation("org.bstats:bstats-bukkit:3.0.0")
 }

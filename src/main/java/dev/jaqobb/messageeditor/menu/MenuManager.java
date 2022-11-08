@@ -24,10 +24,10 @@
 
 package dev.jaqobb.messageeditor.menu;
 
+import com.comphenix.protocol.wrappers.WrappedGameProfile;
+import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XSound;
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
 import dev.jaqobb.messageeditor.MessageEditorConstants;
 import dev.jaqobb.messageeditor.MessageEditorPlugin;
 import dev.jaqobb.messageeditor.message.MessageData;
@@ -37,6 +37,7 @@ import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -74,16 +75,16 @@ public final class MenuManager {
         ItemMeta  arrowItemMeta = arrowItem.getItemMeta();
         try {
             String      textures = "ewogICJ0aW1lc3RhbXAiIDogMTYwNzM2ODc1MzI0NCwKICAicHJvZmlsZUlkIiA6ICI1MGM4NTEwYjVlYTA0ZDYwYmU5YTdkNTQyZDZjZDE1NiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNSEZfQXJyb3dSaWdodCIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9kMzRlZjA2Mzg1MzcyMjJiMjBmNDgwNjk0ZGFkYzBmODVmYmUwNzU5ZDU4MWFhN2ZjZGYyZTQzMTM5Mzc3MTU4IgogICAgfQogIH0KfQ==";
-            GameProfile profile  = new GameProfile(UUID.nameUUIDFromBytes(textures.getBytes(StandardCharsets.UTF_8)), "MHF_ArrowRight");
-            profile.getProperties().put("textures", new Property("textures", textures));
+            WrappedGameProfile profile = new WrappedGameProfile(UUID.nameUUIDFromBytes(textures.getBytes(StandardCharsets.UTF_8)), "MHF_ArrowRight");
+            profile.getProperties().put("textures", new WrappedSignedProperty("textures", textures, null));
             Field profileField = arrowItemMeta.getClass().getDeclaredField("profile");
             profileField.setAccessible(true);
-            profileField.set(arrowItemMeta, profile);
+            profileField.set(arrowItemMeta, profile.getHandle());
         } catch (Exception exception) {
             this.plugin.getLogger().log(Level.WARNING, "Could not load skull texture for the arrow item.", exception);
         }
         arrowItemMeta.setDisplayName(MessageUtils.composeMessage("&e< &7Old message"));
-        arrowItemMeta.setLore(Arrays.asList(MessageUtils.composeMessage("&e> &7New message")));
+        arrowItemMeta.setLore(Collections.singletonList(MessageUtils.composeMessage("&e> &7New message")));
         arrowItem.setItemMeta(arrowItemMeta);
         this.arrowItem = arrowItem;
     }
