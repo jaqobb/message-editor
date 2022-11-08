@@ -25,20 +25,6 @@ SOURCE=$([[ "${SOURCE}" = /* ]] && echo "${SOURCE}" || echo "${PWD}/${SOURCE#./}
 base_folder=$(dirname "${SOURCE}")
 
 case "${1}" in
-	"download")
-	(
-		if [ -z "${2}" ]; then
-			echo "You have to specify a Minecraft version you want to download the latest version of Paper for."
-		else
-			set -e
-			cd "${base_folder}"
-			mkdir -p "server/plugins"
-			echo "Downloading the latest version of Paper for the Minecraft version ${2}..."
-			curl "https://papermc.io/api/v1/paper/${2}/latest/download" --output "server/Paper.jar"
-			echo "The latest version of Paper for the Minecraft version ${2} has been downloaded."
-		fi
-	)
-	;;
 	"copy")
 	(
 		set -e
@@ -79,10 +65,9 @@ case "${1}" in
 		echo "This script provides a variety of commands to build and manage the test server."
 		echo ""
 		echo "Available commands:"
-		echo " * download <Minecraft version> | Downloads the latest version of Paper for the specified Minecraft version."
-		echo " * copy                         | Compiles and copies the plugin to the test server files."
-		echo " * start                        | Starts the test server."
-		echo " * clean                        | Cleans the test server files."
+		echo " * copy   | Compiles and copies the plugin to the test server files."
+		echo " * start  | Starts the test server."
+		echo " * clean  | Cleans the test server files."
   ;;
 esac
 
