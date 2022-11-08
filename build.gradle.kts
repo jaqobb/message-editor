@@ -15,7 +15,7 @@ java {
 
 bukkit {
     name = "MessageEditor"
-    main = "dev.jaqobb.messageeditor.MessageEditorPlugin"
+    main = "dev.jaqobb.message_editor.MessageEditorPlugin"
     version = project.version as String
     apiVersion = "1.13"
     depend = listOf("ProtocolLib")
@@ -48,8 +48,8 @@ tasks {
         exclude("com/cryptomorin/xseries/XItemStack*")
         exclude("com/cryptomorin/xseries/XPotion*")
         exclude("com/cryptomorin/xseries/XTag*")
-        relocate("com.cryptomorin.xseries", "dev.jaqobb.messageeditor.library.xseries")
-        relocate("org.bstats", "dev.jaqobb.messageeditor.metrics")
+        relocate("com.cryptomorin.xseries", "dev.jaqobb.message_editor.library.xseries")
+        relocate("org.bstats", "dev.jaqobb.message_editor.metrics")
     }
 }
 
