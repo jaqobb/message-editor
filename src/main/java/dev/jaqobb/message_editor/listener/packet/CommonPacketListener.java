@@ -58,14 +58,10 @@ class CommonPacketListener extends PacketAdapter {
 
     @Override
     public void onPacketSending(PacketEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
+        if (event.isCancelled()) return;
         Player          player = event.getPlayer();
         PacketContainer packet = event.getPacket().shallowClone();
-        if (!this.shouldProcess(packet)) {
-            return;
-        }
+        if (!this.shouldProcess(packet)) return;
         String originalMessage = this.messagePlace.getMessage(packet);
         String message         = originalMessage;
         if (message == null) {
@@ -91,13 +87,13 @@ class CommonPacketListener extends PacketAdapter {
             if (cachedMessage != null) {
                 message = cachedMessage.getValue();
             } else {
-                String messageAfter = messageEditMatcher.replaceAll(messageEdit.getMessageAfter());
-                messageAfter = ChatColor.translateAlternateColorCodes('&', messageAfter);
+                String newMessage = messageEditMatcher.replaceAll(messageEdit.getMessageAfter());
+                newMessage = ChatColor.translateAlternateColorCodes('&', newMessage);
                 if (this.getPlugin().isPlaceholderApiPresent()) {
-                    messageAfter = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, messageAfter);
+                    newMessage = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, newMessage);
                 }
-                this.getPlugin().cacheMessage(message, messageEdit, messageAfter);
-                message = messageAfter;
+                this.getPlugin().cacheMessage(message, messageEdit, newMessage);
+                message = newMessage;
             }
         }
         boolean messageJson = MessageUtils.isJson(message);

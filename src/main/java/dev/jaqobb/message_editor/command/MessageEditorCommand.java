@@ -62,8 +62,8 @@ public final class MessageEditorCommand implements CommandExecutor {
             this.plugin.clearCurrentMessageEditsData();
             this.plugin.reloadConfig();
             for (Player player : Bukkit.getOnlinePlayers()) {
-                InventoryView inventoryView = player.getOpenInventory();
-                if (inventoryView.getTitle().equals(MessageUtils.composeMessage("&8Message Editor"))) {
+                InventoryView openInventory = player.getOpenInventory();
+                if (openInventory.getTitle().equals(MessageUtils.composeMessage("&8Message Editor"))) {
                     player.closeInventory();
                     player.sendMessage(MessageUtils.composeMessageWithPrefix("&7Your message editor menu has been closed due to the plugin reload."));
                 }
@@ -81,12 +81,12 @@ public final class MessageEditorCommand implements CommandExecutor {
                 player.sendMessage(MessageUtils.composeMessageWithPrefix("&7Correct usage: &e/" + label + " edit <message ID>&7."));
                 return true;
             }
-            MessageData messageData = this.plugin.getCachedMessageData(arguments[1]);
-            if (messageData == null) {
+            MessageData data = this.plugin.getCachedMessageData(arguments[1]);
+            if (data == null) {
                 player.sendMessage(MessageUtils.composeMessageWithPrefix("&cThere is no cached message data attached to the '&7" + arguments[1] + "&c' message ID."));
                 return true;
             }
-            this.plugin.getMenuManager().openMenu(player, messageData, true);
+            this.plugin.getMenuManager().openMenu(player, data, true);
             return true;
         }
         if (arguments[0].equalsIgnoreCase("activate")) {
@@ -96,26 +96,26 @@ public final class MessageEditorCommand implements CommandExecutor {
                 this.sendAvailableMessagePlaces(sender);
                 return true;
             }
-            int affectedMessagePlaces = 0;
-            for (int argumentIndex = 1; argumentIndex < arguments.length; argumentIndex++) {
-                String       argument     = arguments[argumentIndex];
-                MessagePlace messagePlace = MessagePlace.fromName(argument);
-                if (messagePlace == null) {
+            int placesAffected = 0;
+            for (int i = 1; i < arguments.length; i++) {
+                String       argument     = arguments[i];
+                MessagePlace place = MessagePlace.fromName(argument);
+                if (place == null) {
                     sender.sendMessage(MessageUtils.composeMessageWithPrefix("&cCould not convert '&7" + argument + "&c' to a message place."));
                     continue;
                 }
-                if (!messagePlace.isSupported()) {
-                    sender.sendMessage(MessageUtils.composeMessageWithPrefix("&7" + messagePlace.getFriendlyName() + "&cmessage place is not supported by your server."));
+                if (!place.isSupported()) {
+                    sender.sendMessage(MessageUtils.composeMessageWithPrefix("&7" + place.getFriendlyName() + "&cmessage place is not supported by your server."));
                     continue;
                 }
-                if (!messagePlace.isAnalyzingActivated()) {
-                    messagePlace.setAnalyzingActivated(true);
-                    affectedMessagePlaces++;
+                if (!place.isAnalyzingActivated()) {
+                    place.setAnalyzingActivated(true);
+                    placesAffected++;
                 } else {
-                    sender.sendMessage(MessageUtils.composeMessageWithPrefix("&cAnalyzing &7" + messagePlace.getFriendlyName() + " &cmessage place is already activated."));
+                    sender.sendMessage(MessageUtils.composeMessageWithPrefix("&cAnalyzing &7" + place.getFriendlyName() + " &cmessage place is already activated."));
                 }
             }
-            sender.sendMessage(MessageUtils.composeMessageWithPrefix("&7You have activated analyzing &e" + affectedMessagePlaces + " &7message place(s)."));
+            sender.sendMessage(MessageUtils.composeMessageWithPrefix("&7You have activated analyzing &e" + placesAffected + " &7message place(s)."));
             return true;
         }
         if (arguments[0].equalsIgnoreCase("deactivate")) {
@@ -125,26 +125,26 @@ public final class MessageEditorCommand implements CommandExecutor {
                 this.sendAvailableMessagePlaces(sender);
                 return true;
             }
-            int affectedMessagePlaces = 0;
-            for (int argumentIndex = 1; argumentIndex < arguments.length; argumentIndex++) {
-                String       argument     = arguments[argumentIndex];
-                MessagePlace messagePlace = MessagePlace.fromName(argument);
-                if (messagePlace == null) {
+            int placesAffected = 0;
+            for (int i = 1; i < arguments.length; i++) {
+                String       argument     = arguments[i];
+                MessagePlace place = MessagePlace.fromName(argument);
+                if (place == null) {
                     sender.sendMessage(MessageUtils.composeMessageWithPrefix("&cCould not convert '&7" + argument + "&c' to a message place."));
                     continue;
                 }
-                if (!messagePlace.isSupported()) {
-                    sender.sendMessage(MessageUtils.composeMessageWithPrefix("&7" + messagePlace.getFriendlyName() + "&cmessage place is not supported by your server."));
+                if (!place.isSupported()) {
+                    sender.sendMessage(MessageUtils.composeMessageWithPrefix("&7" + place.getFriendlyName() + "&cmessage place is not supported by your server."));
                     continue;
                 }
-                if (messagePlace.isAnalyzingActivated()) {
-                    messagePlace.setAnalyzingActivated(false);
-                    affectedMessagePlaces++;
+                if (place.isAnalyzingActivated()) {
+                    place.setAnalyzingActivated(false);
+                    placesAffected++;
                 } else {
-                    sender.sendMessage(MessageUtils.composeMessageWithPrefix("&cAnalyzing &7" + messagePlace.getFriendlyName() + " &cmessage place is already deactivated."));
+                    sender.sendMessage(MessageUtils.composeMessageWithPrefix("&cAnalyzing &7" + place.getFriendlyName() + " &cmessage place is already deactivated."));
                 }
             }
-            sender.sendMessage(MessageUtils.composeMessageWithPrefix("&7You have deactivated analyzing &e" + affectedMessagePlaces + " &7message place(s)."));
+            sender.sendMessage(MessageUtils.composeMessageWithPrefix("&7You have deactivated analyzing &e" + placesAffected + " &7message place(s)."));
             return true;
         }
         if (arguments[0].equalsIgnoreCase("deactivate-all") || arguments[0].equalsIgnoreCase("deactivateall")) {
@@ -152,8 +152,8 @@ public final class MessageEditorCommand implements CommandExecutor {
                 sender.sendMessage(MessageUtils.composeMessageWithPrefix("&7Correct usage: &e/" + label + " deactivate-all&7."));
                 return true;
             }
-            for (MessagePlace messagePlace : MessagePlace.VALUES) {
-                messagePlace.setAnalyzingActivated(false);
+            for (MessagePlace place : MessagePlace.VALUES) {
+                place.setAnalyzingActivated(false);
             }
             sender.sendMessage(MessageUtils.composeMessageWithPrefix("&7You have deactivated analyzing all message places."));
             return true;
@@ -162,25 +162,22 @@ public final class MessageEditorCommand implements CommandExecutor {
         return true;
     }
 
-    private void sendHelpMessage(
-        CommandSender sender,
-        String label
-    ) {
-        sender.sendMessage(MessageUtils.composeMessageWithPrefix("&7Available commands:"));
-        sender.sendMessage(MessageUtils.composeMessageWithPrefix("&e/message-editor reload &7- Reloads plugin."));
-        sender.sendMessage(MessageUtils.composeMessageWithPrefix("&e/message-editor edit <message ID> &7- Opens message editor."));
-        sender.sendMessage(MessageUtils.composeMessageWithPrefix("&e/message-editor activate <message places> &7- Activates analyzing specified message place(s)."));
-        sender.sendMessage(MessageUtils.composeMessageWithPrefix("&e/message-editor deactivate <message places> &7- Dectivates analyzing specified message place(s)."));
-        sender.sendMessage(MessageUtils.composeMessageWithPrefix("&e/message-editor deactivate-all &7- Deactivates analyzing all message places."));
-        sender.sendMessage(MessageUtils.composeMessageWithPrefix(""));
-        this.sendAvailableMessagePlaces(sender);
+    private void sendHelpMessage(CommandSender target, String label) {
+        target.sendMessage(MessageUtils.composeMessageWithPrefix("&7Available commands:"));
+        target.sendMessage(MessageUtils.composeMessageWithPrefix("&e/message-editor reload &7- Reloads plugin."));
+        target.sendMessage(MessageUtils.composeMessageWithPrefix("&e/message-editor edit <message ID> &7- Opens message editor."));
+        target.sendMessage(MessageUtils.composeMessageWithPrefix("&e/message-editor activate <message places> &7- Activates analyzing specified message place(s)."));
+        target.sendMessage(MessageUtils.composeMessageWithPrefix("&e/message-editor deactivate <message places> &7- Dectivates analyzing specified message place(s)."));
+        target.sendMessage(MessageUtils.composeMessageWithPrefix("&e/message-editor deactivate-all &7- Deactivates analyzing all message places."));
+        target.sendMessage(MessageUtils.composeMessageWithPrefix(""));
+        this.sendAvailableMessagePlaces(target);
     }
 
-    private void sendAvailableMessagePlaces(CommandSender sender) {
-        sender.sendMessage(MessageUtils.composeMessageWithPrefix("&7Available message places:"));
-        for (MessagePlace messagePlace : MessagePlace.VALUES) {
-            if (messagePlace.isSupported()) {
-                sender.sendMessage(MessageUtils.composeMessageWithPrefix("&7- &e" + messagePlace.name() + " &7(&e" + messagePlace.getFriendlyName() + "&7)"));
+    private void sendAvailableMessagePlaces(CommandSender target) {
+        target.sendMessage(MessageUtils.composeMessageWithPrefix("&7Available message places:"));
+        for (MessagePlace place : MessagePlace.VALUES) {
+            if (place.isSupported()) {
+                target.sendMessage(MessageUtils.composeMessageWithPrefix("&7- &e" + place.name() + " &7(&e" + place.getFriendlyName() + "&7)"));
             }
         }
     }

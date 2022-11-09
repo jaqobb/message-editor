@@ -52,105 +52,101 @@ public final class PlayerChatListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         Player          player          = event.getPlayer();
-        MessageEditData messageEditData = this.plugin.getCurrentMessageEditData(player.getUniqueId());
-        if (messageEditData == null) {
-            return;
-        }
-        MessageEditData.Mode messageEditDataMode = messageEditData.getCurrentMode();
-        if (messageEditDataMode == MessageEditData.Mode.NONE) {
-            return;
-        }
+        MessageEditData editData = this.plugin.getCurrentMessageEditData(player.getUniqueId());
+        if (editData == null) return;
+        MessageEditData.Mode editDataMode = editData.getCurrentMode();
+        if (editDataMode == MessageEditData.Mode.NONE) return;
         event.setCancelled(true);
         String message = event.getMessage();
         if (message.equals("done")) {
-            if (messageEditDataMode == MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_KEY || messageEditDataMode == MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_VALUE) {
-                messageEditData.setCurrentMode(MessageEditData.Mode.NONE);
-                messageEditData.setOldMessagePatternKey("");
-                this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, messageEditData, true));
-            } else if (messageEditDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE) {
-                messageEditData.setCurrentMode(MessageEditData.Mode.NONE);
-                if (!messageEditData.getNewMessageCache().isEmpty()) {
-                    messageEditData.setNewMessage(messageEditData.getNewMessageCache());
+            if (editDataMode == MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_KEY || editDataMode == MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_VALUE) {
+                editData.setCurrentMode(MessageEditData.Mode.NONE);
+                editData.setOldMessagePatternKey("");
+                this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, editData, true));
+            } else if (editDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE) {
+                editData.setCurrentMode(MessageEditData.Mode.NONE);
+                if (!editData.getNewMessageCache().isEmpty()) {
+                    editData.setNewMessage(editData.getNewMessageCache());
                     try {
-                        JsonParser.parseString(messageEditData.getNewMessage());
-                        messageEditData.setNewMessageJson(true);
+                        JsonParser.parseString(editData.getNewMessage());
+                        editData.setNewMessageJson(true);
                     } catch (JsonSyntaxException exception) {
-                        messageEditData.setNewMessage(MessageUtils.composeMessage(messageEditData.getNewMessage()));
-                        messageEditData.setNewMessageJson(false);
+                        editData.setNewMessage(MessageUtils.composeMessage(editData.getNewMessage()));
+                        editData.setNewMessageJson(false);
                     }
-                    messageEditData.setNewMessageCache("");
+                    editData.setNewMessageCache("");
                 }
-                this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, messageEditData, true));
-            } else if (messageEditDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE_KEY || messageEditDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE_VALUE) {
-                messageEditData.setCurrentMode(MessageEditData.Mode.NONE);
-                messageEditData.setNewMessageKey("");
-                this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, messageEditData, true));
+                this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, editData, true));
+            } else if (editDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE_KEY || editDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE_VALUE) {
+                editData.setCurrentMode(MessageEditData.Mode.NONE);
+                editData.setNewMessageKey("");
+                this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, editData, true));
             }
-        } else if (messageEditDataMode == MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_KEY) {
-            messageEditData.setOldMessagePatternKey(message);
-            messageEditData.setCurrentMode(MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_VALUE);
+        } else if (editDataMode == MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_KEY) {
+            editData.setOldMessagePatternKey(message);
+            editData.setCurrentMode(MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_VALUE);
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
             player.sendMessage(MessageUtils.composeMessageWithPrefix("&7Now enter old message pattern value, that is what you want the key to be replaced with, or enter '&edone&7' if you are done replacing everything you want."));
-        } else if (messageEditDataMode == MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_VALUE) {
-            String oldMessagePatternKey   = messageEditData.getOldMessagePatternKey();
-            String oldMessagePatternValue = message;
-            messageEditData.setCurrentMode(MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_KEY);
-            messageEditData.setOldMessage(messageEditData.getOldMessage().replaceFirst(Pattern.quote(oldMessagePatternKey), Matcher.quoteReplacement(oldMessagePatternValue.replace("\\", "\\\\"))));
-            messageEditData.setOldMessagePattern(messageEditData.getOldMessagePattern().replaceFirst(Pattern.quote(oldMessagePatternKey.replaceAll(MessageEditorConstants.SPECIAL_REGEX_CHARACTERS, "\\\\$0")), Matcher.quoteReplacement(oldMessagePatternValue)));
+        } else if (editDataMode == MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_VALUE) {
+            String patternKey   = editData.getOldMessagePatternKey();
+            String patternValue = message;
+            editData.setCurrentMode(MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_KEY);
+            editData.setOldMessage(editData.getOldMessage().replaceFirst(Pattern.quote(patternKey), Matcher.quoteReplacement(patternValue.replace("\\", "\\\\"))));
+            editData.setOldMessagePattern(editData.getOldMessagePattern().replaceFirst(Pattern.quote(patternKey.replaceAll(MessageEditorConstants.SPECIAL_REGEX_CHARACTERS, "\\\\$0")), Matcher.quoteReplacement(patternValue)));
             try {
-                JsonParser.parseString(messageEditData.getOldMessage());
-                messageEditData.setOldMessageJson(true);
+                JsonParser.parseString(editData.getOldMessage());
+                editData.setOldMessageJson(true);
             } catch (JsonSyntaxException exception) {
-                messageEditData.setOldMessage(MessageUtils.composeMessage(messageEditData.getOldMessage()));
-                messageEditData.setOldMessagePattern(MessageUtils.composeMessage(messageEditData.getOldMessagePattern()));
-                messageEditData.setOldMessageJson(false);
+                editData.setOldMessage(MessageUtils.composeMessage(editData.getOldMessage()));
+                editData.setOldMessagePattern(MessageUtils.composeMessage(editData.getOldMessagePattern()));
+                editData.setOldMessageJson(false);
             }
-            messageEditData.setOldMessagePatternKey("");
+            editData.setOldMessagePatternKey("");
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
-            player.sendMessage(MessageUtils.composeMessageWithPrefix("&7The first occurence of '&e" + oldMessagePatternKey + "&7' has been replaced with '&e" + oldMessagePatternValue + "&7'."));
+            player.sendMessage(MessageUtils.composeMessageWithPrefix("&7The first occurence of '&e" + patternKey + "&7' has been replaced with '&e" + patternValue + "&7'."));
             player.sendMessage(MessageUtils.composeMessageWithPrefix("&7Enter old message pattern key, that is what you want to replace, or enter '&edone&7' if you are done replacing everything you want."));
-        } else if (messageEditDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE) {
-            MessagePlace newMessagePlace = messageEditData.getNewMessagePlace();
-            if ((newMessagePlace == MessagePlace.GAME_CHAT || newMessagePlace == MessagePlace.SYSTEM_CHAT || newMessagePlace == MessagePlace.ACTION_BAR) && messageEditData.getNewMessageCache().isEmpty() && message.equals("remove")) {
-                messageEditData.setCurrentMode(MessageEditData.Mode.NONE);
-                messageEditData.setNewMessage("");
-                messageEditData.setNewMessageJson(false);
-                messageEditData.setNewMessageCache("");
-                this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, messageEditData, true));
+        } else if (editDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE) {
+            MessagePlace place = editData.getNewMessagePlace();
+            if ((place == MessagePlace.GAME_CHAT || place == MessagePlace.SYSTEM_CHAT || place == MessagePlace.ACTION_BAR) && editData.getNewMessageCache().isEmpty() && message.equals("remove")) {
+                editData.setCurrentMode(MessageEditData.Mode.NONE);
+                editData.setNewMessage("");
+                editData.setNewMessageJson(false);
+                editData.setNewMessageCache("");
+                this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, editData, true));
             } else {
-                messageEditData.setNewMessageCache(messageEditData.getNewMessageCache() + message);
+                editData.setNewMessageCache(editData.getNewMessageCache() + message);
                 player.sendMessage(MessageUtils.composeMessageWithPrefix("&7Message has been added. Continue if your message is longer and had to divide it into parts. Otherwise enter '&edone&7' to set the new message."));
                 player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
             }
-        } else if (messageEditDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE_KEY) {
-            messageEditData.setNewMessageKey(message);
-            messageEditData.setCurrentMode(MessageEditData.Mode.EDITING_NEW_MESSAGE_VALUE);
+        } else if (editDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE_KEY) {
+            editData.setNewMessageKey(message);
+            editData.setCurrentMode(MessageEditData.Mode.EDITING_NEW_MESSAGE_VALUE);
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
             player.sendMessage(MessageUtils.composeMessageWithPrefix("&7Now enter new message value, that is what you want the key to be replaced with, or enter '&edone&7' if you are done replacing everything you want."));
-        } else if (messageEditDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE_VALUE) {
-            String newMessageKey   = messageEditData.getNewMessageKey();
-            String newMessageValue = message;
-            messageEditData.setCurrentMode(MessageEditData.Mode.EDITING_NEW_MESSAGE_KEY);
-            messageEditData.setNewMessage(messageEditData.getNewMessage().replaceFirst(Pattern.quote(newMessageKey), Matcher.quoteReplacement(newMessageValue)));
+        } else if (editDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE_VALUE) {
+            String key   = editData.getNewMessageKey();
+            String value = message;
+            editData.setCurrentMode(MessageEditData.Mode.EDITING_NEW_MESSAGE_KEY);
+            editData.setNewMessage(editData.getNewMessage().replaceFirst(Pattern.quote(key), Matcher.quoteReplacement(value)));
             try {
-                JsonParser.parseString(messageEditData.getNewMessage());
-                messageEditData.setNewMessageJson(true);
+                JsonParser.parseString(editData.getNewMessage());
+                editData.setNewMessageJson(true);
             } catch (JsonSyntaxException exception) {
-                messageEditData.setNewMessage(MessageUtils.composeMessage(messageEditData.getNewMessage()));
-                messageEditData.setNewMessageJson(false);
+                editData.setNewMessage(MessageUtils.composeMessage(editData.getNewMessage()));
+                editData.setNewMessageJson(false);
             }
-            messageEditData.setNewMessageKey("");
+            editData.setNewMessageKey("");
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
-            player.sendMessage(MessageUtils.composeMessageWithPrefix("&7The first occurence of '&e" + newMessageKey + "&7' has been replaced with '&e" + newMessageValue + "&7'."));
+            player.sendMessage(MessageUtils.composeMessageWithPrefix("&7The first occurence of '&e" + key + "&7' has been replaced with '&e" + value + "&7'."));
             player.sendMessage(MessageUtils.composeMessageWithPrefix("&7Enter new message key, that is what you want to replace, or enter '&edone&7' if you are done replacing everything you want."));
-        } else if (messageEditDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE_PLACE) {
-            MessagePlace messagePlace = MessagePlace.fromName(message);
-            if (messagePlace == null) {
+        } else if (editDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE_PLACE) {
+            MessagePlace place = MessagePlace.fromName(message);
+            if (place == null) {
                 player.playSound(player.getLocation(), XSound.ENTITY_ITEM_BREAK.parseSound(), 1.0F, 1.0F);
                 player.sendMessage(MessageUtils.composeMessageWithPrefix("&cCould not convert '&7" + message + "&c' to a message place."));
                 return;
             }
-            if (!messagePlace.isSupported() || (messagePlace != MessagePlace.GAME_CHAT && messagePlace != MessagePlace.SYSTEM_CHAT && messagePlace != MessagePlace.ACTION_BAR)) {
+            if (!place.isSupported() || (place != MessagePlace.GAME_CHAT && place != MessagePlace.SYSTEM_CHAT && place != MessagePlace.ACTION_BAR)) {
                 player.playSound(player.getLocation(), XSound.BLOCK_ANVIL_HIT.parseSound(), 1.0F, 1.0F);
                 player.sendMessage(MessageUtils.composeMessageWithPrefix("&cThis message place is not supported by your server or is unavailable."));
                 player.sendMessage(MessageUtils.composeMessageWithPrefix("&7Available message places:"));
@@ -159,9 +155,9 @@ public final class PlayerChatListener implements Listener {
                 }
                 return;
             }
-            messageEditData.setCurrentMode(MessageEditData.Mode.NONE);
-            messageEditData.setNewMessagePlace(messagePlace);
-            this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, messageEditData, true));
+            editData.setCurrentMode(MessageEditData.Mode.NONE);
+            editData.setNewMessagePlace(place);
+            this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, editData, true));
         }
     }
 }

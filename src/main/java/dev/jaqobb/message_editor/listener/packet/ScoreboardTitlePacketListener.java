@@ -37,7 +37,6 @@ public final class ScoreboardTitlePacketListener extends CommonPacketListener {
     @Override
     public boolean shouldProcess(PacketContainer packet) {
         // 0 = create scoreboard objective
-        // 1 = delete scoreboard objective
         // 2 = update scoreboard objective display name
         int action = packet.getIntegers().read(0);
         return action == 0 || action == 2;

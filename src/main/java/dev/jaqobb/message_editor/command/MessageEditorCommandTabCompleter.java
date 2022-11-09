@@ -35,9 +35,7 @@ public final class MessageEditorCommandTabCompleter implements TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] arguments) {
-        if (!sender.hasPermission("messageeditor.use")) {
-            return null;
-        }
+        if (!sender.hasPermission("messageeditor.use")) return null;
         List<String> completions = new LinkedList<>();
         if (arguments.length == 1) {
             String argument = arguments[0].toLowerCase();
@@ -61,17 +59,13 @@ public final class MessageEditorCommandTabCompleter implements TabCompleter {
             }
         }
         if (arguments.length > 1 && (arguments[0].equalsIgnoreCase("activate") || (arguments[0].equalsIgnoreCase("deactivate")))) {
-            for (int index = 1; index < arguments.length; index++) {
-                for (MessagePlace messagePlace : MessagePlace.VALUES) {
-                    if (!messagePlace.name().startsWith(arguments[index].toUpperCase())) {
-                        continue;
-                    }
-                    if (!messagePlace.isSupported()) {
-                        continue;
-                    }
-                    boolean canMessagePlaceAnalyzingStateBeModified = arguments[0].equalsIgnoreCase("activate") != messagePlace.isAnalyzingActivated();
-                    if (canMessagePlaceAnalyzingStateBeModified) {
-                        completions.add(messagePlace.name());
+            for (int i = 1; i < arguments.length; i++) {
+                for (MessagePlace place : MessagePlace.VALUES) {
+                    if (!place.name().startsWith(arguments[i].toUpperCase())) continue;
+                    if (!place.isSupported()) continue;
+                    boolean modifiable = arguments[0].equalsIgnoreCase("activate") != place.isAnalyzingActivated();
+                    if (modifiable) {
+                        completions.add(place.name());
                     }
                 }
             }

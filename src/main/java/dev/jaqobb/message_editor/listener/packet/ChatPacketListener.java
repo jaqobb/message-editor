@@ -47,7 +47,7 @@ import org.bukkit.entity.Player;
 public final class ChatPacketListener extends PacketAdapter {
 
     public ChatPacketListener(MessageEditorPlugin plugin) {
-        super(plugin, ListenerPriority.HIGHEST, PacketType.Play.Server.CHAT, PacketType.Play.Server.SYSTEM_CHAT);
+        super(plugin, ListenerPriority.HIGHEST, PacketType.Play.Server.CHAT);
     }
 
     @Override
@@ -58,18 +58,14 @@ public final class ChatPacketListener extends PacketAdapter {
     @SuppressWarnings("deprecation")
     @Override
     public void onPacketSending(PacketEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
+        if (event.isCancelled()) return;
         Player          player               = event.getPlayer();
         PacketContainer packet               = event.getPacket().shallowClone();
         MessagePlace    originalMessagePlace = MessagePlace.fromPacket(packet);
         MessagePlace    messagePlace         = originalMessagePlace;
         String          originalMessage      = messagePlace.getMessage(packet);
         String          message              = originalMessage;
-        if (message == null) {
-            return;
-        }
+        if (message == null) return;
         Map.Entry<MessageEdit, String> cachedMessage      = this.getPlugin().getCachedMessage(message);
         MessageEdit                    messageEdit        = null;
         Matcher                        messageEditMatcher = null;
@@ -93,27 +89,27 @@ public final class ChatPacketListener extends PacketAdapter {
                     event.setCancelled(true);
                     return;
                 }
-                MessagePlace messageAfterPlace = cachedMessage.getKey().getMessageAfterPlace();
-                if (messageAfterPlace == MessagePlace.GAME_CHAT || messageAfterPlace == MessagePlace.SYSTEM_CHAT || messageAfterPlace == MessagePlace.ACTION_BAR) {
-                    messagePlace = messageAfterPlace;
+                MessagePlace newMessagePlace = cachedMessage.getKey().getMessageAfterPlace();
+                if (newMessagePlace == MessagePlace.GAME_CHAT || newMessagePlace == MessagePlace.SYSTEM_CHAT || newMessagePlace == MessagePlace.ACTION_BAR) {
+                    messagePlace = newMessagePlace;
                 }
                 message = cachedMessageValue;
             } else {
-                String messageAfter = messageEditMatcher.replaceAll(messageEdit.getMessageAfter());
-                messageAfter = ChatColor.translateAlternateColorCodes('&', messageAfter);
+                String newMessage = messageEditMatcher.replaceAll(messageEdit.getMessageAfter());
+                newMessage = ChatColor.translateAlternateColorCodes('&', newMessage);
                 if (this.getPlugin().isPlaceholderApiPresent()) {
-                    messageAfter = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, messageAfter);
+                    newMessage = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, newMessage);
                 }
-                this.getPlugin().cacheMessage(message, messageEdit, messageAfter);
-                if (messageAfter.isEmpty()) {
+                this.getPlugin().cacheMessage(message, messageEdit, newMessage);
+                if (newMessage.isEmpty()) {
                     event.setCancelled(true);
                     return;
                 }
-                MessagePlace messageAfterPlace = messageEdit.getMessageAfterPlace();
-                if (messageAfterPlace == MessagePlace.GAME_CHAT || messageAfterPlace == MessagePlace.SYSTEM_CHAT || messageAfterPlace == MessagePlace.ACTION_BAR) {
-                    messagePlace = messageAfterPlace;
+                MessagePlace newMessagePlace = messageEdit.getMessageAfterPlace();
+                if (newMessagePlace == MessagePlace.GAME_CHAT || newMessagePlace == MessagePlace.SYSTEM_CHAT || newMessagePlace == MessagePlace.ACTION_BAR) {
+                    messagePlace = newMessagePlace;
                 }
-                message = messageAfter;
+                message = newMessage;
             }
         }
         boolean messageJson = MessageUtils.isJson(message);
