@@ -44,15 +44,8 @@ public final class MessageEditData {
     private       MessagePlace newMessagePlace;
     private       Mode         currentMode;
 
-    public MessageEditData(MessageData messageData) {
-        this(
-            messageData.getMessage(),
-            messageData.isMessageJson(),
-            messageData.getMessagePlace(),
-            messageData.getMessage(),
-            messageData.isMessageJson(),
-            messageData.getMessagePlace()
-        );
+    public MessageEditData(MessageData data) {
+        this(data.getMessage(), data.isMessageJson(), data.getMessagePlace(), data.getMessage(), data.isMessageJson(), data.getMessagePlace());
     }
 
     public MessageEditData(
@@ -180,7 +173,7 @@ public final class MessageEditData {
         this.currentMode = currentMode;
     }
 
-    public static enum Mode {
+    public enum Mode {
 
         NONE(true),
         EDITING_OLD_MESSAGE_PATTERN_KEY(false),
@@ -192,11 +185,11 @@ public final class MessageEditData {
 
         private final boolean invalidateCache;
 
-        private Mode(boolean shouldInvalidateCache) {
-            this.invalidateCache = shouldInvalidateCache;
+        Mode(boolean invalidateCache) {
+            this.invalidateCache = invalidateCache;
         }
 
-        public boolean shouldInvalidateCache() {
+        public boolean isInvalidateCache() {
             return this.invalidateCache;
         }
     }

@@ -55,15 +55,15 @@ public enum MessagePlace {
         }
 
         @Override
-        public void setMessage(PacketContainer packet, String message, boolean messageJson) {
+        public void setMessage(PacketContainer packet, String message, boolean json) {
             if (packet.getChatComponents().read(0) != null) {
-                if (messageJson) {
+                if (json) {
                     packet.getChatComponents().write(0, WrappedChatComponent.fromJson(message));
                 } else {
                     packet.getChatComponents().write(0, WrappedChatComponent.fromJson(MessageUtils.toJson(MessageUtils.toBaseComponents(message), true)));
                 }
             } else if (packet.getSpecificModifier(BaseComponent[].class).size() == 1) {
-                if (messageJson) {
+                if (json) {
                     packet.getSpecificModifier(BaseComponent[].class).write(0, ComponentSerializer.parse(message));
                 } else {
                     packet.getSpecificModifier(BaseComponent[].class).write(0, MessageUtils.toBaseComponents(message));
@@ -78,8 +78,8 @@ public enum MessagePlace {
         }
 
         @Override
-        public void setMessage(PacketContainer packet, String message, boolean messageJson) {
-            GAME_CHAT.setMessage(packet, message, messageJson);
+        public void setMessage(PacketContainer packet, String message, boolean json) {
+            GAME_CHAT.setMessage(packet, message, json);
         }
     },
     ACTION_BAR("AB", "Action Bar", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.CHAT, (byte) 2, EnumWrappers.ChatType.GAME_INFO) {
@@ -89,12 +89,8 @@ public enum MessagePlace {
         }
 
         @Override
-        public void setMessage(
-            PacketContainer packet,
-            String message,
-            boolean messageJson
-        ) {
-            GAME_CHAT.setMessage(packet, message, messageJson);
+        public void setMessage(PacketContainer packet, String message, boolean json) {
+            GAME_CHAT.setMessage(packet, message, json);
         }
     },
     KICK("K", "Kick", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.KICK_DISCONNECT) {
@@ -104,8 +100,8 @@ public enum MessagePlace {
         }
 
         @Override
-        public void setMessage(PacketContainer packet, String message, boolean messageJson) {
-            if (messageJson) {
+        public void setMessage(PacketContainer packet, String message, boolean json) {
+            if (json) {
                 packet.getChatComponents().write(0, WrappedChatComponent.fromJson(message));
             } else {
                 packet.getChatComponents().write(0, WrappedChatComponent.fromJson(MessageUtils.toJson(MessageUtils.toBaseComponents(message), true)));
@@ -119,8 +115,8 @@ public enum MessagePlace {
         }
 
         @Override
-        public void setMessage(PacketContainer packet, String message, boolean messageJson) {
-            if (messageJson) {
+        public void setMessage(PacketContainer packet, String message, boolean json) {
+            if (json) {
                 packet.getChatComponents().write(0, WrappedChatComponent.fromJson(message));
             } else {
                 packet.getChatComponents().write(0, WrappedChatComponent.fromJson(MessageUtils.toJson(MessageUtils.toBaseComponents(message), true)));
@@ -137,15 +133,15 @@ public enum MessagePlace {
         }
 
         @Override
-        public void setMessage(PacketContainer packet, String message, boolean messageJson) {
+        public void setMessage(PacketContainer packet, String message, boolean json) {
             if (!MinecraftVersion.CAVES_CLIFFS_1.atOrAbove()) {
-                if (messageJson) {
+                if (json) {
                     packet.getChatComponents().write(0, WrappedChatComponent.fromJson(message));
                 } else {
                     packet.getChatComponents().write(0, WrappedChatComponent.fromJson(MessageUtils.toJson(MessageUtils.toBaseComponents(message), true)));
                 }
             }
-            if (messageJson) {
+            if (json) {
                 packet.getStructures().read(1).getChatComponents().write(0, WrappedChatComponent.fromJson(message));
             } else {
                 packet.getStructures().read(1).getChatComponents().write(0, WrappedChatComponent.fromJson(MessageUtils.toJson(MessageUtils.toBaseComponents(message), true)));
@@ -162,12 +158,12 @@ public enum MessagePlace {
         }
 
         @Override
-        public void setMessage(PacketContainer packet, String message, boolean messageJson) {
+        public void setMessage(PacketContainer packet, String message, boolean json) {
             if (packet.getStrings().size() == 2) {
                 packet.getStrings().write(1, message);
                 return;
             }
-            if (messageJson) {
+            if (json) {
                 packet.getChatComponents().write(0, WrappedChatComponent.fromJson(message));
             } else {
                 packet.getChatComponents().write(0, WrappedChatComponent.fromJson(MessageUtils.toJson(MessageUtils.toBaseComponents(message), true)));
@@ -181,8 +177,8 @@ public enum MessagePlace {
         }
 
         @Override
-        public void setMessage(PacketContainer packet, String message, boolean messageJson) {
-            if (messageJson) {
+        public void setMessage(PacketContainer packet, String message, boolean json) {
+            if (json) {
                 packet.getStrings().write(0, BaseComponent.toLegacyText(ComponentSerializer.parse(message)));
             } else {
                 packet.getStrings().write(0, message);
@@ -196,8 +192,8 @@ public enum MessagePlace {
         }
 
         @Override
-        public void setMessage(PacketContainer packet, String message, boolean messageJson) {
-            if (messageJson) {
+        public void setMessage(PacketContainer packet, String message, boolean json) {
+            if (json) {
                 packet.getChatComponents().write(0, WrappedChatComponent.fromJson(message));
             } else {
                 packet.getChatComponents().write(0, WrappedChatComponent.fromJson(MessageUtils.toJson(MessageUtils.toBaseComponents(message), true)));
@@ -213,7 +209,7 @@ public enum MessagePlace {
 
         // Items are an exception and do not use this.
         @Override
-        public void setMessage(PacketContainer packet, String message, boolean messageJson) {
+        public void setMessage(PacketContainer packet, String message, boolean json) {
             throw new UnsupportedOperationException();
         }
     },
@@ -226,47 +222,47 @@ public enum MessagePlace {
 
         // Items are an exception and do not use this.
         @Override
-        public void setMessage(PacketContainer packet, String message, boolean messageJson) {
+        public void setMessage(PacketContainer packet, String message, boolean json) {
             throw new UnsupportedOperationException();
         }
     },
     ENTITY_NAME("EN", "Entity Name", MinecraftVersion.BOUNTIFUL_UPDATE, PacketType.Play.Server.ENTITY_METADATA) {
         @Override
         public String getMessage(PacketContainer packet) {
-            List<WrappedWatchableObject> watchableObjects = packet.getWatchableCollectionModifier().read(0);
-            if (watchableObjects == null) {
+            List<WrappedWatchableObject> objects = packet.getWatchableCollectionModifier().read(0);
+            if (objects == null) {
                 return null;
             }
-            for (WrappedWatchableObject watchableObject : watchableObjects) {
-                if (watchableObject.getIndex() != 2) {
+            for (WrappedWatchableObject object : objects) {
+                if (object.getIndex() != 2) {
                     continue;
                 }
-                Object value = watchableObject.getValue();
+                Object value = object.getValue();
                 if (!(value instanceof Optional)) {
                     continue;
                 }
-                Optional<?> nameOptional = (Optional<?>) value;
-                if (nameOptional.isPresent()) {
-                    return WrappedChatComponent.fromHandle(nameOptional.get()).getJson();
+                Optional<?> name = (Optional<?>) value;
+                if (name.isPresent()) {
+                    return WrappedChatComponent.fromHandle(name.get()).getJson();
                 }
             }
             return null;
         }
 
         @Override
-        public void setMessage(PacketContainer packet, String message, boolean messageJson) {
-            List<WrappedWatchableObject> watchableObjects = packet.getWatchableCollectionModifier().read(0);
-            if (watchableObjects == null) {
+        public void setMessage(PacketContainer packet, String message, boolean json) {
+            List<WrappedWatchableObject> objects = packet.getWatchableCollectionModifier().read(0);
+            if (objects == null) {
                 return;
             }
-            for (WrappedWatchableObject watchableObject : watchableObjects) {
-                if (watchableObject.getIndex() != 2) {
+            for (WrappedWatchableObject object : objects) {
+                if (object.getIndex() != 2) {
                     continue;
                 }
-                if (messageJson) {
-                    watchableObject.setValue(Optional.of(WrappedChatComponent.fromJson(message).getHandle()));
+                if (json) {
+                    object.setValue(Optional.of(WrappedChatComponent.fromJson(message).getHandle()));
                 } else {
-                    watchableObject.setValue(Optional.of(WrappedChatComponent.fromJson(MessageUtils.toJson(MessageUtils.toBaseComponents(message), true)).getHandle()));
+                    object.setValue(Optional.of(WrappedChatComponent.fromJson(MessageUtils.toJson(MessageUtils.toBaseComponents(message), true)).getHandle()));
                 }
                 return;
             }

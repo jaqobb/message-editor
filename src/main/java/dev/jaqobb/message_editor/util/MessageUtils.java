@@ -71,49 +71,48 @@ public final class MessageUtils {
         return composeMessage(MessageEditorConstants.PREFIX + message);
     }
 
-    public static String composeMessageId(MessagePlace messagePlace, String message) {
-        String messagePlaceId  = messagePlace.getId();
-        String messageHashCode = message.hashCode() < 0 ? String.valueOf(-message.hashCode() * 2L) : String.valueOf(message.hashCode());
-        String messageId       = "";
-        for (int messageHashCodeIndex = 0; messageHashCodeIndex < messageHashCode.length(); messageHashCodeIndex++) {
-            if (messageHashCodeIndex + 1 < messageHashCode.length()) {
-                String messageHashCodeNumberFirst  = String.valueOf(messageHashCode.charAt(messageHashCodeIndex));
-                String messageHashCodeNumberSecond = String.valueOf(messageHashCode.charAt(messageHashCodeIndex + 1));
-                int    messageHashCodeNumber       = Integer.parseInt(messageHashCodeNumberFirst + messageHashCodeNumberSecond);
-                if (messageHashCodeNumber < CHARACTERS.length) {
-                    messageId += CHARACTERS[messageHashCodeNumber];
+    public static String composeMessageId(MessagePlace place, String message) {
+        String placeId     = place.getId();
+        String messageHash = message.hashCode() < 0 ? String.valueOf(-message.hashCode() * 2L) : String.valueOf(message.hashCode());
+        String messageId   = "";
+        for (int i = 0; i < messageHash.length(); i++) {
+            if (i + 1 < messageHash.length()) {
+                String currentNumber = String.valueOf(messageHash.charAt(i));
+                String nextNumber    = String.valueOf(messageHash.charAt(i + 1));
+                int    number        = Integer.parseInt(currentNumber + nextNumber);
+                if (number < CHARACTERS.length) {
+                    messageId += CHARACTERS[number];
                 } else {
-                    messageId += CHARACTERS[Integer.parseInt(messageHashCodeNumberFirst)];
-                    messageId += CHARACTERS[Integer.parseInt(messageHashCodeNumberSecond)];
+                    messageId += CHARACTERS[Integer.parseInt(currentNumber)];
+                    messageId += CHARACTERS[Integer.parseInt(nextNumber)];
                 }
-                messageHashCodeIndex++;
+                i++;
             } else {
-                messageId += CHARACTERS[Integer.parseInt(String.valueOf(messageHashCode.charAt(messageHashCodeIndex)))];
+                messageId += CHARACTERS[Integer.parseInt(String.valueOf(messageHash.charAt(i)))];
             }
         }
-        return messagePlaceId + messageId;
+        return placeId + messageId;
     }
 
     public static String getLastColors(String message) {
-        int    messageLength = message.length();
-        String result        = "";
-        for (int index = messageLength - 1; index > -1; index--) {
-            char section = message.charAt(index);
-            if (section == ChatColor.COLOR_CHAR && index < messageLength - 1) {
-                char character = message.charAt(index + 1);
-                if (index - 12 >= 0) {
-                    char hexColorSection = message.charAt(index - 12);
+        int    length = message.length();
+        String colors = "";
+        for (int i = length - 1; i > -1; i--) {
+            char section = message.charAt(i);
+            if (section == ChatColor.COLOR_CHAR && i < length - 1) {
+                char character = message.charAt(i + 1);
+                if (i - 12 >= 0) {
+                    char hexColorSection = message.charAt(i - 12);
                     if (hexColorSection == ChatColor.COLOR_CHAR) {
-                        char hexColorCharacter = message.charAt(index - 11);
+                        char hexColorCharacter = message.charAt(i - 11);
                         if ((hexColorCharacter == 'x' || hexColorCharacter == 'X') && HEX_COLORS_SUPPORTED) {
                             String hexColor = "";
-                            for (int hexColorIndex = -9; hexColorIndex <= 1; hexColorIndex += 2) {
-                                hexColor += message.charAt(index + hexColorIndex);
+                            for (int j = -9; j <= 1; j += 2) {
+                                hexColor += message.charAt(i + j);
                             }
                             try {
-                                ChatColor color = ChatColor.of("#" + hexColor);
-                                index -= 13;
-                                result = color + result;
+                                i -= 13;
+                                colors = ChatColor.of("#" + hexColor) + colors;
                                 continue;
                             } catch (IllegalArgumentException ignored) {
                             }
@@ -122,79 +121,78 @@ public final class MessageUtils {
                 }
                 ChatColor color = ChatColor.getByChar(character);
                 if (color != null) {
-                    index--;
-                    result = color + result;
+                    i--;
+                    colors = color + colors;
                     if (color == ChatColor.RESET || (color != ChatColor.MAGIC && color != ChatColor.BOLD && color != ChatColor.STRIKETHROUGH && color != ChatColor.UNDERLINE && color != ChatColor.ITALIC)) {
                         break;
                     }
                 }
             }
         }
-        return result;
+        return colors;
     }
 
     public static BaseComponent[] toBaseComponents(String message) {
-        List<BaseComponent> messageComponents = new ArrayList<>(10);
-        String              messagePart       = "";
-        for (int messageIndex = 0; messageIndex < message.length(); messageIndex++) {
-            boolean makeMessageComponent = false;
-            String  messagePartNew       = "";
-            char    messageCharacter     = message.charAt(messageIndex);
-            if (messageIndex == message.length() - 1) {
-                makeMessageComponent = true;
-                messagePart += messageCharacter;
-            } else if (messageCharacter != "§".charAt(0)) {
-                messagePart += messageCharacter;
+        List<BaseComponent> components  = new ArrayList<>(10);
+        String              messagePart = "";
+        for (int i = 0; i < message.length(); i++) {
+            boolean makeComponent  = false;
+            String  newMessagePart = "";
+            char    character      = message.charAt(i);
+            if (i == message.length() - 1) {
+                makeComponent = true;
+                messagePart += character;
+            } else if (character != "§".charAt(0)) {
+                messagePart += character;
             } else {
-                char messageHexColorCharacter = message.charAt(messageIndex + 1);
-                if ((messageHexColorCharacter == 'x' || messageHexColorCharacter == 'X') && HEX_COLORS_SUPPORTED) {
+                char hexColorCharacter = message.charAt(i + 1);
+                if ((hexColorCharacter == 'x' || hexColorCharacter == 'X') && HEX_COLORS_SUPPORTED) {
                     String hexColor = "";
-                    for (int messageHexColorIndex = 3; messageHexColorIndex <= 13; messageHexColorIndex += 2) {
-                        hexColor += message.charAt(messageIndex + messageHexColorIndex);
+                    for (int j = 3; j <= 13; j += 2) {
+                        hexColor += message.charAt(i + j);
                     }
                     try {
-                        ChatColor color = ChatColor.of("#" + hexColor);
-                        messageIndex += 13;
-                        messagePart += color;
+                        i += 13;
+                        messagePart += ChatColor.of("#" + hexColor);
                         continue;
                     } catch (IllegalArgumentException ignored) {
                     }
                 }
-                ChatColor color = ChatColor.getByChar(message.charAt(messageIndex + 1));
+                ChatColor color = ChatColor.getByChar(message.charAt(i + 1));
                 if (color != null) {
-                    messageIndex++;
+                    i++;
                     if (messagePart.isEmpty() || (color == ChatColor.MAGIC || color == ChatColor.BOLD || color == ChatColor.STRIKETHROUGH || color == ChatColor.UNDERLINE || color == ChatColor.ITALIC || color == ChatColor.RESET)) {
                         messagePart += color.toString();
                     } else {
-                        makeMessageComponent = true;
-                        messagePartNew += color.toString();
+                        makeComponent = true;
+                        newMessagePart += color.toString();
                     }
                 } else {
-                    messagePart += messageCharacter;
+                    messagePart += character;
                 }
             }
-            if (makeMessageComponent) {
-                messageComponents.addAll(Arrays.asList(TextComponent.fromLegacyText(messagePart)));
-                messagePart = messagePartNew;
+            if (makeComponent) {
+                components.addAll(Arrays.asList(TextComponent.fromLegacyText(messagePart)));
+                messagePart = newMessagePart;
             }
         }
-        return messageComponents.toArray(EMPTY_BASE_COMPONENT_ARRAY);
+        return components.toArray(EMPTY_BASE_COMPONENT_ARRAY);
     }
 
     // Using ComponentSerializer#toString when the amount of components is greater than 1
     // wraps the message into TextComponent and thus can break plugins where the index
     // of a message component is important.
-    public static String toJson(BaseComponent[] messageComponents, boolean wrapIntoTextComponent) {
-        if (messageComponents.length == 1) {
-            return ComponentSerializer.toString(messageComponents[0]);
+    public static String toJson(BaseComponent[] components, boolean wrapIntoTextComponent) {
+        if (components.length == 1) {
+            return ComponentSerializer.toString(components[0]);
         } else if (wrapIntoTextComponent) {
-            return ComponentSerializer.toString(messageComponents);
+            return ComponentSerializer.toString(components);
         } else {
-            StringJoiner messageComponentsJson = new StringJoiner(",", "[", "]");
-            for (BaseComponent messageComponent : messageComponents) {
-                messageComponentsJson.add(ComponentSerializer.toString(messageComponent));
+            StringJoiner componentsJson = new StringJoiner(",", "[", "]");
+            for (BaseComponent messageComponent : components) {
+                componentsJson.add(ComponentSerializer.toString(messageComponent));
             }
-            return messageComponentsJson.toString();
+            return componentsJson.toString();
         }
     }
 
@@ -209,15 +207,15 @@ public final class MessageUtils {
 
     public static void logMessage(
         Logger logger,
-        MessagePlace messagePlace,
+        MessagePlace place,
         Player player,
         String messageId,
-        boolean messageJson,
+        boolean json,
         String message
     ) {
-        logger.log(Level.INFO, "Place: " + messagePlace.getFriendlyName() + " (" + messagePlace.name() + ")");
+        logger.log(Level.INFO, "Place: " + place.getFriendlyName() + " (" + place.name() + ")");
         logger.log(Level.INFO, "Player: " + player.getName());
-        if (messageJson) {
+        if (json) {
             String messageReplaced = message.replaceAll(MessageEditorConstants.SPECIAL_REGEX_CHARACTERS, "\\\\$0");
             String messageClear    = BaseComponent.toLegacyText(ComponentSerializer.parse(message));
             logger.log(Level.INFO, "Message JSON: '" + messageReplaced + "'");

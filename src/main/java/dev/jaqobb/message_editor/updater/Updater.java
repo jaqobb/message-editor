@@ -78,9 +78,7 @@ public final class Updater implements Runnable {
 
     @Override
     public void run() {
-        if (this.currentVersion.contains("-SNAPSHOT")) {
-            return;
-        }
+        if (this.currentVersion.contains("-SNAPSHOT"))  return;
         try {
             HttpsURLConnection connection = (HttpsURLConnection) new URL("https://api.spigotmc.org/legacy/update.php?resource=" + this.pluginId).openConnection();
             connection.setRequestMethod("GET");
@@ -89,13 +87,13 @@ public final class Updater implements Runnable {
                 String[] currentVersionData = this.currentVersion.split("\\.");
                 String[] latestVersionData  = this.latestVersion.split("\\.");
                 if (currentVersionData.length == 3 && latestVersionData.length == 3) {
-                    int majorVersionDifference = Integer.compare(Integer.parseInt(currentVersionData[0]), Integer.parseInt(latestVersionData[0]));
-                    if (majorVersionDifference != 0) {
-                        this.versionDifference = majorVersionDifference;
+                    int majorDifference = Integer.compare(Integer.parseInt(currentVersionData[0]), Integer.parseInt(latestVersionData[0]));
+                    if (majorDifference != 0) {
+                        this.versionDifference = majorDifference;
                     } else {
-                        int minorVersionDifference = Integer.compare(Integer.parseInt(currentVersionData[1]), Integer.parseInt(latestVersionData[1]));
-                        if (minorVersionDifference != 0) {
-                            this.versionDifference = minorVersionDifference;
+                        int minorDifference = Integer.compare(Integer.parseInt(currentVersionData[1]), Integer.parseInt(latestVersionData[1]));
+                        if (minorDifference != 0) {
+                            this.versionDifference = minorDifference;
                         } else {
                             this.versionDifference = Integer.compare(Integer.parseInt(currentVersionData[2]), Integer.parseInt(latestVersionData[2]));
                         }
