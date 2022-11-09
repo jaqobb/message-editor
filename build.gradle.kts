@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "dev.jaqobb"
-version = "2.4.10-SNAPSHOT"
+version = "2.4.10"
 description = "Edit in-game messages that were previously unmodifiable"
 
 java {
