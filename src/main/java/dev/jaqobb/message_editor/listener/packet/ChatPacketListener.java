@@ -80,6 +80,9 @@ public final class ChatPacketListener extends PacketAdapter {
         if (cachedMessage == null) {
             for (MessageEdit edit : this.getPlugin().getMessageEdits()) {
                 MessagePlace beforePlace = edit.getMessageBeforePlace();
+                if (beforePlace == MessagePlace.GAME_CHAT && MinecraftVersion.atOrAbove(MinecraftVersion.WILD_UPDATE)) {
+                    beforePlace = MessagePlace.SYSTEM_CHAT;
+                }
                 if (beforePlace != null && beforePlace != place) {
                     continue;
                 }
