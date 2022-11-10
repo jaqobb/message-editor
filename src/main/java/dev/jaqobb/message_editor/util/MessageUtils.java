@@ -24,6 +24,9 @@
 
 package dev.jaqobb.message_editor.util;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import dev.jaqobb.message_editor.MessageEditorConstants;
@@ -63,15 +66,15 @@ public final class MessageUtils {
         throw new UnsupportedOperationException("Cannot create instance of this class");
     }
 
-    public static String composeMessage(String message) {
+    public static String translate(String message) {
         return ChatColor.translateAlternateColorCodes('&', message);
     }
 
-    public static String composeMessageWithPrefix(String message) {
-        return composeMessage(MessageEditorConstants.PREFIX + message);
+    public static String translateWithPrefix(String message) {
+        return translate(MessageEditorConstants.PREFIX + message);
     }
 
-    public static String composeMessageId(MessagePlace place, String message) {
+    public static String generateId(MessagePlace place, String message) {
         String placeId     = place.getId();
         String messageHash = message.hashCode() < 0 ? String.valueOf(-message.hashCode() * 2L) : String.valueOf(message.hashCode());
         String messageId   = "";
@@ -196,9 +199,9 @@ public final class MessageUtils {
         }
     }
 
-    public static boolean isJson(String message) {
+    public static boolean isJson(String string) {
         try {
-            JsonParser.parseString(message);
+            JsonParser.parseString(string);
             return true;
         } catch (JsonSyntaxException exception) {
             return false;
@@ -227,5 +230,46 @@ public final class MessageUtils {
             logger.log(Level.INFO, "Message clear: '" + matcher.replaceAll("") + "'");
         }
         logger.log(Level.INFO, "Message ID: '" + messageId + "'");
+    }
+
+    public static String retrieveMessage(PacketContainer packet, PacketType simulatedPacketType) {
+        if (simulatedPacketType == PacketType.Play.Server.CHAT) {
+            WrappedChatComponent message = packet.getChatComponents().read(0);
+            if (message != null) {
+                return message.getJson();
+            } else if (packet.getSpecificModifier(BaseComponent[].class).size() == 1) {
+                BaseComponent[] messageComponents = packet.getSpecificModifier(BaseComponent[].class).read(0);
+                if (messageComponents != null) {
+                    return toJson(messageComponents, false);
+                }
+            }
+        } else if (simulatedPacketType == PacketType.Play.Server.SYSTEM_CHAT) {
+            return packet.getStrings().read(0);
+        }
+        return null;
+    }
+
+    public static void updateMessage(PacketContainer packet, PacketType simulatedPacketType, String message, boolean json) {
+        if (simulatedPacketType == PacketType.Play.Server.CHAT) {
+            if (packet.getChatComponents().read(0) != null) {
+                if (json) {
+                    packet.getChatComponents().write(0, WrappedChatComponent.fromJson(message));
+                } else {
+                    packet.getChatComponents().write(0, WrappedChatComponent.fromJson(toJson(toBaseComponents(message), true)));
+                }
+            } else if (packet.getSpecificModifier(BaseComponent[].class).size() == 1) {
+                if (json) {
+                    packet.getSpecificModifier(BaseComponent[].class).write(0, ComponentSerializer.parse(message));
+                } else {
+                    packet.getSpecificModifier(BaseComponent[].class).write(0, toBaseComponents(message));
+                }
+            }
+        } else if (simulatedPacketType == PacketType.Play.Server.SYSTEM_CHAT) {
+            if (json) {
+                packet.getStrings().write(0, message);
+            } else {
+                packet.getStrings().write(0, toJson(toBaseComponents(message), true));
+            }
+        }
     }
 }

@@ -64,21 +64,23 @@ public final class Updater implements Runnable {
 
     public String getUpdateMessage() {
         if (this.currentVersion.contains("-SNAPSHOT")) {
-            return MessageUtils.composeMessageWithPrefix("&cYou are running a development version (&7" + this.currentVersion + "&c) It is not advised to run development versions on production servers as they are very likely to not work as intended.");
+            return MessageUtils.translateWithPrefix("&cYou are running a development version (&7" + this.currentVersion + "&c) It is not advised to run development versions on production servers as they are very likely to not work as intended.");
         } else if (this.latestVersion == null || this.versionDifference == null) {
-            return MessageUtils.composeMessageWithPrefix("&cCould not retrieve the latest version data. Make sure that you have internet access.");
+            return MessageUtils.translateWithPrefix("&cCould not retrieve the latest version data. Make sure that you have internet access.");
         } else if (this.versionDifference > 0) {
-            return MessageUtils.composeMessageWithPrefix("&7You are running a future version (&e" + this.currentVersion + " &7> &e" + this.latestVersion + "&7). This version is safe to use but is yet to be officially uploaded or the latest version data is yet to be updated.");
+            return MessageUtils.translateWithPrefix("&7You are running a future version (&e" + this.currentVersion + " &7> &e" + this.latestVersion + "&7). This version is safe to use but is yet to be officially uploaded or the latest version data is yet to be updated.");
         } else if (this.versionDifference < 0) {
-            return MessageUtils.composeMessageWithPrefix("&7You are running a past version (&e" + this.currentVersion + " &7< &e" + this.latestVersion + "&7). Updating is recommended to receive new features, bug fixes and more.");
+            return MessageUtils.translateWithPrefix("&7You are running a past version (&e" + this.currentVersion + " &7< &e" + this.latestVersion + "&7). Updating is recommended to receive new features, bug fixes and more.");
         } else {
-            return MessageUtils.composeMessageWithPrefix("&7You are running the latest version (&e" + this.currentVersion + "&7).");
+            return MessageUtils.translateWithPrefix("&7You are running the latest version (&e" + this.currentVersion + "&7).");
         }
     }
 
     @Override
     public void run() {
-        if (this.currentVersion.contains("-SNAPSHOT"))  return;
+        if (this.currentVersion.contains("-SNAPSHOT")) {
+            return;
+        }
         try {
             HttpsURLConnection connection = (HttpsURLConnection) new URL("https://api.spigotmc.org/legacy/update.php?resource=" + this.pluginId).openConnection();
             connection.setRequestMethod("GET");

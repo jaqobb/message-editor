@@ -24,6 +24,7 @@
 
 package dev.jaqobb.message_editor.listener.player;
 
+import com.comphenix.protocol.utility.MinecraftVersion;
 import com.cryptomorin.xseries.XSound;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
@@ -51,11 +52,15 @@ public final class PlayerChatListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerChat(AsyncPlayerChatEvent event) {
-        Player          player          = event.getPlayer();
+        Player          player   = event.getPlayer();
         MessageEditData editData = this.plugin.getCurrentMessageEditData(player.getUniqueId());
-        if (editData == null) return;
+        if (editData == null) {
+            return;
+        }
         MessageEditData.Mode editDataMode = editData.getCurrentMode();
-        if (editDataMode == MessageEditData.Mode.NONE) return;
+        if (editDataMode == MessageEditData.Mode.NONE) {
+            return;
+        }
         event.setCancelled(true);
         String message = event.getMessage();
         if (message.equals("done")) {
@@ -71,7 +76,7 @@ public final class PlayerChatListener implements Listener {
                         JsonParser.parseString(editData.getNewMessage());
                         editData.setNewMessageJson(true);
                     } catch (JsonSyntaxException exception) {
-                        editData.setNewMessage(MessageUtils.composeMessage(editData.getNewMessage()));
+                        editData.setNewMessage(MessageUtils.translate(editData.getNewMessage()));
                         editData.setNewMessageJson(false);
                     }
                     editData.setNewMessageCache("");
@@ -81,12 +86,15 @@ public final class PlayerChatListener implements Listener {
                 editData.setCurrentMode(MessageEditData.Mode.NONE);
                 editData.setNewMessageKey("");
                 this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, editData, true));
+            } else if (editDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE_PLACE) {
+                editData.setCurrentMode(MessageEditData.Mode.NONE);
+                this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, editData, true));
             }
         } else if (editDataMode == MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_KEY) {
             editData.setOldMessagePatternKey(message);
             editData.setCurrentMode(MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_VALUE);
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
-            player.sendMessage(MessageUtils.composeMessageWithPrefix("&7Now enter old message pattern value, that is what you want the key to be replaced with, or enter '&edone&7' if you are done replacing everything you want."));
+            player.sendMessage(MessageUtils.translateWithPrefix("&7Now enter old message pattern value, that is what you want the key to be replaced with, or enter '&edone&7' if you are done replacing everything you want."));
         } else if (editDataMode == MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_VALUE) {
             String patternKey   = editData.getOldMessagePatternKey();
             String patternValue = message;
@@ -97,14 +105,14 @@ public final class PlayerChatListener implements Listener {
                 JsonParser.parseString(editData.getOldMessage());
                 editData.setOldMessageJson(true);
             } catch (JsonSyntaxException exception) {
-                editData.setOldMessage(MessageUtils.composeMessage(editData.getOldMessage()));
-                editData.setOldMessagePattern(MessageUtils.composeMessage(editData.getOldMessagePattern()));
+                editData.setOldMessage(MessageUtils.translate(editData.getOldMessage()));
+                editData.setOldMessagePattern(MessageUtils.translate(editData.getOldMessagePattern()));
                 editData.setOldMessageJson(false);
             }
             editData.setOldMessagePatternKey("");
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
-            player.sendMessage(MessageUtils.composeMessageWithPrefix("&7The first occurence of '&e" + patternKey + "&7' has been replaced with '&e" + patternValue + "&7'."));
-            player.sendMessage(MessageUtils.composeMessageWithPrefix("&7Enter old message pattern key, that is what you want to replace, or enter '&edone&7' if you are done replacing everything you want."));
+            player.sendMessage(MessageUtils.translateWithPrefix("&7The first occurence of '&e" + patternKey + "&7' has been replaced with '&e" + patternValue + "&7'."));
+            player.sendMessage(MessageUtils.translateWithPrefix("&7Enter old message pattern key, that is what you want to replace, or enter '&edone&7' if you are done replacing everything you want."));
         } else if (editDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE) {
             MessagePlace place = editData.getNewMessagePlace();
             if ((place == MessagePlace.GAME_CHAT || place == MessagePlace.SYSTEM_CHAT || place == MessagePlace.ACTION_BAR) && editData.getNewMessageCache().isEmpty() && message.equals("remove")) {
@@ -115,14 +123,14 @@ public final class PlayerChatListener implements Listener {
                 this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, editData, true));
             } else {
                 editData.setNewMessageCache(editData.getNewMessageCache() + message);
-                player.sendMessage(MessageUtils.composeMessageWithPrefix("&7Message has been added. Continue if your message is longer and had to divide it into parts. Otherwise enter '&edone&7' to set the new message."));
+                player.sendMessage(MessageUtils.translateWithPrefix("&7Message has been added. Continue if your message is longer and had to divide it into parts. Otherwise enter '&edone&7' to set the new message."));
                 player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
             }
         } else if (editDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE_KEY) {
             editData.setNewMessageKey(message);
             editData.setCurrentMode(MessageEditData.Mode.EDITING_NEW_MESSAGE_VALUE);
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
-            player.sendMessage(MessageUtils.composeMessageWithPrefix("&7Now enter new message value, that is what you want the key to be replaced with, or enter '&edone&7' if you are done replacing everything you want."));
+            player.sendMessage(MessageUtils.translateWithPrefix("&7Now enter new message value, that is what you want the key to be replaced with, or enter '&edone&7' if you are done replacing everything you want."));
         } else if (editDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE_VALUE) {
             String key   = editData.getNewMessageKey();
             String value = message;
@@ -132,28 +140,37 @@ public final class PlayerChatListener implements Listener {
                 JsonParser.parseString(editData.getNewMessage());
                 editData.setNewMessageJson(true);
             } catch (JsonSyntaxException exception) {
-                editData.setNewMessage(MessageUtils.composeMessage(editData.getNewMessage()));
+                editData.setNewMessage(MessageUtils.translate(editData.getNewMessage()));
                 editData.setNewMessageJson(false);
             }
             editData.setNewMessageKey("");
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
-            player.sendMessage(MessageUtils.composeMessageWithPrefix("&7The first occurence of '&e" + key + "&7' has been replaced with '&e" + value + "&7'."));
-            player.sendMessage(MessageUtils.composeMessageWithPrefix("&7Enter new message key, that is what you want to replace, or enter '&edone&7' if you are done replacing everything you want."));
+            player.sendMessage(MessageUtils.translateWithPrefix("&7The first occurence of '&e" + key + "&7' has been replaced with '&e" + value + "&7'."));
+            player.sendMessage(MessageUtils.translateWithPrefix("&7Enter new message key, that is what you want to replace, or enter '&edone&7' if you are done replacing everything you want."));
         } else if (editDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE_PLACE) {
             MessagePlace place = MessagePlace.fromName(message);
             if (place == null) {
                 player.playSound(player.getLocation(), XSound.ENTITY_ITEM_BREAK.parseSound(), 1.0F, 1.0F);
-                player.sendMessage(MessageUtils.composeMessageWithPrefix("&cCould not convert '&7" + message + "&c' to a message place."));
+                player.sendMessage(MessageUtils.translateWithPrefix("&cCould not convert '&7" + message + "&c' to a message place."));
                 return;
             }
             if (!place.isSupported() || (place != MessagePlace.GAME_CHAT && place != MessagePlace.SYSTEM_CHAT && place != MessagePlace.ACTION_BAR)) {
                 player.playSound(player.getLocation(), XSound.BLOCK_ANVIL_HIT.parseSound(), 1.0F, 1.0F);
-                player.sendMessage(MessageUtils.composeMessageWithPrefix("&cThis message place is not supported by your server or is unavailable."));
-                player.sendMessage(MessageUtils.composeMessageWithPrefix("&7Available message places:"));
-                for (MessagePlace availableMessagePlace : Arrays.asList(MessagePlace.GAME_CHAT, MessagePlace.SYSTEM_CHAT, MessagePlace.ACTION_BAR)) {
-                    player.sendMessage(MessageUtils.composeMessageWithPrefix("&7- &e" + availableMessagePlace.name() + " &7(&e" + availableMessagePlace.getFriendlyName() + "&7)"));
+                player.sendMessage(MessageUtils.translateWithPrefix("&cThis message place is not supported by your server or is unavailable."));
+                player.sendMessage(MessageUtils.translateWithPrefix("&7Available message places:"));
+                if (!MinecraftVersion.atOrAbove(MinecraftVersion.WILD_UPDATE)) {
+                    for (MessagePlace availableMessagePlace : Arrays.asList(MessagePlace.GAME_CHAT, MessagePlace.SYSTEM_CHAT, MessagePlace.ACTION_BAR)) {
+                        player.sendMessage(MessageUtils.translateWithPrefix("&7- &e" + availableMessagePlace.name() + " &7(&e" + availableMessagePlace.getFriendlyName() + "&7)"));
+                    }
+                } else {
+                    for (MessagePlace availableMessagePlace : Arrays.asList(MessagePlace.SYSTEM_CHAT, MessagePlace.ACTION_BAR)) {
+                        player.sendMessage(MessageUtils.translateWithPrefix("&7- &e" + availableMessagePlace.name() + " &7(&e" + availableMessagePlace.getFriendlyName() + "&7)"));
+                    }
                 }
                 return;
+            }
+            if (place == MessagePlace.GAME_CHAT && MinecraftVersion.atOrAbove(MinecraftVersion.WILD_UPDATE)) {
+                place = MessagePlace.SYSTEM_CHAT;
             }
             editData.setCurrentMode(MessageEditData.Mode.NONE);
             editData.setNewMessagePlace(place);

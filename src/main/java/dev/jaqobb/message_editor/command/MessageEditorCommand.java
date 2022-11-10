@@ -28,6 +28,7 @@ import dev.jaqobb.message_editor.MessageEditorPlugin;
 import dev.jaqobb.message_editor.message.MessageData;
 import dev.jaqobb.message_editor.message.MessagePlace;
 import dev.jaqobb.message_editor.util.MessageUtils;
+import net.md_5.bungee.api.ChatMessageType;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -46,16 +47,31 @@ public final class MessageEditorCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] arguments) {
         if (!sender.hasPermission("messageeditor.use")) {
-            sender.sendMessage(MessageUtils.composeMessageWithPrefix("&cYou do not have the required permissions to do that."));
+            sender.sendMessage(MessageUtils.translateWithPrefix("&cYou do not have the required permissions to do that."));
             return true;
         }
         if (arguments.length == 0) {
             this.sendHelpMessage(sender, label);
             return true;
         }
+        if (arguments[0].equalsIgnoreCase("dev") && this.plugin.getUpdater().getCurrentVersion().contains("-SNAPSHOT") && sender.hasPermission("messageeditor.dev")) {
+            Player player = (Player) sender;
+            switch (arguments[1]) {
+                case "1":
+                    player.spigot().sendMessage(ChatMessageType.CHAT, MessageUtils.toBaseComponents("MessageEditor Test 1"));
+                    break;
+                case "2":
+                    player.spigot().sendMessage(ChatMessageType.SYSTEM, MessageUtils.toBaseComponents("MessageEditor Test 2"));
+                    break;
+                case "3":
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, MessageUtils.toBaseComponents("MessageEditor Test 3"));
+                    break;
+            }
+            return true;
+        }
         if (arguments[0].equalsIgnoreCase("reload")) {
             if (arguments.length != 1) {
-                sender.sendMessage(MessageUtils.composeMessageWithPrefix("&7Correct usage: &e/" + label + " reload&7."));
+                sender.sendMessage(MessageUtils.translateWithPrefix("&7Correct usage: &e/" + label + " reload&7."));
                 return true;
             }
             this.plugin.clearCachedMessages();
@@ -63,27 +79,27 @@ public final class MessageEditorCommand implements CommandExecutor {
             this.plugin.reloadConfig();
             for (Player player : Bukkit.getOnlinePlayers()) {
                 InventoryView openInventory = player.getOpenInventory();
-                if (openInventory.getTitle().equals(MessageUtils.composeMessage("&8Message Editor"))) {
+                if (openInventory.getTitle().equals(MessageUtils.translate("&8Message Editor"))) {
                     player.closeInventory();
-                    player.sendMessage(MessageUtils.composeMessageWithPrefix("&7Your message editor menu has been closed due to the plugin reload."));
+                    player.sendMessage(MessageUtils.translateWithPrefix("&7Your message editor menu has been closed due to the plugin reload."));
                 }
             }
-            sender.sendMessage(MessageUtils.composeMessageWithPrefix("&7Plugin has been reloaded."));
+            sender.sendMessage(MessageUtils.translateWithPrefix("&7Plugin has been reloaded."));
             return true;
         }
         if (arguments[0].equalsIgnoreCase("edit")) {
             if (!(sender instanceof Player)) {
-                sender.sendMessage(MessageUtils.composeMessageWithPrefix("&cOnly players can do that."));
+                sender.sendMessage(MessageUtils.translateWithPrefix("&cOnly players can do that."));
                 return true;
             }
             Player player = (Player) sender;
             if (arguments.length != 2) {
-                player.sendMessage(MessageUtils.composeMessageWithPrefix("&7Correct usage: &e/" + label + " edit <message ID>&7."));
+                player.sendMessage(MessageUtils.translateWithPrefix("&7Correct usage: &e/" + label + " edit <message ID>&7."));
                 return true;
             }
             MessageData data = this.plugin.getCachedMessageData(arguments[1]);
             if (data == null) {
-                player.sendMessage(MessageUtils.composeMessageWithPrefix("&cThere is no cached message data attached to the '&7" + arguments[1] + "&c' message ID."));
+                player.sendMessage(MessageUtils.translateWithPrefix("&cThere is no cached message data attached to the '&7" + arguments[1] + "&c' message ID."));
                 return true;
             }
             this.plugin.getMenuManager().openMenu(player, data, true);
@@ -91,71 +107,71 @@ public final class MessageEditorCommand implements CommandExecutor {
         }
         if (arguments[0].equalsIgnoreCase("activate")) {
             if (arguments.length == 1) {
-                sender.sendMessage(MessageUtils.composeMessageWithPrefix("&7Correct usage: &e/" + label + " activate <message places>&7."));
-                sender.sendMessage(MessageUtils.composeMessageWithPrefix(""));
+                sender.sendMessage(MessageUtils.translateWithPrefix("&7Correct usage: &e/" + label + " activate <message places>&7."));
+                sender.sendMessage(MessageUtils.translateWithPrefix(""));
                 this.sendAvailableMessagePlaces(sender);
                 return true;
             }
             int placesAffected = 0;
             for (int i = 1; i < arguments.length; i++) {
-                String       argument     = arguments[i];
-                MessagePlace place = MessagePlace.fromName(argument);
+                String       argument = arguments[i];
+                MessagePlace place    = MessagePlace.fromName(argument);
                 if (place == null) {
-                    sender.sendMessage(MessageUtils.composeMessageWithPrefix("&cCould not convert '&7" + argument + "&c' to a message place."));
+                    sender.sendMessage(MessageUtils.translateWithPrefix("&cCould not convert '&7" + argument + "&c' to a message place."));
                     continue;
                 }
                 if (!place.isSupported()) {
-                    sender.sendMessage(MessageUtils.composeMessageWithPrefix("&7" + place.getFriendlyName() + "&cmessage place is not supported by your server."));
+                    sender.sendMessage(MessageUtils.translateWithPrefix("&7" + place.getFriendlyName() + "&cmessage place is not supported by your server."));
                     continue;
                 }
-                if (!place.isAnalyzingActivated()) {
-                    place.setAnalyzingActivated(true);
+                if (!place.isAnalyzing()) {
+                    place.setAnalyzing(true);
                     placesAffected++;
                 } else {
-                    sender.sendMessage(MessageUtils.composeMessageWithPrefix("&cAnalyzing &7" + place.getFriendlyName() + " &cmessage place is already activated."));
+                    sender.sendMessage(MessageUtils.translateWithPrefix("&cAnalyzing &7" + place.getFriendlyName() + " &cmessage place is already activated."));
                 }
             }
-            sender.sendMessage(MessageUtils.composeMessageWithPrefix("&7You have activated analyzing &e" + placesAffected + " &7message place(s)."));
+            sender.sendMessage(MessageUtils.translateWithPrefix("&7You have activated analyzing &e" + placesAffected + " &7message place(s)."));
             return true;
         }
         if (arguments[0].equalsIgnoreCase("deactivate")) {
             if (arguments.length == 1) {
-                sender.sendMessage(MessageUtils.composeMessageWithPrefix("&7Correct usage: &e/" + label + " deactivate <message places>&7."));
-                sender.sendMessage(MessageUtils.composeMessageWithPrefix(""));
+                sender.sendMessage(MessageUtils.translateWithPrefix("&7Correct usage: &e/" + label + " deactivate <message places>&7."));
+                sender.sendMessage(MessageUtils.translateWithPrefix(""));
                 this.sendAvailableMessagePlaces(sender);
                 return true;
             }
             int placesAffected = 0;
             for (int i = 1; i < arguments.length; i++) {
-                String       argument     = arguments[i];
-                MessagePlace place = MessagePlace.fromName(argument);
+                String       argument = arguments[i];
+                MessagePlace place    = MessagePlace.fromName(argument);
                 if (place == null) {
-                    sender.sendMessage(MessageUtils.composeMessageWithPrefix("&cCould not convert '&7" + argument + "&c' to a message place."));
+                    sender.sendMessage(MessageUtils.translateWithPrefix("&cCould not convert '&7" + argument + "&c' to a message place."));
                     continue;
                 }
                 if (!place.isSupported()) {
-                    sender.sendMessage(MessageUtils.composeMessageWithPrefix("&7" + place.getFriendlyName() + "&cmessage place is not supported by your server."));
+                    sender.sendMessage(MessageUtils.translateWithPrefix("&7" + place.getFriendlyName() + "&cmessage place is not supported by your server."));
                     continue;
                 }
-                if (place.isAnalyzingActivated()) {
-                    place.setAnalyzingActivated(false);
+                if (place.isAnalyzing()) {
+                    place.setAnalyzing(false);
                     placesAffected++;
                 } else {
-                    sender.sendMessage(MessageUtils.composeMessageWithPrefix("&cAnalyzing &7" + place.getFriendlyName() + " &cmessage place is already deactivated."));
+                    sender.sendMessage(MessageUtils.translateWithPrefix("&cAnalyzing &7" + place.getFriendlyName() + " &cmessage place is already deactivated."));
                 }
             }
-            sender.sendMessage(MessageUtils.composeMessageWithPrefix("&7You have deactivated analyzing &e" + placesAffected + " &7message place(s)."));
+            sender.sendMessage(MessageUtils.translateWithPrefix("&7You have deactivated analyzing &e" + placesAffected + " &7message place(s)."));
             return true;
         }
         if (arguments[0].equalsIgnoreCase("deactivate-all") || arguments[0].equalsIgnoreCase("deactivateall")) {
             if (arguments.length != 1) {
-                sender.sendMessage(MessageUtils.composeMessageWithPrefix("&7Correct usage: &e/" + label + " deactivate-all&7."));
+                sender.sendMessage(MessageUtils.translateWithPrefix("&7Correct usage: &e/" + label + " deactivate-all&7."));
                 return true;
             }
             for (MessagePlace place : MessagePlace.VALUES) {
-                place.setAnalyzingActivated(false);
+                place.setAnalyzing(false);
             }
-            sender.sendMessage(MessageUtils.composeMessageWithPrefix("&7You have deactivated analyzing all message places."));
+            sender.sendMessage(MessageUtils.translateWithPrefix("&7You have deactivated analyzing all message places."));
             return true;
         }
         this.sendHelpMessage(sender, label);
@@ -163,21 +179,21 @@ public final class MessageEditorCommand implements CommandExecutor {
     }
 
     private void sendHelpMessage(CommandSender target, String label) {
-        target.sendMessage(MessageUtils.composeMessageWithPrefix("&7Available commands:"));
-        target.sendMessage(MessageUtils.composeMessageWithPrefix("&e/message-editor reload &7- Reloads plugin."));
-        target.sendMessage(MessageUtils.composeMessageWithPrefix("&e/message-editor edit <message ID> &7- Opens message editor."));
-        target.sendMessage(MessageUtils.composeMessageWithPrefix("&e/message-editor activate <message places> &7- Activates analyzing specified message place(s)."));
-        target.sendMessage(MessageUtils.composeMessageWithPrefix("&e/message-editor deactivate <message places> &7- Dectivates analyzing specified message place(s)."));
-        target.sendMessage(MessageUtils.composeMessageWithPrefix("&e/message-editor deactivate-all &7- Deactivates analyzing all message places."));
-        target.sendMessage(MessageUtils.composeMessageWithPrefix(""));
+        target.sendMessage(MessageUtils.translateWithPrefix("&7Available commands:"));
+        target.sendMessage(MessageUtils.translateWithPrefix("&e/message-editor reload &7- Reloads plugin."));
+        target.sendMessage(MessageUtils.translateWithPrefix("&e/message-editor edit <message ID> &7- Opens message editor."));
+        target.sendMessage(MessageUtils.translateWithPrefix("&e/message-editor activate <message places> &7- Activates analyzing specified message place(s)."));
+        target.sendMessage(MessageUtils.translateWithPrefix("&e/message-editor deactivate <message places> &7- Dectivates analyzing specified message place(s)."));
+        target.sendMessage(MessageUtils.translateWithPrefix("&e/message-editor deactivate-all &7- Deactivates analyzing all message places."));
+        target.sendMessage(MessageUtils.translateWithPrefix(""));
         this.sendAvailableMessagePlaces(target);
     }
 
     private void sendAvailableMessagePlaces(CommandSender target) {
-        target.sendMessage(MessageUtils.composeMessageWithPrefix("&7Available message places:"));
+        target.sendMessage(MessageUtils.translateWithPrefix("&7Available message places:"));
         for (MessagePlace place : MessagePlace.VALUES) {
             if (place.isSupported()) {
-                target.sendMessage(MessageUtils.composeMessageWithPrefix("&7- &e" + place.name() + " &7(&e" + place.getFriendlyName() + "&7)"));
+                target.sendMessage(MessageUtils.translateWithPrefix("&7- &e" + place.name() + " &7(&e" + place.getFriendlyName() + "&7)"));
             }
         }
     }

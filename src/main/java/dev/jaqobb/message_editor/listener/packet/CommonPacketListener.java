@@ -43,7 +43,7 @@ class CommonPacketListener extends PacketAdapter {
     private final MessagePlace messagePlace;
 
     CommonPacketListener(MessageEditorPlugin plugin, MessagePlace messagePlace) {
-        super(plugin, ListenerPriority.HIGHEST, messagePlace.getPacketType());
+        super(plugin, ListenerPriority.HIGHEST, messagePlace.getPacketTypes());
         this.messagePlace = messagePlace;
     }
 
@@ -58,10 +58,14 @@ class CommonPacketListener extends PacketAdapter {
 
     @Override
     public void onPacketSending(PacketEvent event) {
-        if (event.isCancelled()) return;
-        Player          player = event.getPlayer();
+        if (event.isCancelled()) {
+            return;
+        }
         PacketContainer packet = event.getPacket().shallowClone();
-        if (!this.shouldProcess(packet)) return;
+        if (!this.shouldProcess(packet)) {
+            return;
+        }
+        Player player          = event.getPlayer();
         String originalMessage = this.messagePlace.getMessage(packet);
         String message         = originalMessage;
         if (message == null) {
@@ -71,14 +75,15 @@ class CommonPacketListener extends PacketAdapter {
         MessageEdit                    messageEdit        = null;
         Matcher                        messageEditMatcher = null;
         if (cachedMessage == null) {
-            for (MessageEdit currentMessageEdit : this.getPlugin().getMessageEdits()) {
-                if (currentMessageEdit.getMessageBeforePlace() != null && currentMessageEdit.getMessageBeforePlace() != this.messagePlace) {
+            for (MessageEdit edit : this.getPlugin().getMessageEdits()) {
+                MessagePlace place = edit.getMessageBeforePlace();
+                if (place != null && place != this.messagePlace) {
                     continue;
                 }
-                Matcher currentMessageEditMatcher = currentMessageEdit.getMatcher(message);
-                if (currentMessageEditMatcher != null) {
-                    messageEdit        = currentMessageEdit;
-                    messageEditMatcher = currentMessageEditMatcher;
+                Matcher matcher = edit.getMatcher(message);
+                if (matcher != null) {
+                    messageEdit        = edit;
+                    messageEditMatcher = matcher;
                     break;
                 }
             }
@@ -96,14 +101,14 @@ class CommonPacketListener extends PacketAdapter {
                 message = newMessage;
             }
         }
-        boolean messageJson = MessageUtils.isJson(message);
-        String  messageId   = MessageUtils.composeMessageId(this.messagePlace, message);
-        this.getPlugin().cacheMessageData(messageId, new MessageData(this.messagePlace, message, messageJson));
-        if (this.messagePlace.isAnalyzingActivated()) {
-            MessageUtils.logMessage(this.getPlugin().getLogger(), this.messagePlace, player, messageId, messageJson, message);
+        boolean json = MessageUtils.isJson(message);
+        String  id   = MessageUtils.generateId(this.messagePlace, message);
+        this.getPlugin().cacheMessageData(id, new MessageData(this.messagePlace, message, json));
+        if (this.messagePlace.isAnalyzing()) {
+            MessageUtils.logMessage(this.getPlugin().getLogger(), this.messagePlace, player, id, json, message);
         }
         if (!message.equals(originalMessage)) {
-            this.messagePlace.setMessage(packet, message, messageJson);
+            this.messagePlace.setMessage(packet, message, json);
             event.setPacket(packet);
         }
     }

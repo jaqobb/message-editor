@@ -26,6 +26,7 @@ package dev.jaqobb.message_editor.menu;
 
 import com.comphenix.protocol.reflect.accessors.Accessors;
 import com.comphenix.protocol.reflect.accessors.FieldAccessor;
+import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.cryptomorin.xseries.XMaterial;
@@ -34,6 +35,7 @@ import dev.jaqobb.message_editor.MessageEditorConstants;
 import dev.jaqobb.message_editor.MessageEditorPlugin;
 import dev.jaqobb.message_editor.message.MessageData;
 import dev.jaqobb.message_editor.message.MessageEditData;
+import dev.jaqobb.message_editor.message.MessagePlace;
 import dev.jaqobb.message_editor.util.MessageUtils;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -86,7 +88,7 @@ public final class MenuManager {
     }
 
     public void openMenu(Player player, MessageEditData editData, boolean playSound) {
-        Inventory inventory = Bukkit.createInventory(null, 54, MessageUtils.composeMessage("&8Message Editor"));
+        Inventory inventory = Bukkit.createInventory(null, 54, MessageUtils.translate("&8Message Editor"));
         for (int slot : BORDER_ITEM_1_SLOTS) {
             inventory.setItem(slot, BORDER_ITEM_1);
         }
@@ -95,7 +97,7 @@ public final class MenuManager {
         }
         ItemStack oldMessageItem     = XMaterial.PAPER.parseItem();
         ItemMeta  oldMessageItemMeta = oldMessageItem.getItemMeta();
-        oldMessageItemMeta.setDisplayName(MessageUtils.composeMessage("&fOld message"));
+        oldMessageItemMeta.setDisplayName(MessageUtils.translate("&fOld message"));
         String oldMessage;
         if (editData.isOldMessageJson()) {
             oldMessage = BaseComponent.toLegacyText(ComponentSerializer.parse(editData.getOldMessage()));
@@ -123,26 +125,27 @@ public final class MenuManager {
             }
         }
         oldMessageLore.add("");
-        oldMessageLore.add(MessageUtils.composeMessage("&7Click to edit old message pattern."));
+        oldMessageLore.add(MessageUtils.translate("&7Click to edit old message pattern."));
         oldMessageItemMeta.setLore(oldMessageLore);
         oldMessageItem.setItemMeta(oldMessageItemMeta);
         inventory.setItem(11, oldMessageItem);
         ItemStack oldMessagePlaceItem     = XMaterial.COMPASS.parseItem();
         ItemMeta  oldMessagePlaceItemMeta = oldMessagePlaceItem.getItemMeta();
-        oldMessagePlaceItemMeta.setDisplayName(MessageUtils.composeMessage("&fOld message place"));
+        oldMessagePlaceItemMeta.setDisplayName(MessageUtils.translate("&fOld message place"));
+        MessagePlace oldPlace = editData.getOldMessagePlace();
         oldMessagePlaceItemMeta.setLore(Arrays.asList(
             "",
-            MessageUtils.composeMessage("&7ID: &e" + editData.getOldMessagePlace().name()),
-            MessageUtils.composeMessage("&7Friendly name: &e" + editData.getOldMessagePlace().getFriendlyName())
+            MessageUtils.translate("&7ID: &e" + oldPlace.name()),
+            MessageUtils.translate("&7Friendly name: &e" + oldPlace.getFriendlyName())
         ));
         oldMessagePlaceItem.setItemMeta(oldMessagePlaceItemMeta);
         inventory.setItem(20, oldMessagePlaceItem);
         ItemStack newMessageItem     = XMaterial.PAPER.parseItem();
         ItemMeta  newMessageItemMeta = newMessageItem.getItemMeta();
-        newMessageItemMeta.setDisplayName(MessageUtils.composeMessage("&fNew message"));
+        newMessageItemMeta.setDisplayName(MessageUtils.translate("&fNew message"));
         String newMessage;
         if (editData.getNewMessage().isEmpty()) {
-            newMessage = MessageUtils.composeMessage("&cMessage removed.\\n(this is not an actual message)");
+            newMessage = MessageUtils.translate("&cMessage removed.\\n(this is not an actual message)");
         } else if (editData.isNewMessageJson()) {
             newMessage = BaseComponent.toLegacyText(ComponentSerializer.parse(editData.getNewMessage()));
         } else {
@@ -169,24 +172,34 @@ public final class MenuManager {
             }
         }
         newMessageLore.add("");
-        newMessageLore.add(MessageUtils.composeMessage("&7Click LMB to edit new message"));
-        newMessageLore.add(MessageUtils.composeMessage("&7in the override mode."));
+        newMessageLore.add(MessageUtils.translate("&7Click LMB to edit new message"));
+        newMessageLore.add(MessageUtils.translate("&7in the override mode."));
         newMessageLore.add("");
-        newMessageLore.add(MessageUtils.composeMessage("&7Click RMB to edit new message"));
-        newMessageLore.add(MessageUtils.composeMessage("&7in the replace mode."));
+        newMessageLore.add(MessageUtils.translate("&7Click RMB to edit new message"));
+        newMessageLore.add(MessageUtils.translate("&7in the replace mode."));
         newMessageItemMeta.setLore(newMessageLore);
         newMessageItem.setItemMeta(newMessageItemMeta);
         inventory.setItem(15, newMessageItem);
         ItemStack newMessagePlaceItem     = XMaterial.COMPASS.parseItem();
         ItemMeta  newMessagePlaceItemMeta = newMessagePlaceItem.getItemMeta();
-        newMessagePlaceItemMeta.setDisplayName(MessageUtils.composeMessage("&fNew message place"));
-        newMessagePlaceItemMeta.setLore(Arrays.asList(
-            "",
-            MessageUtils.composeMessage("&7ID: &e" + editData.getNewMessagePlace().name()),
-            MessageUtils.composeMessage("&7Friendly name: &e" + editData.getNewMessagePlace().getFriendlyName()),
-            "",
-            MessageUtils.composeMessage("&7Click to edit new message place.")
-        ));
+        newMessagePlaceItemMeta.setDisplayName(MessageUtils.translate("&fNew message place"));
+        List<String> newMessagePlaceItemMetaLore = new ArrayList<>(10);
+        newMessagePlaceItemMetaLore.add("");
+        MessagePlace newPlace = editData.getNewMessagePlace();
+        newMessagePlaceItemMetaLore.add(MessageUtils.translate("&7ID: &e" + newPlace.name()));
+        newMessagePlaceItemMetaLore.add(MessageUtils.translate("&7Friendly name: &e" + newPlace.getFriendlyName()));
+        if (MinecraftVersion.atOrAbove(MinecraftVersion.WILD_UPDATE)) {
+            if (newPlace == MessagePlace.GAME_CHAT || newPlace == MessagePlace.SYSTEM_CHAT || newPlace == MessagePlace.ACTION_BAR) {
+                newMessagePlaceItemMetaLore.add("");
+                newMessagePlaceItemMetaLore.add(MessageUtils.translate("&7Click to edit new message place."));
+            }
+        } else {
+            if (newPlace == MessagePlace.SYSTEM_CHAT || newPlace == MessagePlace.ACTION_BAR) {
+                newMessagePlaceItemMetaLore.add("");
+                newMessagePlaceItemMetaLore.add(MessageUtils.translate("&7Click to edit new message place."));
+            }
+        }
+        newMessagePlaceItemMeta.setLore(newMessagePlaceItemMetaLore);
         newMessagePlaceItem.setItemMeta(newMessagePlaceItemMeta);
         inventory.setItem(24, newMessagePlaceItem);
         inventory.setItem(22, ARROW_ITEM);
@@ -208,7 +221,7 @@ public final class MenuManager {
             "&e< &7Old message",
             "&e> &7New message"
         );
-        ItemMeta itemMeta = item.getItemMeta();
+        ItemMeta           itemMeta = item.getItemMeta();
         String             textures = "ewogICJ0aW1lc3RhbXAiIDogMTYwNzM2ODc1MzI0NCwKICAicHJvZmlsZUlkIiA6ICI1MGM4NTEwYjVlYTA0ZDYwYmU5YTdkNTQyZDZjZDE1NiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNSEZfQXJyb3dSaWdodCIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9kMzRlZjA2Mzg1MzcyMjJiMjBmNDgwNjk0ZGFkYzBmODVmYmUwNzU5ZDU4MWFhN2ZjZGYyZTQzMTM5Mzc3MTU4IgogICAgfQogIH0KfQ==";
         WrappedGameProfile profile  = new WrappedGameProfile(UUID.nameUUIDFromBytes(textures.getBytes(StandardCharsets.UTF_8)), "MHF_ArrowRight");
         profile.getProperties().put("textures", new WrappedSignedProperty("textures", textures, null));
@@ -221,9 +234,9 @@ public final class MenuManager {
     private static ItemStack constructItem(XMaterial material, String name, String... lore) {
         ItemStack item     = material.parseItem();
         ItemMeta  itemMeta = item.getItemMeta();
-        itemMeta.setDisplayName(MessageUtils.composeMessage(name));
+        itemMeta.setDisplayName(MessageUtils.translate(name));
         if (lore != null) {
-            itemMeta.setLore(Arrays.stream(lore).map(MessageUtils::composeMessage).collect(Collectors.toList()));
+            itemMeta.setLore(Arrays.stream(lore).map(MessageUtils::translate).collect(Collectors.toList()));
         }
         item.setItemMeta(itemMeta);
         return item;

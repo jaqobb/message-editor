@@ -28,12 +28,12 @@ public final class MessageData {
 
     private final MessagePlace messagePlace;
     private final String       message;
-    private final boolean      messageJson;
+    private final boolean      json;
 
-    public MessageData(MessagePlace messagePlace, String message, boolean messageJson) {
+    public MessageData(MessagePlace messagePlace, String message, boolean json) {
         this.messagePlace = messagePlace;
         this.message      = message;
-        this.messageJson  = messageJson;
+        this.json         = json;
     }
 
     public MessagePlace getMessagePlace() {
@@ -44,7 +44,7 @@ public final class MessageData {
         return this.message;
     }
 
-    public boolean isMessageJson() {
-        return this.messageJson;
+    public boolean isJson() {
+        return this.json;
     }
 }

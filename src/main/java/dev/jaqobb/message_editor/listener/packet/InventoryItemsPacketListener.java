@@ -69,7 +69,7 @@ public final class InventoryItemsPacketListener extends PacketAdapter {
         } else {
             items = packet.getItemListModifier().read(0);
         }
-        boolean updateItems = false;
+        boolean update = false;
         for (ItemStack item : items) {
             if (item == null) {
                 continue;
@@ -85,14 +85,15 @@ public final class InventoryItemsPacketListener extends PacketAdapter {
                 MessageEdit                    messageEdit        = null;
                 Matcher                        messageEditMatcher = null;
                 if (cachedMessage == null) {
-                    for (MessageEdit currentMessageEdit : this.getPlugin().getMessageEdits()) {
-                        if (currentMessageEdit.getMessageBeforePlace() != null && currentMessageEdit.getMessageBeforePlace() != MessagePlace.INVENTORY_ITEM_NAME) {
+                    for (MessageEdit edit : this.getPlugin().getMessageEdits()) {
+                        MessagePlace place = edit.getMessageBeforePlace();
+                        if (place != null && place != MessagePlace.INVENTORY_ITEM_NAME) {
                             continue;
                         }
-                        Matcher currentMessageEditMatcher = currentMessageEdit.getMatcher(message);
-                        if (currentMessageEditMatcher != null) {
-                            messageEdit        = currentMessageEdit;
-                            messageEditMatcher = currentMessageEditMatcher;
+                        Matcher matcher = edit.getMatcher(message);
+                        if (matcher != null) {
+                            messageEdit        = edit;
+                            messageEditMatcher = matcher;
                             break;
                         }
                     }
@@ -101,29 +102,29 @@ public final class InventoryItemsPacketListener extends PacketAdapter {
                     if (cachedMessage != null) {
                         message = cachedMessage.getValue();
                     } else {
-                        String messageAfter = messageEditMatcher.replaceAll(messageEdit.getMessageAfter());
-                        messageAfter = ChatColor.translateAlternateColorCodes('&', messageAfter);
+                        String newMessage = messageEditMatcher.replaceAll(messageEdit.getMessageAfter());
+                        newMessage = ChatColor.translateAlternateColorCodes('&', newMessage);
                         if (this.getPlugin().isPlaceholderApiPresent()) {
-                            messageAfter = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, messageAfter);
+                            newMessage = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, newMessage);
                         }
-                        this.getPlugin().cacheMessage(message, messageEdit, messageAfter);
-                        message = messageAfter;
+                        this.getPlugin().cacheMessage(message, messageEdit, newMessage);
+                        message = newMessage;
                     }
                 }
-                boolean messageJson = MessageUtils.isJson(message);
-                if (messageJson) {
-                    message     = BaseComponent.toLegacyText(MessageUtils.toBaseComponents(message));
-                    messageJson = false;
+                boolean json = MessageUtils.isJson(message);
+                if (json) {
+                    json    = false;
+                    message = BaseComponent.toLegacyText(MessageUtils.toBaseComponents(message));
                 }
-                String messageId = MessageUtils.composeMessageId(MessagePlace.INVENTORY_ITEM_NAME, message);
-                this.getPlugin().cacheMessageData(messageId, new MessageData(MessagePlace.INVENTORY_ITEM_NAME, message, messageJson));
-                if (MessagePlace.INVENTORY_ITEM_NAME.isAnalyzingActivated()) {
-                    MessageUtils.logMessage(this.getPlugin().getLogger(), MessagePlace.INVENTORY_ITEM_NAME, player, messageId, messageJson, message);
+                String id = MessageUtils.generateId(MessagePlace.INVENTORY_ITEM_NAME, message);
+                this.getPlugin().cacheMessageData(id, new MessageData(MessagePlace.INVENTORY_ITEM_NAME, message, json));
+                if (MessagePlace.INVENTORY_ITEM_NAME.isAnalyzing()) {
+                    MessageUtils.logMessage(this.getPlugin().getLogger(), MessagePlace.INVENTORY_ITEM_NAME, player, id, json, message);
                 }
                 if (!message.equals(originalMessage)) {
+                    update = true;
                     itemMeta.setDisplayName(message);
                     item.setItemMeta(itemMeta);
-                    updateItems = true;
                 }
             }
             if (itemMeta.hasLore()) {
@@ -133,14 +134,15 @@ public final class InventoryItemsPacketListener extends PacketAdapter {
                 MessageEdit                    messageEdit        = null;
                 Matcher                        messageEditMatcher = null;
                 if (cachedMessage == null) {
-                    for (MessageEdit currentMessageEdit : this.getPlugin().getMessageEdits()) {
-                        if (currentMessageEdit.getMessageBeforePlace() != null && currentMessageEdit.getMessageBeforePlace() != MessagePlace.INVENTORY_ITEM_LORE) {
+                    for (MessageEdit edit : this.getPlugin().getMessageEdits()) {
+                        MessagePlace place = edit.getMessageBeforePlace();
+                        if (place != null && place != MessagePlace.INVENTORY_ITEM_LORE) {
                             continue;
                         }
-                        Matcher currentMessageEditMatcher = currentMessageEdit.getMatcher(message);
-                        if (currentMessageEditMatcher != null) {
-                            messageEdit        = currentMessageEdit;
-                            messageEditMatcher = currentMessageEditMatcher;
+                        Matcher matcher = edit.getMatcher(message);
+                        if (matcher != null) {
+                            messageEdit        = edit;
+                            messageEditMatcher = matcher;
                             break;
                         }
                     }
@@ -149,36 +151,36 @@ public final class InventoryItemsPacketListener extends PacketAdapter {
                     if (cachedMessage != null) {
                         message = cachedMessage.getValue();
                     } else {
-                        String messageAfter = messageEditMatcher.replaceAll(messageEdit.getMessageAfter());
-                        messageAfter = ChatColor.translateAlternateColorCodes('&', messageAfter);
+                        String newMessage = messageEditMatcher.replaceAll(messageEdit.getMessageAfter());
+                        newMessage = ChatColor.translateAlternateColorCodes('&', newMessage);
                         if (this.getPlugin().isPlaceholderApiPresent()) {
-                            messageAfter = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, messageAfter);
+                            newMessage = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, newMessage);
                         }
-                        this.getPlugin().cacheMessage(message, messageEdit, messageAfter);
-                        message = messageAfter;
+                        this.getPlugin().cacheMessage(message, messageEdit, newMessage);
+                        message = newMessage;
                     }
                 }
-                boolean messageJson = MessageUtils.isJson(message);
-                if (messageJson) {
-                    message     = BaseComponent.toLegacyText(MessageUtils.toBaseComponents(message));
-                    messageJson = false;
+                boolean json = MessageUtils.isJson(message);
+                if (json) {
+                    json    = false;
+                    message = BaseComponent.toLegacyText(MessageUtils.toBaseComponents(message));
                 }
-                String messageId = MessageUtils.composeMessageId(MessagePlace.INVENTORY_ITEM_LORE, message);
-                this.getPlugin().cacheMessageData(messageId, new MessageData(MessagePlace.INVENTORY_ITEM_LORE, message, messageJson));
-                if (MessagePlace.INVENTORY_ITEM_LORE.isAnalyzingActivated()) {
-                    MessageUtils.logMessage(this.getPlugin().getLogger(), MessagePlace.INVENTORY_ITEM_LORE, player, messageId, messageJson, message);
+                String id = MessageUtils.generateId(MessagePlace.INVENTORY_ITEM_LORE, message);
+                this.getPlugin().cacheMessageData(id, new MessageData(MessagePlace.INVENTORY_ITEM_LORE, message, json));
+                if (MessagePlace.INVENTORY_ITEM_LORE.isAnalyzing()) {
+                    MessageUtils.logMessage(this.getPlugin().getLogger(), MessagePlace.INVENTORY_ITEM_LORE, player, id, json, message);
                 }
                 if (!message.equals(originalMessage)) {
+                    update = true;
                     itemMeta.setLore(Arrays.asList(message.split("\\\\n")));
                     item.setItemMeta(itemMeta);
-                    updateItems = true;
                 }
             }
         }
-        if (updateItems) {
+        if (update) {
             // Updating items in the cloned packet and then setting the packet does seem to work but only partially
             // (initial items are still the old ones and updating the opened inventory actually fixes the issue).
-            // However during initial testing, not modifying the packet and just sending another one (with modified items) a tick later
+            // However, during initial testing, not modifying the packet and just sending another one (with modified items) a tick later
             // seemed to work all the time. Although not sure, this may break (by replacing items in a wrong inventory) when
             // the opened inventory is changed multiple times in a rapid succession and each inventory needs to be updated.
             // If such issue happens, I believe it can be fixed by storing and then verifying window id that should have

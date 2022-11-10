@@ -199,7 +199,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
         this.messageEdits.add(messageEdit);
     }
 
-    public boolean isAttachingSpecialHoverAndClickEventsEnabled() {
+    public boolean isAttachSpecialHoverAndClickEvents() {
         return this.attachSpecialHoverAndClickEvents;
     }
 
@@ -223,8 +223,8 @@ public final class MessageEditorPlugin extends JavaPlugin {
         return this.cachedMessages.getIfPresent(messageBefore);
     }
 
-    public void cacheMessage(String messageBefore, MessageEdit messageEdit, String messageAfter) {
-        this.cachedMessages.put(messageBefore, new AbstractMap.SimpleEntry<>(messageEdit, messageAfter));
+    public void cacheMessage(String messageBefore, MessageEdit edit, String messageAfter) {
+        this.cachedMessages.put(messageBefore, new AbstractMap.SimpleEntry<>(edit, messageAfter));
     }
 
     public void uncacheMessage(String messageBefore) {
@@ -239,16 +239,16 @@ public final class MessageEditorPlugin extends JavaPlugin {
         return Collections.unmodifiableSet(this.cachedMessagesData.asMap().keySet());
     }
 
-    public MessageData getCachedMessageData(String messageId) {
-        return this.cachedMessagesData.getIfPresent(messageId);
+    public MessageData getCachedMessageData(String id) {
+        return this.cachedMessagesData.getIfPresent(id);
     }
 
-    public void cacheMessageData(String messageId, MessageData messageData) {
-        this.cachedMessagesData.put(messageId, messageData);
+    public void cacheMessageData(String id, MessageData data) {
+        this.cachedMessagesData.put(id, data);
     }
 
-    public void uncacheMessageData(String messageId) {
-        this.cachedMessagesData.invalidate(messageId);
+    public void uncacheMessageData(String id) {
+        this.cachedMessagesData.invalidate(id);
     }
 
     public void clearCachedMessagesData() {
@@ -263,8 +263,8 @@ public final class MessageEditorPlugin extends JavaPlugin {
         return this.currentMessageEditsData.get(uuid);
     }
 
-    public void setCurrentMessageEdit(UUID uuid, MessageEditData messageEditData) {
-        this.currentMessageEditsData.put(uuid, messageEditData);
+    public void setCurrentMessageEdit(UUID uuid, MessageEditData editData) {
+        this.currentMessageEditsData.put(uuid, editData);
     }
 
     public void removeCurrentMessageEditData(UUID uuid) {

@@ -29,6 +29,7 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.utility.MinecraftVersion;
 import dev.jaqobb.message_editor.MessageEditorPlugin;
 import dev.jaqobb.message_editor.message.MessageData;
 import dev.jaqobb.message_editor.message.MessageEdit;
@@ -47,7 +48,7 @@ import org.bukkit.entity.Player;
 public final class ChatPacketListener extends PacketAdapter {
 
     public ChatPacketListener(MessageEditorPlugin plugin) {
-        super(plugin, ListenerPriority.HIGHEST, PacketType.Play.Server.CHAT);
+        super(plugin, ListenerPriority.HIGHEST, PacketType.Play.Server.CHAT, PacketType.Play.Server.SYSTEM_CHAT);
     }
 
     @Override
@@ -58,42 +59,53 @@ public final class ChatPacketListener extends PacketAdapter {
     @SuppressWarnings("deprecation")
     @Override
     public void onPacketSending(PacketEvent event) {
-        if (event.isCancelled()) return;
-        Player          player               = event.getPlayer();
-        PacketContainer packet               = event.getPacket().shallowClone();
-        MessagePlace    originalMessagePlace = MessagePlace.fromPacket(packet);
-        MessagePlace    messagePlace         = originalMessagePlace;
-        String          originalMessage      = messagePlace.getMessage(packet);
-        String          message              = originalMessage;
-        if (message == null) return;
+        if (event.isCancelled()) {
+            return;
+        }
+        PacketContainer packet = event.getPacket().shallowClone();
+        if (packet.getType() == PacketType.Play.Server.CHAT && MinecraftVersion.atOrAbove(MinecraftVersion.WILD_UPDATE)) {
+            return;
+        }
+        Player       player          = event.getPlayer();
+        MessagePlace originalPlace   = MessagePlace.fromPacket(packet);
+        MessagePlace place           = originalPlace;
+        String       originalMessage = place.getMessage(packet);
+        String       message         = originalMessage;
+        if (message == null) {
+            return;
+        }
         Map.Entry<MessageEdit, String> cachedMessage      = this.getPlugin().getCachedMessage(message);
         MessageEdit                    messageEdit        = null;
         Matcher                        messageEditMatcher = null;
         if (cachedMessage == null) {
-            for (MessageEdit currentMessageEdit : this.getPlugin().getMessageEdits()) {
-                if (currentMessageEdit.getMessageBeforePlace() != null && currentMessageEdit.getMessageBeforePlace() != messagePlace) {
+            for (MessageEdit edit : this.getPlugin().getMessageEdits()) {
+                MessagePlace beforePlace = edit.getMessageBeforePlace();
+                if (beforePlace != null && beforePlace != place) {
                     continue;
                 }
-                Matcher currentMessageEditMatcher = currentMessageEdit.getMatcher(message);
-                if (currentMessageEditMatcher != null) {
-                    messageEdit        = currentMessageEdit;
-                    messageEditMatcher = currentMessageEditMatcher;
+                Matcher matcher = edit.getMatcher(message);
+                if (matcher != null) {
+                    messageEdit        = edit;
+                    messageEditMatcher = matcher;
                     break;
                 }
             }
         }
         if (cachedMessage != null || (messageEdit != null && messageEditMatcher != null)) {
             if (cachedMessage != null) {
-                String cachedMessageValue = cachedMessage.getValue();
-                if (cachedMessageValue.isEmpty()) {
+                String value = cachedMessage.getValue();
+                if (value.isEmpty()) {
                     event.setCancelled(true);
                     return;
                 }
-                MessagePlace newMessagePlace = cachedMessage.getKey().getMessageAfterPlace();
-                if (newMessagePlace == MessagePlace.GAME_CHAT || newMessagePlace == MessagePlace.SYSTEM_CHAT || newMessagePlace == MessagePlace.ACTION_BAR) {
-                    messagePlace = newMessagePlace;
+                MessagePlace newPlace = cachedMessage.getKey().getMessageAfterPlace();
+                if (newPlace == MessagePlace.GAME_CHAT || newPlace == MessagePlace.SYSTEM_CHAT || newPlace == MessagePlace.ACTION_BAR) {
+                    place = newPlace;
+                    if (place == MessagePlace.GAME_CHAT && packet.getType() == PacketType.Play.Server.SYSTEM_CHAT) {
+                        place = MessagePlace.SYSTEM_CHAT;
+                    }
                 }
-                message = cachedMessageValue;
+                message = value;
             } else {
                 String newMessage = messageEditMatcher.replaceAll(messageEdit.getMessageAfter());
                 newMessage = ChatColor.translateAlternateColorCodes('&', newMessage);
@@ -105,46 +117,53 @@ public final class ChatPacketListener extends PacketAdapter {
                     event.setCancelled(true);
                     return;
                 }
-                MessagePlace newMessagePlace = messageEdit.getMessageAfterPlace();
-                if (newMessagePlace == MessagePlace.GAME_CHAT || newMessagePlace == MessagePlace.SYSTEM_CHAT || newMessagePlace == MessagePlace.ACTION_BAR) {
-                    messagePlace = newMessagePlace;
+                MessagePlace newPlace = messageEdit.getMessageAfterPlace();
+                if (newPlace == MessagePlace.GAME_CHAT || newPlace == MessagePlace.SYSTEM_CHAT || newPlace == MessagePlace.ACTION_BAR) {
+                    place = newPlace;
+                    if (place == MessagePlace.GAME_CHAT && packet.getType() == PacketType.Play.Server.SYSTEM_CHAT) {
+                        place = MessagePlace.SYSTEM_CHAT;
+                    }
                 }
                 message = newMessage;
             }
         }
-        boolean messageJson = MessageUtils.isJson(message);
-        String  messageId   = MessageUtils.composeMessageId(messagePlace, message);
-        this.getPlugin().cacheMessageData(messageId, new MessageData(messagePlace, message, messageJson));
-        if (messagePlace.isAnalyzingActivated()) {
-            MessageUtils.logMessage(this.getPlugin().getLogger(), messagePlace, player, messageId, messageJson, message);
+        boolean json = MessageUtils.isJson(message);
+        String  id   = MessageUtils.generateId(place, message);
+        this.getPlugin().cacheMessageData(id, new MessageData(place, message, json));
+        if (place.isAnalyzing()) {
+            MessageUtils.logMessage(this.getPlugin().getLogger(), place, player, id, json, message);
         }
-        if (this.getPlugin().isAttachingSpecialHoverAndClickEventsEnabled() && player.hasPermission("messageeditor.use")) {
+        if (this.getPlugin().isAttachSpecialHoverAndClickEvents() && player.hasPermission("messageeditor.use")) {
             BaseComponent[] messageToSend;
-            if (messageJson) {
+            if (json) {
                 messageToSend = ComponentSerializer.parse(message);
             } else {
                 messageToSend = MessageUtils.toBaseComponents(message);
             }
             for (BaseComponent messageToSendElement : messageToSend) {
                 messageToSendElement.setHoverEvent(
-                    new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(MessageUtils.composeMessage("&7Click to start editing this message.")))
+                    new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(MessageUtils.translate("&7Click to start editing this message.")))
                 );
-                messageToSendElement.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/message-editor edit " + messageId));
+                messageToSendElement.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/message-editor edit " + id));
             }
-            message     = MessageUtils.toJson(messageToSend, false);
-            messageJson = true;
+            message = MessageUtils.toJson(messageToSend, false);
+            json    = true;
         }
-        if (messagePlace != originalMessagePlace) {
-            if (packet.getBytes().size() == 1) {
-                packet.getBytes().write(0, messagePlace.getChatType());
+        if (place != originalPlace) {
+            if (packet.getType() == PacketType.Play.Server.CHAT) {
+                if (packet.getBytes().size() == 1) {
+                    packet.getBytes().write(0, place.getChatType());
+                } else {
+                    packet.getChatTypes().write(0, place.getChatTypeEnum());
+                }
             } else {
-                packet.getChatTypes().write(0, messagePlace.getChatTypeEnum());
+                packet.getBooleans().write(0, place == MessagePlace.ACTION_BAR);
             }
         }
         if (!message.equals(originalMessage)) {
-            messagePlace.setMessage(packet, message, messageJson);
+            place.setMessage(packet, message, json);
         }
-        if (!message.equals(originalMessage) || messagePlace != originalMessagePlace) {
+        if (!message.equals(originalMessage) || place != originalPlace) {
             event.setPacket(packet);
         }
     }

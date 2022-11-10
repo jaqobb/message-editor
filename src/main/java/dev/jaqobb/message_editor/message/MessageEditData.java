@@ -45,7 +45,7 @@ public final class MessageEditData {
     private       Mode         currentMode;
 
     public MessageEditData(MessageData data) {
-        this(data.getMessage(), data.isMessageJson(), data.getMessagePlace(), data.getMessage(), data.isMessageJson(), data.getMessagePlace());
+        this(data.getMessage(), data.isJson(), data.getMessagePlace(), data.getMessage(), data.isJson(), data.getMessagePlace());
     }
 
     public MessageEditData(
