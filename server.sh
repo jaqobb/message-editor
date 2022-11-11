@@ -69,6 +69,4 @@ case "${1}" in
   ;;
 esac
 
-unset RCPATH
-unset SOURCE
 unset base_folder
