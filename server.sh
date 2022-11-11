@@ -1,6 +1,25 @@
 base_folder=$(echo "${PWD}")
 
 case "${1}" in
+"download")
+  (
+    if [ -z "${2}" ]; then
+      echo "You have to specify a Minecraft version you want to download the latest version of Spigot for."
+    else
+      set -e
+      cd "${base_folder}"
+      mkdir -p "server/buildtools"
+      mkdir -p "server/plugins"
+      echo "Downloading the latest version of Spigot for the Minecraft version ${2}..."
+      curl "https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar" --output "server/BuildTools/BuildTools.jar"
+      cd "${base_folder}/server/buildtools"
+      java -jar BuildTools.jar --rev "${2}"
+      cp "spigot-${2}.jar" "../server.jar"
+      cd "${base_folder}"
+      echo "The latest version of Spigot for the Minecraft version ${2} has been downloaded."
+    fi
+  )
+  ;;
 "copy")
   (
     set -e
@@ -42,9 +61,10 @@ case "${1}" in
     echo "This script provides a variety of commands to build and manage the test server."
     echo ""
     echo "Available commands:"
-    echo " * copy  | Compiles and copies the plugin to the test server files."
-    echo " * start | Starts the test server."
-    echo " * clean | Cleans the test server files."
+    echo " * download <Minecraft version> | Downloads the latest version of Spigot for the specified Minecraft version."
+    echo " * copy                         | Compiles and copies the plugin to the test server files."
+    echo " * start                        | Starts the test server."
+    echo " * clean                        | Cleans the test server files."
   )
   ;;
 esac
