@@ -49,7 +49,7 @@ public final class MessageUtils {
     private static final char[] CHARACTERS = {'q', 'Q', 'w', 'W', 'e', 'E', 'r', 'R', 't', 'T', 'y', 'Y', 'u', 'U', 'i', 'I', 'o', 'O', 'p', 'P', 'a', 'A', 's', 'S', 'd', 'D', 'f', 'F', 'g', 'G', 'h', 'H', 'j', 'J', 'k', 'K', 'l', 'L', 'z', 'Z', 'x', 'X', 'c', 'C', 'v', 'V', 'b', 'B', 'n', 'N', 'm', 'M', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '_'};
 
     private static final BaseComponent[] EMPTY_BASE_COMPONENT_ARRAY = new BaseComponent[0];
-    private static final boolean         HEX_COLORS_SUPPORTED;
+    private static final boolean HEX_COLORS_SUPPORTED;
 
     static {
         boolean hexColorsSupported;
@@ -75,14 +75,14 @@ public final class MessageUtils {
     }
 
     public static String generateId(MessagePlace place, String message) {
-        String placeId     = place.getId();
+        String placeId = place.getId();
         String messageHash = message.hashCode() < 0 ? String.valueOf(-message.hashCode() * 2L) : String.valueOf(message.hashCode());
-        String messageId   = "";
+        String messageId = "";
         for (int i = 0; i < messageHash.length(); i++) {
             if (i + 1 < messageHash.length()) {
                 String currentNumber = String.valueOf(messageHash.charAt(i));
-                String nextNumber    = String.valueOf(messageHash.charAt(i + 1));
-                int    number        = Integer.parseInt(currentNumber + nextNumber);
+                String nextNumber = String.valueOf(messageHash.charAt(i + 1));
+                int number = Integer.parseInt(currentNumber + nextNumber);
                 if (number < CHARACTERS.length) {
                     messageId += CHARACTERS[number];
                 } else {
@@ -98,7 +98,7 @@ public final class MessageUtils {
     }
 
     public static String getLastColors(String message) {
-        int    length = message.length();
+        int length = message.length();
         String colors = "";
         for (int i = length - 1; i > -1; i--) {
             char section = message.charAt(i);
@@ -136,12 +136,12 @@ public final class MessageUtils {
     }
 
     public static BaseComponent[] toBaseComponents(String message) {
-        List<BaseComponent> components  = new ArrayList<>(10);
-        String              messagePart = "";
+        List<BaseComponent> components = new ArrayList<>(10);
+        String messagePart = "";
         for (int i = 0; i < message.length(); i++) {
-            boolean makeComponent  = false;
-            String  newMessagePart = "";
-            char    character      = message.charAt(i);
+            boolean makeComponent = false;
+            String newMessagePart = "";
+            char character = message.charAt(i);
             if (i == message.length() - 1) {
                 makeComponent = true;
                 messagePart += character;
@@ -220,12 +220,12 @@ public final class MessageUtils {
         logger.log(Level.INFO, "Player: " + player.getName());
         if (json) {
             String messageReplaced = message.replaceAll(MessageEditorConstants.SPECIAL_REGEX_CHARACTERS, "\\\\$0");
-            String messageClear    = BaseComponent.toLegacyText(ComponentSerializer.parse(message));
+            String messageClear = BaseComponent.toLegacyText(ComponentSerializer.parse(message));
             logger.log(Level.INFO, "Message JSON: '" + messageReplaced + "'");
             logger.log(Level.INFO, "Message clear: '" + messageClear + "'");
         } else {
-            Matcher matcher       = MessageEditorConstants.CHAT_COLOR_PATTERN.matcher(message);
-            String  messageSuffix = matcher.find() ? " (replace & -> § (section sign) in colors)" : "";
+            Matcher matcher = MessageEditorConstants.CHAT_COLOR_PATTERN.matcher(message);
+            String messageSuffix = matcher.find() ? " (replace & -> § (section sign) in colors)" : "";
             logger.log(Level.INFO, "Message: '" + matcher.replaceAll("&$1").replace("\\", "\\\\") + "'" + messageSuffix);
             logger.log(Level.INFO, "Message clear: '" + matcher.replaceAll("") + "'");
         }

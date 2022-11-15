@@ -53,15 +53,15 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public final class MenuManager {
 
-    private static final int[]     BORDER_ITEM_1_SLOTS = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 49, 51, 52, 53};
-    private static final ItemStack BORDER_ITEM_1       = constructBorderItem(XMaterial.BLACK_STAINED_GLASS_PANE);
+    private static final int[] BORDER_ITEM_1_SLOTS = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 49, 51, 52, 53};
+    private static final ItemStack BORDER_ITEM_1 = constructBorderItem(XMaterial.BLACK_STAINED_GLASS_PANE);
 
-    private static final int[]     BORDER_ITEM_2_SLOTS = {10, 12, 13, 14, 16, 19, 21, 23, 25, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43};
-    private static final ItemStack BORDER_ITEM_2       = constructBorderItem(XMaterial.GRAY_STAINED_GLASS_PANE);
+    private static final int[] BORDER_ITEM_2_SLOTS = {10, 12, 13, 14, 16, 19, 21, 23, 25, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43};
+    private static final ItemStack BORDER_ITEM_2 = constructBorderItem(XMaterial.GRAY_STAINED_GLASS_PANE);
 
     private static final ItemStack ARROW_ITEM = constructArrowItem();
 
-    private static final ItemStack DONE_ITEM   = constructItem(
+    private static final ItemStack DONE_ITEM = constructItem(
         XMaterial.GREEN_TERRACOTTA,
         "&aDone",
         "",
@@ -95,8 +95,8 @@ public final class MenuManager {
         for (int slot : BORDER_ITEM_2_SLOTS) {
             inventory.setItem(slot, BORDER_ITEM_2);
         }
-        ItemStack oldMessageItem     = XMaterial.PAPER.parseItem();
-        ItemMeta  oldMessageItemMeta = oldMessageItem.getItemMeta();
+        ItemStack oldMessageItem = XMaterial.PAPER.parseItem();
+        ItemMeta oldMessageItemMeta = oldMessageItem.getItemMeta();
         oldMessageItemMeta.setDisplayName(MessageUtils.translate("&fOld message"));
         String oldMessage;
         if (editData.isOldMessageJson()) {
@@ -107,7 +107,7 @@ public final class MenuManager {
         List<String> oldMessageLore = new ArrayList<>(10);
         oldMessageLore.add("");
         for (String oldMessageData : oldMessage.split(editData.isOldMessageJson() ? "\\n" : "\\\\n")) {
-            String   oldMessageChunk     = "";
+            String oldMessageChunk = "";
             String[] oldMessageDataChunk = oldMessageData.split(" ");
             for (int i = 0; i < oldMessageDataChunk.length; i++) {
                 if (i > 0 && i < oldMessageDataChunk.length && !oldMessageChunk.isEmpty()) {
@@ -129,8 +129,8 @@ public final class MenuManager {
         oldMessageItemMeta.setLore(oldMessageLore);
         oldMessageItem.setItemMeta(oldMessageItemMeta);
         inventory.setItem(11, oldMessageItem);
-        ItemStack oldMessagePlaceItem     = XMaterial.COMPASS.parseItem();
-        ItemMeta  oldMessagePlaceItemMeta = oldMessagePlaceItem.getItemMeta();
+        ItemStack oldMessagePlaceItem = XMaterial.COMPASS.parseItem();
+        ItemMeta oldMessagePlaceItemMeta = oldMessagePlaceItem.getItemMeta();
         oldMessagePlaceItemMeta.setDisplayName(MessageUtils.translate("&fOld message place"));
         MessagePlace oldPlace = editData.getOldMessagePlace();
         oldMessagePlaceItemMeta.setLore(Arrays.asList(
@@ -140,8 +140,8 @@ public final class MenuManager {
         ));
         oldMessagePlaceItem.setItemMeta(oldMessagePlaceItemMeta);
         inventory.setItem(20, oldMessagePlaceItem);
-        ItemStack newMessageItem     = XMaterial.PAPER.parseItem();
-        ItemMeta  newMessageItemMeta = newMessageItem.getItemMeta();
+        ItemStack newMessageItem = XMaterial.PAPER.parseItem();
+        ItemMeta newMessageItemMeta = newMessageItem.getItemMeta();
         newMessageItemMeta.setDisplayName(MessageUtils.translate("&fNew message"));
         String newMessage;
         if (editData.getNewMessage().isEmpty()) {
@@ -154,7 +154,7 @@ public final class MenuManager {
         List<String> newMessageLore = new ArrayList<>(10);
         newMessageLore.add("");
         for (String newMessageData : newMessage.split(editData.isNewMessageJson() ? "\\n" : "\\\\n")) {
-            String   newMessageChunk     = "";
+            String newMessageChunk = "";
             String[] newMessageDataChunk = newMessageData.split(" ");
             for (int i = 0; i < newMessageDataChunk.length; i++) {
                 if (i > 0 && i < newMessageDataChunk.length && !newMessageChunk.isEmpty()) {
@@ -180,8 +180,8 @@ public final class MenuManager {
         newMessageItemMeta.setLore(newMessageLore);
         newMessageItem.setItemMeta(newMessageItemMeta);
         inventory.setItem(15, newMessageItem);
-        ItemStack newMessagePlaceItem     = XMaterial.COMPASS.parseItem();
-        ItemMeta  newMessagePlaceItemMeta = newMessagePlaceItem.getItemMeta();
+        ItemStack newMessagePlaceItem = XMaterial.COMPASS.parseItem();
+        ItemMeta newMessagePlaceItemMeta = newMessagePlaceItem.getItemMeta();
         newMessagePlaceItemMeta.setDisplayName(MessageUtils.translate("&fNew message place"));
         List<String> newMessagePlaceItemMetaLore = new ArrayList<>(10);
         newMessagePlaceItemMetaLore.add("");
@@ -221,9 +221,9 @@ public final class MenuManager {
             "&e< &7Old message",
             "&e> &7New message"
         );
-        ItemMeta           itemMeta = item.getItemMeta();
-        String             textures = "ewogICJ0aW1lc3RhbXAiIDogMTYwNzM2ODc1MzI0NCwKICAicHJvZmlsZUlkIiA6ICI1MGM4NTEwYjVlYTA0ZDYwYmU5YTdkNTQyZDZjZDE1NiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNSEZfQXJyb3dSaWdodCIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9kMzRlZjA2Mzg1MzcyMjJiMjBmNDgwNjk0ZGFkYzBmODVmYmUwNzU5ZDU4MWFhN2ZjZGYyZTQzMTM5Mzc3MTU4IgogICAgfQogIH0KfQ==";
-        WrappedGameProfile profile  = new WrappedGameProfile(UUID.nameUUIDFromBytes(textures.getBytes(StandardCharsets.UTF_8)), "MHF_ArrowRight");
+        ItemMeta itemMeta = item.getItemMeta();
+        String textures = "ewogICJ0aW1lc3RhbXAiIDogMTYwNzM2ODc1MzI0NCwKICAicHJvZmlsZUlkIiA6ICI1MGM4NTEwYjVlYTA0ZDYwYmU5YTdkNTQyZDZjZDE1NiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNSEZfQXJyb3dSaWdodCIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9kMzRlZjA2Mzg1MzcyMjJiMjBmNDgwNjk0ZGFkYzBmODVmYmUwNzU5ZDU4MWFhN2ZjZGYyZTQzMTM5Mzc3MTU4IgogICAgfQogIH0KfQ==";
+        WrappedGameProfile profile = new WrappedGameProfile(UUID.nameUUIDFromBytes(textures.getBytes(StandardCharsets.UTF_8)), "MHF_ArrowRight");
         profile.getProperties().put("textures", new WrappedSignedProperty("textures", textures, null));
         FieldAccessor fieldAccessor = Accessors.getFieldAccessorOrNull(itemMeta.getClass(), "profile", profile.getHandle().getClass());
         fieldAccessor.set(itemMeta, profile.getHandle());
@@ -232,8 +232,8 @@ public final class MenuManager {
     }
 
     private static ItemStack constructItem(XMaterial material, String name, String... lore) {
-        ItemStack item     = material.parseItem();
-        ItemMeta  itemMeta = item.getItemMeta();
+        ItemStack item = material.parseItem();
+        ItemMeta itemMeta = item.getItemMeta();
         itemMeta.setDisplayName(MessageUtils.translate(name));
         if (lore != null) {
             itemMeta.setLore(Arrays.stream(lore).map(MessageUtils::translate).collect(Collectors.toList()));

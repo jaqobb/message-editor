@@ -42,7 +42,7 @@ public final class PlayerInventoryCloseListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerInventoryClose(InventoryCloseEvent event) {
-        Player          player   = (Player) event.getPlayer();
+        Player player = (Player) event.getPlayer();
         MessageEditData editData = this.plugin.getCurrentMessageEditData(player.getUniqueId());
         if (editData != null && editData.getCurrentMode().isInvalidateCache()) {
             this.plugin.removeCurrentMessageEditData(player.getUniqueId());

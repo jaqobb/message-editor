@@ -34,16 +34,16 @@ import org.bukkit.configuration.serialization.SerializableAs;
 @SerializableAs("MessageEdit")
 public final class MessageEdit implements ConfigurationSerializable {
 
-    private final Pattern      messageBeforePattern;
+    private final Pattern messageBeforePattern;
     private final MessagePlace messageBeforePlace;
-    private final String       messageAfter;
+    private final String messageAfter;
     private final MessagePlace messageAfterPlace;
 
     public MessageEdit(String messageBeforePattern, MessagePlace messageBeforePlace, String messageAfter, MessagePlace messageAfterPlace) {
         this.messageBeforePattern = Pattern.compile(messageBeforePattern);
-        this.messageBeforePlace   = messageBeforePlace;
-        this.messageAfter         = messageAfter;
-        this.messageAfterPlace    = messageAfterPlace;
+        this.messageBeforePlace = messageBeforePlace;
+        this.messageAfter = messageAfter;
+        this.messageAfterPlace = messageAfterPlace;
     }
 
     public Pattern getMessageBeforePattern() {
@@ -89,12 +89,12 @@ public final class MessageEdit implements ConfigurationSerializable {
     }
 
     public static MessageEdit deserialize(Map<String, Object> data) {
-        String       messageBeforePattern = (String) data.get("message-before-pattern");
-        MessagePlace messageBeforePlace   = null;
+        String messageBeforePattern = (String) data.get("message-before-pattern");
+        MessagePlace messageBeforePlace = null;
         if (data.containsKey("message-before-place")) {
             messageBeforePlace = MessagePlace.fromName((String) data.get("message-before-place"));
         }
-        String       messageAfter      = (String) data.get("message-after");
+        String messageAfter = (String) data.get("message-after");
         MessagePlace messageAfterPlace = null;
         if (data.containsKey("message-after-place")) {
             messageAfterPlace = MessagePlace.fromName((String) data.get("message-after-place"));

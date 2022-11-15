@@ -65,15 +65,15 @@ class CommonPacketListener extends PacketAdapter {
         if (!this.shouldProcess(packet)) {
             return;
         }
-        Player player          = event.getPlayer();
+        Player player = event.getPlayer();
         String originalMessage = this.messagePlace.getMessage(packet);
-        String message         = originalMessage;
+        String message = originalMessage;
         if (message == null) {
             return;
         }
-        Map.Entry<MessageEdit, String> cachedMessage      = this.getPlugin().getCachedMessage(message);
-        MessageEdit                    messageEdit        = null;
-        Matcher                        messageEditMatcher = null;
+        Map.Entry<MessageEdit, String> cachedMessage = this.getPlugin().getCachedMessage(message);
+        MessageEdit messageEdit = null;
+        Matcher messageEditMatcher = null;
         if (cachedMessage == null) {
             for (MessageEdit edit : this.getPlugin().getMessageEdits()) {
                 MessagePlace place = edit.getMessageBeforePlace();
@@ -82,7 +82,7 @@ class CommonPacketListener extends PacketAdapter {
                 }
                 Matcher matcher = edit.getMatcher(message);
                 if (matcher != null) {
-                    messageEdit        = edit;
+                    messageEdit = edit;
                     messageEditMatcher = matcher;
                     break;
                 }
@@ -102,7 +102,7 @@ class CommonPacketListener extends PacketAdapter {
             }
         }
         boolean json = MessageUtils.isJson(message);
-        String  id   = MessageUtils.generateId(this.messagePlace, message);
+        String id = MessageUtils.generateId(this.messagePlace, message);
         this.getPlugin().cacheMessageData(id, new MessageData(this.messagePlace, message, json));
         if (this.messagePlace.isAnalyzing()) {
             MessageUtils.logMessage(this.getPlugin().getLogger(), this.messagePlace, player, id, json, message);

@@ -52,7 +52,7 @@ public final class PlayerChatListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerChat(AsyncPlayerChatEvent event) {
-        Player          player   = event.getPlayer();
+        Player player = event.getPlayer();
         MessageEditData editData = this.plugin.getCurrentMessageEditData(player.getUniqueId());
         if (editData == null) {
             return;
@@ -96,7 +96,7 @@ public final class PlayerChatListener implements Listener {
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
             player.sendMessage(MessageUtils.translateWithPrefix("&7Now enter old message pattern value, that is what you want the key to be replaced with, or enter '&edone&7' if you are done replacing everything you want."));
         } else if (editDataMode == MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_VALUE) {
-            String patternKey   = editData.getOldMessagePatternKey();
+            String patternKey = editData.getOldMessagePatternKey();
             String patternValue = message;
             editData.setCurrentMode(MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_KEY);
             editData.setOldMessage(editData.getOldMessage().replaceFirst(Pattern.quote(patternKey), Matcher.quoteReplacement(patternValue.replace("\\", "\\\\"))));
@@ -132,7 +132,7 @@ public final class PlayerChatListener implements Listener {
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
             player.sendMessage(MessageUtils.translateWithPrefix("&7Now enter new message value, that is what you want the key to be replaced with, or enter '&edone&7' if you are done replacing everything you want."));
         } else if (editDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE_VALUE) {
-            String key   = editData.getNewMessageKey();
+            String key = editData.getNewMessageKey();
             String value = message;
             editData.setCurrentMode(MessageEditData.Mode.EDITING_NEW_MESSAGE_KEY);
             editData.setNewMessage(editData.getNewMessage().replaceFirst(Pattern.quote(key), Matcher.quoteReplacement(value)));

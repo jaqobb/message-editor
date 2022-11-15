@@ -114,8 +114,8 @@ public final class MessageEditorCommand implements CommandExecutor {
             }
             int placesAffected = 0;
             for (int i = 1; i < arguments.length; i++) {
-                String       argument = arguments[i];
-                MessagePlace place    = MessagePlace.fromName(argument);
+                String argument = arguments[i];
+                MessagePlace place = MessagePlace.fromName(argument);
                 if (place == null) {
                     sender.sendMessage(MessageUtils.translateWithPrefix("&cCould not convert '&7" + argument + "&c' to a message place."));
                     continue;
@@ -143,8 +143,8 @@ public final class MessageEditorCommand implements CommandExecutor {
             }
             int placesAffected = 0;
             for (int i = 1; i < arguments.length; i++) {
-                String       argument = arguments[i];
-                MessagePlace place    = MessagePlace.fromName(argument);
+                String argument = arguments[i];
+                MessagePlace place = MessagePlace.fromName(argument);
                 if (place == null) {
                     sender.sendMessage(MessageUtils.translateWithPrefix("&cCould not convert '&7" + argument + "&c' to a message place."));
                     continue;

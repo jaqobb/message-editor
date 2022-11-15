@@ -28,21 +28,21 @@ import dev.jaqobb.message_editor.MessageEditorConstants;
 
 public final class MessageEditData {
 
-    private final String       originalOldMessage;
-    private final boolean      originalOldMessageJson;
-    private       String       oldMessage;
-    private       String       oldMessagePattern;
-    private       boolean      oldMessageJson;
-    private       String       oldMessagePatternKey;
+    private final String originalOldMessage;
+    private final boolean originalOldMessageJson;
+    private String oldMessage;
+    private String oldMessagePattern;
+    private boolean oldMessageJson;
+    private String oldMessagePatternKey;
     private final MessagePlace oldMessagePlace;
-    private final String       originalNewMessage;
-    private final boolean      originalNewMessageJson;
-    private       String       newMessage;
-    private       boolean      newMessageJson;
-    private       String       newMessageCache;
-    private       String       newMessageKey;
-    private       MessagePlace newMessagePlace;
-    private       Mode         currentMode;
+    private final String originalNewMessage;
+    private final boolean originalNewMessageJson;
+    private String newMessage;
+    private boolean newMessageJson;
+    private String newMessageCache;
+    private String newMessageKey;
+    private MessagePlace newMessagePlace;
+    private Mode currentMode;
 
     public MessageEditData(MessageData data) {
         this(data.getMessage(), data.isJson(), data.getMessagePlace(), data.getMessage(), data.isJson(), data.getMessagePlace());
@@ -56,21 +56,21 @@ public final class MessageEditData {
         boolean newMessageJson,
         MessagePlace newMessagePlace
     ) {
-        this.originalOldMessage     = oldMessage;
+        this.originalOldMessage = oldMessage;
         this.originalOldMessageJson = oldMessageJson;
-        this.oldMessage             = oldMessage;
-        this.oldMessagePattern      = oldMessage.replaceAll(MessageEditorConstants.SPECIAL_REGEX_CHARACTERS, "\\\\$0");
-        this.oldMessageJson         = oldMessageJson;
-        this.oldMessagePatternKey   = "";
-        this.oldMessagePlace        = oldMessagePlace;
-        this.originalNewMessage     = newMessage;
+        this.oldMessage = oldMessage;
+        this.oldMessagePattern = oldMessage.replaceAll(MessageEditorConstants.SPECIAL_REGEX_CHARACTERS, "\\\\$0");
+        this.oldMessageJson = oldMessageJson;
+        this.oldMessagePatternKey = "";
+        this.oldMessagePlace = oldMessagePlace;
+        this.originalNewMessage = newMessage;
         this.originalNewMessageJson = newMessageJson;
-        this.newMessage             = newMessage;
-        this.newMessageJson         = newMessageJson;
-        this.newMessageCache        = "";
-        this.newMessageKey          = "";
-        this.newMessagePlace        = newMessagePlace;
-        this.currentMode            = Mode.NONE;
+        this.newMessage = newMessage;
+        this.newMessageJson = newMessageJson;
+        this.newMessageCache = "";
+        this.newMessageKey = "";
+        this.newMessagePlace = newMessagePlace;
+        this.currentMode = Mode.NONE;
     }
 
     public String getOriginalOldMessage() {

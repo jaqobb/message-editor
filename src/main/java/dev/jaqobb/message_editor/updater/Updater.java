@@ -37,16 +37,16 @@ import javax.net.ssl.HttpsURLConnection;
 public final class Updater implements Runnable {
 
     private final MessageEditorPlugin plugin;
-    private final int                 pluginId;
-    private final String              currentVersion;
-    private       String              latestVersion;
-    private       Integer             versionDifference;
+    private final int pluginId;
+    private final String currentVersion;
+    private String latestVersion;
+    private Integer versionDifference;
 
     public Updater(MessageEditorPlugin plugin, int pluginId) {
-        this.plugin            = plugin;
-        this.pluginId          = pluginId;
-        this.currentVersion    = this.plugin.getDescription().getVersion();
-        this.latestVersion     = null;
+        this.plugin = plugin;
+        this.pluginId = pluginId;
+        this.currentVersion = this.plugin.getDescription().getVersion();
+        this.latestVersion = null;
         this.versionDifference = null;
     }
 
@@ -87,7 +87,7 @@ public final class Updater implements Runnable {
             try (InputStream input = connection.getInputStream(); BufferedReader reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8))) {
                 this.latestVersion = reader.readLine();
                 String[] currentVersionData = this.currentVersion.split("\\.");
-                String[] latestVersionData  = this.latestVersion.split("\\.");
+                String[] latestVersionData = this.latestVersion.split("\\.");
                 if (currentVersionData.length == 3 && latestVersionData.length == 3) {
                     int majorDifference = Integer.compare(Integer.parseInt(currentVersionData[0]), Integer.parseInt(latestVersionData[0]));
                     if (majorDifference != 0) {

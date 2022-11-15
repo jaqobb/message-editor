@@ -74,29 +74,29 @@ public final class MessageEditorPlugin extends JavaPlugin {
         ConfigurationSerialization.registerClass(MessageEdit.class);
     }
 
-    private Metrics                                       metrics;
-    private boolean                                       updateNotify;
-    private Updater                                       updater;
-    private List<MessageEdit>                             messageEdits;
-    private boolean                                       attachSpecialHoverAndClickEvents;
-    private boolean                                       placeholderApiPresent;
-    private MenuManager                                   menuManager;
+    private Metrics metrics;
+    private boolean updateNotify;
+    private Updater updater;
+    private List<MessageEdit> messageEdits;
+    private boolean attachSpecialHoverAndClickEvents;
+    private boolean placeholderApiPresent;
+    private MenuManager menuManager;
     private Cache<String, Map.Entry<MessageEdit, String>> cachedMessages;
-    private Cache<String, MessageData>                    cachedMessagesData;
-    private Map<UUID, MessageEditData>                    currentMessageEditsData;
+    private Cache<String, MessageData> cachedMessagesData;
+    private Map<UUID, MessageEditData> currentMessageEditsData;
 
     @Override
     public void onLoad() {
-        MinecraftVersion minimumRequiredMinecraftVersion = null;
-        for (MessagePlace messagePlace : MessagePlace.VALUES) {
-            MinecraftVersion messagePlaceMininumRequiredMinecraftVersion = messagePlace.getMinimumRequiredMinecraftVersion();
-            if (minimumRequiredMinecraftVersion == null || minimumRequiredMinecraftVersion.compareTo(messagePlaceMininumRequiredMinecraftVersion) > 0) {
-                minimumRequiredMinecraftVersion = messagePlaceMininumRequiredMinecraftVersion;
+        MinecraftVersion requiredVersion = null;
+        for (MessagePlace place : MessagePlace.VALUES) {
+            MinecraftVersion version = place.getMinimumRequiredMinecraftVersion();
+            if (requiredVersion == null || requiredVersion.compareTo(version) > 0) {
+                requiredVersion = version;
             }
         }
-        if (!MinecraftVersion.atOrAbove(minimumRequiredMinecraftVersion)) {
+        if (!MinecraftVersion.atOrAbove(requiredVersion)) {
             this.getLogger().log(Level.WARNING, "Your server does not support any message places.");
-            this.getLogger().log(Level.WARNING, "The minimum required server version is " + minimumRequiredMinecraftVersion.getVersion() + ".");
+            this.getLogger().log(Level.WARNING, "The minimum required server version is " + requiredVersion.getVersion() + ".");
             this.getLogger().log(Level.WARNING, "Disabling plugin...");
             this.setEnabled(false);
             return;
@@ -110,10 +110,10 @@ public final class MessageEditorPlugin extends JavaPlugin {
         PluginManager pluginManager = this.getServer().getPluginManager();
         this.placeholderApiPresent = pluginManager.getPlugin(MessageEditorConstants.PLACEHOLDER_API_PLUGIN_NAME) != null;
         this.getLogger().log(Level.INFO, MessageEditorConstants.PLACEHOLDER_API_PLUGIN_NAME + ": " + (this.placeholderApiPresent ? "present" : "not present") + ".");
-        this.cachedMessages          = CacheBuilder.newBuilder()
+        this.cachedMessages = CacheBuilder.newBuilder()
             .expireAfterAccess(15L, TimeUnit.MINUTES)
             .build();
-        this.cachedMessagesData      = CacheBuilder.newBuilder()
+        this.cachedMessagesData = CacheBuilder.newBuilder()
             .expireAfterAccess(15L, TimeUnit.MINUTES)
             .build();
         this.currentMessageEditsData = new HashMap<>(16);
@@ -174,9 +174,9 @@ public final class MessageEditorPlugin extends JavaPlugin {
     @Override
     public void reloadConfig() {
         super.reloadConfig();
-        this.updateNotify                     = this.getConfig().getBoolean("update.notify", true);
+        this.updateNotify = this.getConfig().getBoolean("update.notify", true);
         this.attachSpecialHoverAndClickEvents = this.getConfig().getBoolean("attach-special-hover-and-click-events", true);
-        this.messageEdits                     = (List<MessageEdit>) this.getConfig().getList("message-edits");
+        this.messageEdits = (List<MessageEdit>) this.getConfig().getList("message-edits");
     }
 
     public Metrics getMetrics() {

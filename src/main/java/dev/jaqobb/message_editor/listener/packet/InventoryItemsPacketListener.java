@@ -61,8 +61,8 @@ public final class InventoryItemsPacketListener extends PacketAdapter {
         if (event.isCancelled()) {
             return;
         }
-        Player              player = event.getPlayer();
-        PacketContainer     packet = event.getPacket().shallowClone();
+        Player player = event.getPlayer();
+        PacketContainer packet = event.getPacket().shallowClone();
         Iterable<ItemStack> items;
         if (packet.getItemArrayModifier().size() == 1) {
             items = Arrays.asList(packet.getItemArrayModifier().read(0));
@@ -79,11 +79,11 @@ public final class InventoryItemsPacketListener extends PacketAdapter {
             }
             ItemMeta itemMeta = item.getItemMeta();
             if (itemMeta.hasDisplayName()) {
-                String                         originalMessage    = itemMeta.getDisplayName();
-                String                         message            = originalMessage;
-                Map.Entry<MessageEdit, String> cachedMessage      = this.getPlugin().getCachedMessage(message);
-                MessageEdit                    messageEdit        = null;
-                Matcher                        messageEditMatcher = null;
+                String originalMessage = itemMeta.getDisplayName();
+                String message = originalMessage;
+                Map.Entry<MessageEdit, String> cachedMessage = this.getPlugin().getCachedMessage(message);
+                MessageEdit messageEdit = null;
+                Matcher messageEditMatcher = null;
                 if (cachedMessage == null) {
                     for (MessageEdit edit : this.getPlugin().getMessageEdits()) {
                         MessagePlace place = edit.getMessageBeforePlace();
@@ -92,7 +92,7 @@ public final class InventoryItemsPacketListener extends PacketAdapter {
                         }
                         Matcher matcher = edit.getMatcher(message);
                         if (matcher != null) {
-                            messageEdit        = edit;
+                            messageEdit = edit;
                             messageEditMatcher = matcher;
                             break;
                         }
@@ -113,7 +113,7 @@ public final class InventoryItemsPacketListener extends PacketAdapter {
                 }
                 boolean json = MessageUtils.isJson(message);
                 if (json) {
-                    json    = false;
+                    json = false;
                     message = BaseComponent.toLegacyText(MessageUtils.toBaseComponents(message));
                 }
                 String id = MessageUtils.generateId(MessagePlace.INVENTORY_ITEM_NAME, message);
@@ -128,11 +128,11 @@ public final class InventoryItemsPacketListener extends PacketAdapter {
                 }
             }
             if (itemMeta.hasLore()) {
-                String                         originalMessage    = String.join("\\n", itemMeta.getLore());
-                String                         message            = originalMessage;
-                Map.Entry<MessageEdit, String> cachedMessage      = this.getPlugin().getCachedMessage(message);
-                MessageEdit                    messageEdit        = null;
-                Matcher                        messageEditMatcher = null;
+                String originalMessage = String.join("\\n", itemMeta.getLore());
+                String message = originalMessage;
+                Map.Entry<MessageEdit, String> cachedMessage = this.getPlugin().getCachedMessage(message);
+                MessageEdit messageEdit = null;
+                Matcher messageEditMatcher = null;
                 if (cachedMessage == null) {
                     for (MessageEdit edit : this.getPlugin().getMessageEdits()) {
                         MessagePlace place = edit.getMessageBeforePlace();
@@ -141,7 +141,7 @@ public final class InventoryItemsPacketListener extends PacketAdapter {
                         }
                         Matcher matcher = edit.getMatcher(message);
                         if (matcher != null) {
-                            messageEdit        = edit;
+                            messageEdit = edit;
                             messageEditMatcher = matcher;
                             break;
                         }
@@ -162,7 +162,7 @@ public final class InventoryItemsPacketListener extends PacketAdapter {
                 }
                 boolean json = MessageUtils.isJson(message);
                 if (json) {
-                    json    = false;
+                    json = false;
                     message = BaseComponent.toLegacyText(MessageUtils.toBaseComponents(message));
                 }
                 String id = MessageUtils.generateId(MessagePlace.INVENTORY_ITEM_LORE, message);

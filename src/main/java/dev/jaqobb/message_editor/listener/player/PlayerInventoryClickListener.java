@@ -56,9 +56,9 @@ public final class PlayerInventoryClickListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerInventoryClick(InventoryClickEvent event) {
-        Player        player    = (Player) event.getWhoClicked();
-        Inventory     inventory = event.getInventory();
-        InventoryView view      = event.getView();
+        Player player = (Player) event.getWhoClicked();
+        Inventory inventory = event.getInventory();
+        InventoryView view = event.getView();
         if (!view.getTitle().equals(MessageUtils.translate("&8Message Editor"))) {
             return;
         }
@@ -124,11 +124,11 @@ public final class PlayerInventoryClickListener implements Listener {
                 }
             }
         } else if (slot == 48) {
-            String       oldMessagePatternString  = editData.getOldMessagePattern();
-            Pattern      oldMessagePattern        = Pattern.compile(oldMessagePatternString);
-            Matcher      oldMessagePatternMatcher = oldMessagePattern.matcher(editData.getOriginalOldMessage());
-            MessagePlace oldMessagePlace          = editData.getOldMessagePlace();
-            String       newMessage               = editData.getNewMessage();
+            String oldMessagePatternString = editData.getOldMessagePattern();
+            Pattern oldMessagePattern = Pattern.compile(oldMessagePatternString);
+            Matcher oldMessagePatternMatcher = oldMessagePattern.matcher(editData.getOriginalOldMessage());
+            MessagePlace oldMessagePlace = editData.getOldMessagePlace();
+            String newMessage = editData.getNewMessage();
             newMessage = newMessage.replace("\\", "\\\\");
             if (oldMessagePatternMatcher.matches()) {
                 StringJoiner excludePattern = new StringJoiner("|", "(?!", ")");

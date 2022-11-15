@@ -66,17 +66,17 @@ public final class ChatPacketListener extends PacketAdapter {
         if (packet.getType() == PacketType.Play.Server.CHAT && MinecraftVersion.atOrAbove(MinecraftVersion.WILD_UPDATE)) {
             return;
         }
-        Player       player          = event.getPlayer();
-        MessagePlace originalPlace   = MessagePlace.fromPacket(packet);
-        MessagePlace place           = originalPlace;
-        String       originalMessage = place.getMessage(packet);
-        String       message         = originalMessage;
+        Player player = event.getPlayer();
+        MessagePlace originalPlace = MessagePlace.fromPacket(packet);
+        MessagePlace place = originalPlace;
+        String originalMessage = place.getMessage(packet);
+        String message = originalMessage;
         if (message == null) {
             return;
         }
-        Map.Entry<MessageEdit, String> cachedMessage      = this.getPlugin().getCachedMessage(message);
-        MessageEdit                    messageEdit        = null;
-        Matcher                        messageEditMatcher = null;
+        Map.Entry<MessageEdit, String> cachedMessage = this.getPlugin().getCachedMessage(message);
+        MessageEdit messageEdit = null;
+        Matcher messageEditMatcher = null;
         if (cachedMessage == null) {
             for (MessageEdit edit : this.getPlugin().getMessageEdits()) {
                 MessagePlace beforePlace = edit.getMessageBeforePlace();
@@ -88,7 +88,7 @@ public final class ChatPacketListener extends PacketAdapter {
                 }
                 Matcher matcher = edit.getMatcher(message);
                 if (matcher != null) {
-                    messageEdit        = edit;
+                    messageEdit = edit;
                     messageEditMatcher = matcher;
                     break;
                 }
@@ -131,7 +131,7 @@ public final class ChatPacketListener extends PacketAdapter {
             }
         }
         boolean json = MessageUtils.isJson(message);
-        String  id   = MessageUtils.generateId(place, message);
+        String id = MessageUtils.generateId(place, message);
         this.getPlugin().cacheMessageData(id, new MessageData(place, message, json));
         if (place.isAnalyzing()) {
             MessageUtils.logMessage(this.getPlugin().getLogger(), place, player, id, json, message);
@@ -150,7 +150,7 @@ public final class ChatPacketListener extends PacketAdapter {
                 messageToSendElement.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/message-editor edit " + id));
             }
             message = MessageUtils.toJson(messageToSend, false);
-            json    = true;
+            json = true;
         }
         if (place != originalPlace) {
             if (packet.getType() == PacketType.Play.Server.CHAT) {

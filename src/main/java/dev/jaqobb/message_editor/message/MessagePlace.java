@@ -262,14 +262,14 @@ public enum MessagePlace {
 
     public static final MessagePlace[] VALUES = values();
 
-    private final String                id;
-    private final String                friendlyName;
-    private final MinecraftVersion      minimumRequiredMinecraftVersion;
-    private final Set<PacketType>       packetTypes;
-    private final Byte                  chatType;
+    private final String id;
+    private final String friendlyName;
+    private final MinecraftVersion minimumRequiredMinecraftVersion;
+    private final Set<PacketType> packetTypes;
+    private final Byte chatType;
     private final EnumWrappers.ChatType chatTypeEnum;
-    private final boolean               supported;
-    private       boolean               analyzing;
+    private final boolean supported;
+    private boolean analyzing;
 
     MessagePlace(
         String id,
@@ -288,14 +288,14 @@ public enum MessagePlace {
         Byte chatType,
         EnumWrappers.ChatType chatTypeEnum
     ) {
-        this.id                              = id;
-        this.friendlyName                    = friendlyName;
+        this.id = id;
+        this.friendlyName = friendlyName;
         this.minimumRequiredMinecraftVersion = minimumRequiredMinecraftVersion;
-        this.packetTypes                     = packetTypes;
-        this.chatType                        = chatType;
-        this.chatTypeEnum                    = chatTypeEnum;
-        this.supported                       = MinecraftVersion.atOrAbove(this.minimumRequiredMinecraftVersion);
-        this.analyzing                       = false;
+        this.packetTypes = packetTypes;
+        this.chatType = chatType;
+        this.chatTypeEnum = chatTypeEnum;
+        this.supported = MinecraftVersion.atOrAbove(this.minimumRequiredMinecraftVersion);
+        this.analyzing = false;
     }
 
     public String getId() {
