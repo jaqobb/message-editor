@@ -1,7 +1,7 @@
 base_folder=$(echo "${PWD}")
 
 case "${1}" in
-"download-spigot")
+"download")
   (
     if [ -z "${2}" ]; then
       echo "You have to specify a Minecraft version you want to download the latest version of Spigot for."
@@ -56,15 +56,24 @@ case "${1}" in
     echo "The test server files have been cleaned."
   )
   ;;
+"prepare")
+  (
+    set -e
+    cd "${base_folder}"
+    mkdir -p "server/buildtools"
+    mkdir -p "server/plugins"
+  )
+  ;;
 *)
   (
     echo "This script provides a variety of commands to build and manage the test server."
     echo ""
     echo "Available commands:"
-    echo " * download-spigot <Minecraft version> | Downloads the latest version of Spigot for the specified Minecraft version."
-    echo " * copy                                | Compiles and copies the plugin to the test server files."
-    echo " * start                               | Starts the test server."
-    echo " * clean                               | Cleans the test server files."
+    echo " * download <Minecraft version> | Downloads the latest version of Spigot for the specified Minecraft version."
+    echo " * copy                         | Compiles and copies the plugin to the test server files."
+    echo " * start                        | Starts the test server."
+    echo " * clean                        | Cleans the test server files."
+    echo " * prepare                      | Creates the test server's empty core directories."
   )
   ;;
 esac
