@@ -1,7 +1,7 @@
 base_folder=$(echo "${PWD}")
 
 case "${1}" in
-"download")
+"download-spigot")
   (
     if [ -z "${2}" ]; then
       echo "You have to specify a Minecraft version you want to download the latest version of Spigot for."
@@ -61,10 +61,10 @@ case "${1}" in
     echo "This script provides a variety of commands to build and manage the test server."
     echo ""
     echo "Available commands:"
-    echo " * download <Minecraft version> | Downloads the latest version of Spigot for the specified Minecraft version."
-    echo " * copy                         | Compiles and copies the plugin to the test server files."
-    echo " * start                        | Starts the test server."
-    echo " * clean                        | Cleans the test server files."
+    echo " * download-spigot <Minecraft version> | Downloads the latest version of Spigot for the specified Minecraft version."
+    echo " * copy                                | Compiles and copies the plugin to the test server files."
+    echo " * start                               | Starts the test server."
+    echo " * clean                               | Cleans the test server files."
   )
   ;;
 esac
