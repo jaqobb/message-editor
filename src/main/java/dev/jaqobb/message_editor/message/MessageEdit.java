@@ -99,11 +99,6 @@ public final class MessageEdit implements ConfigurationSerializable {
         if (data.containsKey("message-after-place")) {
             messageAfterPlace = MessagePlace.fromName((String) data.get("message-after-place"));
         }
-        return new MessageEdit(
-            messageBeforePattern,
-            messageBeforePlace,
-            messageAfter,
-            messageAfterPlace
-        );
+        return new MessageEdit(messageBeforePattern, messageBeforePlace, messageAfter, messageAfterPlace);
     }
 }
