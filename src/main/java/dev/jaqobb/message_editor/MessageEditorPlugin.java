@@ -78,6 +78,8 @@ import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+// TODO: Save new message edits in their own files.
+// TODO: Add ability to name message edit file via GUI.
 public final class MessageEditorPlugin extends JavaPlugin {
 
     static {
