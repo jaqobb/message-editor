@@ -79,6 +79,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 // TODO: Add ability to name message edit file via GUI.
+// TODO: Fix disconnect message place (it just does not seem to be working at all?)?
 public final class MessageEditorPlugin extends JavaPlugin {
 
     static {
