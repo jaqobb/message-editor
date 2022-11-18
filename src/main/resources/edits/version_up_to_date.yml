@@ -1,0 +1,4 @@
+message-before-pattern: \{"extra":\[\{"text":"You are running the latest version"\}\]\,"text":""\}
+message-before-place: SYSTEM_CHAT
+message-after: §e§l> §7You are up to date with the server version.
+message-after-place: SYSTEM_CHAT
