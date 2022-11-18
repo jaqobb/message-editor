@@ -55,14 +55,21 @@ import dev.jaqobb.message_editor.message.MessageEditData;
 import dev.jaqobb.message_editor.message.MessagePlace;
 import dev.jaqobb.message_editor.updater.Updater;
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.logging.Level;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -186,7 +193,35 @@ public final class MessageEditorPlugin extends JavaPlugin {
                 this.getLogger().log(Level.WARNING, "Could not create 'edits' directory.");
                 return;
             }
-            // TODO: Copy default edits.
+            List<String> resources = new ArrayList<>(10);
+            URL resourceDirectory = this.getClassLoader().getResource("edits");
+            String jarPath = resourceDirectory.getPath().substring(5, resourceDirectory.getPath().indexOf('!'));
+            try (JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"))) {
+                Enumeration<JarEntry> entries = jar.entries();
+                while (entries.hasMoreElements()) {
+                    JarEntry entry = entries.nextElement();
+                    String name = entry.getName();
+                    if (!name.startsWith("edits")) {
+                        continue;
+                    }
+                    String lastCharacter = name.substring(name.length() - 1);
+                    if (lastCharacter.equals(File.separator)) {
+                        continue;
+                    }
+                    String clearName = name.substring("edits".length() + 1);
+                    if (clearName.isEmpty()) {
+                        continue;
+                    }
+                    if (clearName.endsWith(".yml") && !clearName.substring(0, clearName.length() - 4).isEmpty()) {
+                        resources.add("edits/" + clearName);
+                    }
+                }
+            } catch (IOException exception) {
+                this.getLogger().log(Level.WARNING, "Could not copy default edits.", exception);
+            }
+            for (String resource : resources) {
+                this.saveResource(resource, false);
+            }
         }
         for (File editFile : editsDirectory.listFiles()) {
             String name = editFile.getName();
