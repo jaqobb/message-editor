@@ -113,7 +113,7 @@ public final class MessageEditorCommand implements CommandExecutor {
                 return true;
             }
             int placesAffected = 0;
-            for (int i = 1; i < arguments.length; i++) {
+            for (int i = 1; i < arguments.length; i += 1) {
                 String argument = arguments[i];
                 MessagePlace place = MessagePlace.fromName(argument);
                 if (place == null) {
@@ -126,7 +126,7 @@ public final class MessageEditorCommand implements CommandExecutor {
                 }
                 if (!place.isAnalyzing()) {
                     place.setAnalyzing(true);
-                    placesAffected++;
+                    placesAffected += 1;
                 } else {
                     sender.sendMessage(MessageUtils.translateWithPrefix("&cAnalyzing &7" + place.getFriendlyName() + " &cmessage place is already activated."));
                 }
@@ -142,7 +142,7 @@ public final class MessageEditorCommand implements CommandExecutor {
                 return true;
             }
             int placesAffected = 0;
-            for (int i = 1; i < arguments.length; i++) {
+            for (int i = 1; i < arguments.length; i += 1) {
                 String argument = arguments[i];
                 MessagePlace place = MessagePlace.fromName(argument);
                 if (place == null) {
@@ -155,7 +155,7 @@ public final class MessageEditorCommand implements CommandExecutor {
                 }
                 if (place.isAnalyzing()) {
                     place.setAnalyzing(false);
-                    placesAffected++;
+                    placesAffected += 1;
                 } else {
                     sender.sendMessage(MessageUtils.translateWithPrefix("&cAnalyzing &7" + place.getFriendlyName() + " &cmessage place is already deactivated."));
                 }

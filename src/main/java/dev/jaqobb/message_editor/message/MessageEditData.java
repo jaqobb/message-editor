@@ -28,6 +28,7 @@ import dev.jaqobb.message_editor.MessageEditorConstants;
 
 public final class MessageEditData {
 
+    private final String id;
     private final String originalOldMessage;
     private final boolean originalOldMessageJson;
     private String oldMessage;
@@ -45,10 +46,11 @@ public final class MessageEditData {
     private Mode currentMode;
 
     public MessageEditData(MessageData data) {
-        this(data.getMessage(), data.isJson(), data.getMessagePlace(), data.getMessage(), data.isJson(), data.getMessagePlace());
+        this(data.getId(), data.getMessage(), data.isJson(), data.getMessagePlace(), data.getMessage(), data.isJson(), data.getMessagePlace());
     }
 
     public MessageEditData(
+        String id,
         String oldMessage,
         boolean oldMessageJson,
         MessagePlace oldMessagePlace,
@@ -56,6 +58,7 @@ public final class MessageEditData {
         boolean newMessageJson,
         MessagePlace newMessagePlace
     ) {
+        this.id = id;
         this.originalOldMessage = oldMessage;
         this.originalOldMessageJson = oldMessageJson;
         this.oldMessage = oldMessage;
@@ -71,6 +74,10 @@ public final class MessageEditData {
         this.newMessageKey = "";
         this.newMessagePlace = newMessagePlace;
         this.currentMode = Mode.NONE;
+    }
+
+    public String getId() {
+        return this.id;
     }
 
     public String getOriginalOldMessage() {

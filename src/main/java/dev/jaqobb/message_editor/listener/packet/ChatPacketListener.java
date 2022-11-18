@@ -132,7 +132,7 @@ public final class ChatPacketListener extends PacketAdapter {
         }
         boolean json = MessageUtils.isJson(message);
         String id = MessageUtils.generateId(place, message);
-        this.getPlugin().cacheMessageData(id, new MessageData(place, message, json));
+        this.getPlugin().cacheMessageData(id, new MessageData(id, place, message, json));
         if (place.isAnalyzing()) {
             MessageUtils.logMessage(this.getPlugin().getLogger(), place, player, id, json, message);
         }

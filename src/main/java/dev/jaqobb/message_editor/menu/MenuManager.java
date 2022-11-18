@@ -109,7 +109,7 @@ public final class MenuManager {
         for (String oldMessageData : oldMessage.split(editData.isOldMessageJson() ? "\\n" : "\\\\n")) {
             String oldMessageChunk = "";
             String[] oldMessageDataChunk = oldMessageData.split(" ");
-            for (int i = 0; i < oldMessageDataChunk.length; i++) {
+            for (int i = 0; i < oldMessageDataChunk.length; i += 1) {
                 if (i > 0 && i < oldMessageDataChunk.length && !oldMessageChunk.isEmpty()) {
                     oldMessageChunk += " ";
                 }
@@ -156,7 +156,7 @@ public final class MenuManager {
         for (String newMessageData : newMessage.split(editData.isNewMessageJson() ? "\\n" : "\\\\n")) {
             String newMessageChunk = "";
             String[] newMessageDataChunk = newMessageData.split(" ");
-            for (int i = 0; i < newMessageDataChunk.length; i++) {
+            for (int i = 0; i < newMessageDataChunk.length; i += 1) {
                 if (i > 0 && i < newMessageDataChunk.length && !newMessageChunk.isEmpty()) {
                     newMessageChunk += " ";
                 }

@@ -31,9 +31,6 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import dev.jaqobb.message_editor.MessageEditorConstants;
 import dev.jaqobb.message_editor.message.MessagePlace;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -78,7 +75,7 @@ public final class MessageUtils {
         String placeId = place.getId();
         String messageHash = message.hashCode() < 0 ? String.valueOf(-message.hashCode() * 2L) : String.valueOf(message.hashCode());
         String messageId = "";
-        for (int i = 0; i < messageHash.length(); i++) {
+        for (int i = 0; i < messageHash.length(); i += 1) {
             if (i + 1 < messageHash.length()) {
                 String currentNumber = String.valueOf(messageHash.charAt(i));
                 String nextNumber = String.valueOf(messageHash.charAt(i + 1));
@@ -89,7 +86,7 @@ public final class MessageUtils {
                     messageId += CHARACTERS[Integer.parseInt(currentNumber)];
                     messageId += CHARACTERS[Integer.parseInt(nextNumber)];
                 }
-                i++;
+                i += 1;
             } else {
                 messageId += CHARACTERS[Integer.parseInt(String.valueOf(messageHash.charAt(i)))];
             }
@@ -100,7 +97,7 @@ public final class MessageUtils {
     public static String getLastColors(String message) {
         int length = message.length();
         String colors = "";
-        for (int i = length - 1; i > -1; i--) {
+        for (int i = length - 1; i > -1; i -= 1) {
             char section = message.charAt(i);
             if (section == ChatColor.COLOR_CHAR && i < length - 1) {
                 char character = message.charAt(i + 1);
@@ -124,7 +121,7 @@ public final class MessageUtils {
                 }
                 ChatColor color = ChatColor.getByChar(character);
                 if (color != null) {
-                    i--;
+                    i -= 1;
                     colors = color + colors;
                     if (color == ChatColor.RESET || (color != ChatColor.MAGIC && color != ChatColor.BOLD && color != ChatColor.STRIKETHROUGH && color != ChatColor.UNDERLINE && color != ChatColor.ITALIC)) {
                         break;
@@ -136,17 +133,18 @@ public final class MessageUtils {
     }
 
     public static BaseComponent[] toBaseComponents(String message) {
-        List<BaseComponent> components = new ArrayList<>(10);
-        String messagePart = "";
-        for (int i = 0; i < message.length(); i++) {
+        TextComponent finalComponent = new TextComponent();
+        TextComponent component = new TextComponent();
+        ChatColor componentNewColor = null;
+        boolean firstColor = true;
+        for (int i = 0; i < message.length(); i += 1) {
             boolean makeComponent = false;
-            String newMessagePart = "";
             char character = message.charAt(i);
             if (i == message.length() - 1) {
                 makeComponent = true;
-                messagePart += character;
+                component.setText(component.getText() + character);
             } else if (character != '§') {
-                messagePart += character;
+                component.setText(component.getText() + character);
             } else {
                 char hexColorCharacter = message.charAt(i + 1);
                 if ((hexColorCharacter == 'x' || hexColorCharacter == 'X') && HEX_COLORS_SUPPORTED) {
@@ -156,30 +154,51 @@ public final class MessageUtils {
                     }
                     try {
                         i += 13;
-                        messagePart += ChatColor.of("#" + hexColor);
+                        component.setColor(ChatColor.of("#" + hexColor));
+                        firstColor = false;
                         continue;
                     } catch (IllegalArgumentException ignored) {
                     }
                 }
                 ChatColor color = ChatColor.getByChar(message.charAt(i + 1));
                 if (color != null) {
-                    i++;
-                    if (messagePart.isEmpty() || (color == ChatColor.MAGIC || color == ChatColor.BOLD || color == ChatColor.STRIKETHROUGH || color == ChatColor.UNDERLINE || color == ChatColor.ITALIC || color == ChatColor.RESET)) {
-                        messagePart += color.toString();
+                    i += 1;
+                    if ((color != component.getColor() && firstColor) || color == ChatColor.MAGIC || color == ChatColor.BOLD || color == ChatColor.STRIKETHROUGH || color == ChatColor.UNDERLINE || color == ChatColor.ITALIC) {
+                        if (color == ChatColor.MAGIC) {
+                            component.setObfuscated(true);
+                        } else if (color == ChatColor.BOLD) {
+                            component.setBold(true);
+                        } else if (color == ChatColor.STRIKETHROUGH) {
+                            component.setStrikethrough(true);
+                        } else if (color == ChatColor.UNDERLINE) {
+                            component.setUnderlined(true);
+                        } else if (color == ChatColor.ITALIC) {
+                            component.setItalic(true);
+                        } else {
+                            component.setColor(color);
+                            firstColor = false;
+                        }
                     } else {
                         makeComponent = true;
-                        newMessagePart += color.toString();
+                        componentNewColor = color;
                     }
                 } else {
-                    messagePart += character;
+                    component.setText(component.getText() + character);
                 }
             }
             if (makeComponent) {
-                components.addAll(Arrays.asList(TextComponent.fromLegacyText(messagePart)));
-                messagePart = newMessagePart;
+                finalComponent.addExtra(component);
+                component = new TextComponent();
+                if (componentNewColor != null) {
+                    component.setColor(componentNewColor);
+                    componentNewColor = null;
+                    firstColor = false;
+                } else {
+                    firstColor = true;
+                }
             }
         }
-        return components.toArray(EMPTY_BASE_COMPONENT_ARRAY);
+        return new BaseComponent[]{finalComponent};
     }
 
     // Using ComponentSerializer#toString when the amount of components is greater than 1
@@ -191,11 +210,11 @@ public final class MessageUtils {
         } else if (wrapIntoTextComponent) {
             return ComponentSerializer.toString(components);
         } else {
-            StringJoiner componentsJson = new StringJoiner(",", "[", "]");
-            for (BaseComponent messageComponent : components) {
-                componentsJson.add(ComponentSerializer.toString(messageComponent));
+            StringJoiner json = new StringJoiner(",", "[", "]");
+            for (BaseComponent component : components) {
+                json.add(ComponentSerializer.toString(component));
             }
-            return componentsJson.toString();
+            return json.toString();
         }
     }
 

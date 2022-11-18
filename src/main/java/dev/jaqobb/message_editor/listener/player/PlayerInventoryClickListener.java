@@ -31,10 +31,15 @@ import dev.jaqobb.message_editor.message.MessageEdit;
 import dev.jaqobb.message_editor.message.MessageEditData;
 import dev.jaqobb.message_editor.message.MessagePlace;
 import dev.jaqobb.message_editor.util.MessageUtils;
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.StringJoiner;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -133,8 +138,8 @@ public final class PlayerInventoryClickListener implements Listener {
             if (oldMessagePatternMatcher.matches()) {
                 StringJoiner excludePattern = new StringJoiner("|", "(?!", ")");
                 excludePattern.add("\\$0");
-                for (int index = 0; index < oldMessagePatternMatcher.groupCount(); index++) {
-                    excludePattern.add("\\$" + (index + 1));
+                for (int i = 0; i < oldMessagePatternMatcher.groupCount(); i += 1) {
+                    excludePattern.add("\\$" + (i + 1));
                 }
                 String excludePatternString = excludePattern + "\\$[0-9]+";
                 newMessage = newMessage.replaceAll(excludePatternString, "\\\\$0");
@@ -142,9 +147,23 @@ public final class PlayerInventoryClickListener implements Listener {
                 newMessage = newMessage.replace("$", "\\$");
             }
             MessagePlace newMessagePlace = editData.getNewMessagePlace();
-            this.plugin.addMessageEdit(new MessageEdit(oldMessagePatternString, oldMessagePlace, newMessage, newMessagePlace));
+            MessageEdit edit = new MessageEdit(oldMessagePatternString, oldMessagePlace, newMessage, newMessagePlace);
+            this.plugin.addMessageEdit(edit);
             this.plugin.clearCachedMessages();
-            this.plugin.saveConfig();
+            try {
+                File file = new File(this.plugin.getDataFolder(), "edits" + File.separator + editData.getId() + ".yml");
+                if (file.createNewFile()) {
+                    Map<String, Object> data = edit.serialize();
+                    YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+                    for (Map.Entry<String, Object> entry : data.entrySet()) {
+                        configuration.set(entry.getKey(), entry.getValue());
+                    }
+                    configuration.save(file);
+                }
+            } catch (IOException exception) {
+                this.plugin.getLogger().log(Level.WARNING, "Could not save message edit.", exception);
+                player.sendMessage(MessageUtils.translateWithPrefix("&cCould not save message edit, check console for more information."));
+            }
             player.closeInventory();
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
             player.sendMessage(MessageUtils.translateWithPrefix("&7Message edit has been saved and applied."));
