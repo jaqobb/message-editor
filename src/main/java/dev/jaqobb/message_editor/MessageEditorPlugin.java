@@ -54,6 +54,7 @@ import dev.jaqobb.message_editor.message.MessageEdit;
 import dev.jaqobb.message_editor.message.MessageEditData;
 import dev.jaqobb.message_editor.message.MessagePlace;
 import dev.jaqobb.message_editor.updater.Updater;
+import java.io.File;
 import java.util.AbstractMap;
 import java.util.Collections;
 import java.util.HashMap;
@@ -64,6 +65,8 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import org.bstats.bukkit.Metrics;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -177,6 +180,25 @@ public final class MessageEditorPlugin extends JavaPlugin {
         this.updateNotify = this.getConfig().getBoolean("update.notify", true);
         this.attachSpecialHoverAndClickEvents = this.getConfig().getBoolean("attach-special-hover-and-click-events", true);
         this.messageEdits = (List<MessageEdit>) this.getConfig().getList("message-edits");
+        File editsDirectory = new File(this.getDataFolder(), "edits");
+        if (!editsDirectory.exists()) {
+            if (!editsDirectory.mkdir()) {
+                this.getLogger().log(Level.WARNING, "Could not create 'edits' directory.");
+                return;
+            }
+            // TODO: Copy default edits.
+        }
+        for (File editFile : editsDirectory.listFiles()) {
+            String name = editFile.getName();
+            if (!name.isEmpty() && name.charAt(0) == '#') {
+                continue;
+            }
+            if (!name.endsWith(".yml")) {
+                continue;
+            }
+            FileConfiguration configuration = YamlConfiguration.loadConfiguration(editFile);
+            this.messageEdits.add(MessageEdit.deserialize(configuration.getRoot().getValues(false)));
+        }
     }
 
     public Metrics getMetrics() {
