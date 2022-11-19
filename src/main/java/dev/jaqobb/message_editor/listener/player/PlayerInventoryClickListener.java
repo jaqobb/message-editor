@@ -82,13 +82,18 @@ public final class PlayerInventoryClickListener implements Listener {
         if (editData == null) {
             return;
         }
-        if (slot == 11) {
+        if (slot == 4) {
+            editData.setCurrentMode(MessageEditData.Mode.EDITING_FILE_NAME);
+            player.closeInventory();
+            player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
+            player.sendMessage(MessageUtils.translateWithPrefix("&7Enter new file name where you want your message edit to be stored, or enter '&edone&7' if you changed your mind and no longer want to edit file name."));
+        } else if (slot == 20) {
             editData.setCurrentMode(MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_KEY);
             editData.setOldMessagePatternKey("");
             player.closeInventory();
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
             player.sendMessage(MessageUtils.translateWithPrefix("&7Enter old message pattern key, that is what you want to replace, or enter '&edone&7' if you are done replacing everything you want."));
-        } else if (slot == 15) {
+        } else if (slot == 24) {
             ClickType click = event.getClick();
             if (click.isLeftClick()) {
                 editData.setCurrentMode(MessageEditData.Mode.EDITING_NEW_MESSAGE);
@@ -107,7 +112,7 @@ public final class PlayerInventoryClickListener implements Listener {
                 player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
                 player.sendMessage(MessageUtils.translateWithPrefix("&7Enter new message key, that is what you want to replace, or enter '&edone&7' if you are done replacing everything you want."));
             }
-        } else if (slot == 24) {
+        } else if (slot == 33) {
             MessagePlace place = editData.getOldMessagePlace();
             if (place != MessagePlace.GAME_CHAT && place != MessagePlace.SYSTEM_CHAT && place != MessagePlace.ACTION_BAR) {
                 player.playSound(player.getLocation(), XSound.ENTITY_ITEM_BREAK.parseSound(), 1.0F, 1.0F);
@@ -129,6 +134,15 @@ public final class PlayerInventoryClickListener implements Listener {
                 }
             }
         } else if (slot == 48) {
+            player.closeInventory();
+            player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
+        } else if (slot == 50) {
+            File file = new File(this.plugin.getDataFolder(), "edits" + File.separator + editData.getFileName() + ".yml");
+            if (file.exists()) {
+                player.playSound(player.getLocation(), XSound.ENTITY_ITEM_BREAK.parseSound(), 1.0F, 1.0F);
+                player.sendMessage(MessageUtils.translateWithPrefix("&cThere is already a message edit that uses a file with the name '&7" + editData.getFileName() + ".yml&c'."));
+                return;
+            }
             String oldMessagePatternString = editData.getOldMessagePattern();
             Pattern oldMessagePattern = Pattern.compile(oldMessagePatternString);
             Matcher oldMessagePatternMatcher = oldMessagePattern.matcher(editData.getOriginalOldMessage());
@@ -151,7 +165,6 @@ public final class PlayerInventoryClickListener implements Listener {
             this.plugin.addMessageEdit(edit);
             this.plugin.clearCachedMessages();
             try {
-                File file = new File(this.plugin.getDataFolder(), "edits" + File.separator + editData.getId() + ".yml");
                 if (file.createNewFile()) {
                     Map<String, Object> data = edit.serialize();
                     YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
@@ -159,6 +172,8 @@ public final class PlayerInventoryClickListener implements Listener {
                         configuration.set(entry.getKey(), entry.getValue());
                     }
                     configuration.save(file);
+                } else {
+                    player.sendMessage(MessageUtils.translateWithPrefix("&cCould not create message edit file."));
                 }
             } catch (IOException exception) {
                 this.plugin.getLogger().log(Level.WARNING, "Could not save message edit.", exception);
@@ -167,9 +182,6 @@ public final class PlayerInventoryClickListener implements Listener {
             player.closeInventory();
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
             player.sendMessage(MessageUtils.translateWithPrefix("&7Message edit has been saved and applied."));
-        } else if (slot == 50) {
-            player.closeInventory();
-            player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
         }
     }
 }

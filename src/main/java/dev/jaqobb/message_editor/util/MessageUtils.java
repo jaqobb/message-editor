@@ -219,6 +219,9 @@ public final class MessageUtils {
     }
 
     public static boolean isJson(String string) {
+        if (string == null || string.trim().isEmpty()) {
+            return false;
+        }
         try {
             JsonParser.parseString(string);
             return true;

@@ -33,6 +33,7 @@ import dev.jaqobb.message_editor.MessageEditorPlugin;
 import dev.jaqobb.message_editor.message.MessageEditData;
 import dev.jaqobb.message_editor.message.MessagePlace;
 import dev.jaqobb.message_editor.util.MessageUtils;
+import java.io.File;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -64,12 +65,10 @@ public final class PlayerChatListener implements Listener {
         event.setCancelled(true);
         String message = event.getMessage();
         if (message.equals("done")) {
+            editData.setCurrentMode(MessageEditData.Mode.NONE);
             if (editDataMode == MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_KEY || editDataMode == MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_VALUE) {
-                editData.setCurrentMode(MessageEditData.Mode.NONE);
                 editData.setOldMessagePatternKey("");
-                this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, editData, true));
             } else if (editDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE) {
-                editData.setCurrentMode(MessageEditData.Mode.NONE);
                 if (!editData.getNewMessageCache().isEmpty()) {
                     editData.setNewMessage(editData.getNewMessageCache());
                     try {
@@ -81,15 +80,25 @@ public final class PlayerChatListener implements Listener {
                     }
                     editData.setNewMessageCache("");
                 }
-                this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, editData, true));
             } else if (editDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE_KEY || editDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE_VALUE) {
-                editData.setCurrentMode(MessageEditData.Mode.NONE);
                 editData.setNewMessageKey("");
-                this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, editData, true));
-            } else if (editDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE_PLACE) {
-                editData.setCurrentMode(MessageEditData.Mode.NONE);
-                this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, editData, true));
             }
+            this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, editData, true));
+        } else if (editDataMode == MessageEditData.Mode.EDITING_FILE_NAME) {
+            if (message.charAt(0) == '#') {
+                player.playSound(player.getLocation(), XSound.ENTITY_ITEM_BREAK.parseSound(), 1.0F, 1.0F);
+                player.sendMessage(MessageUtils.translateWithPrefix("&cMessage edit file name cannot start with the '&7#&c' character."));
+                return;
+            }
+            File file = new File(this.plugin.getDataFolder(), "edits" + File.separator + message + ".yml");
+            if (file.exists()) {
+                player.playSound(player.getLocation(), XSound.ENTITY_ITEM_BREAK.parseSound(), 1.0F, 1.0F);
+                player.sendMessage(MessageUtils.translateWithPrefix("&cThere is already a message edit that uses a file named '&7" + message + ".yml&c'."));
+                return;
+            }
+            editData.setCurrentMode(MessageEditData.Mode.NONE);
+            editData.setFileName(message);
+            this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, editData, true));
         } else if (editDataMode == MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_KEY) {
             editData.setOldMessagePatternKey(message);
             editData.setCurrentMode(MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_VALUE);
@@ -121,11 +130,11 @@ public final class PlayerChatListener implements Listener {
                 editData.setNewMessageJson(false);
                 editData.setNewMessageCache("");
                 this.plugin.getServer().getScheduler().runTask(this.plugin, () -> this.plugin.getMenuManager().openMenu(player, editData, true));
-            } else {
-                editData.setNewMessageCache(editData.getNewMessageCache() + message);
-                player.sendMessage(MessageUtils.translateWithPrefix("&7Message has been added. Continue if your message is longer and had to divide it into parts. Otherwise enter '&edone&7' to set the new message."));
-                player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
+                return;
             }
+            editData.setNewMessageCache(editData.getNewMessageCache() + message);
+            player.sendMessage(MessageUtils.translateWithPrefix("&7Message has been added. Continue if your message is longer and had to divide it into parts. Otherwise enter '&edone&7' to set the new message."));
+            player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
         } else if (editDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE_KEY) {
             editData.setNewMessageKey(message);
             editData.setCurrentMode(MessageEditData.Mode.EDITING_NEW_MESSAGE_VALUE);

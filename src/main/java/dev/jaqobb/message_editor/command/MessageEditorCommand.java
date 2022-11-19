@@ -28,7 +28,6 @@ import dev.jaqobb.message_editor.MessageEditorPlugin;
 import dev.jaqobb.message_editor.message.MessageData;
 import dev.jaqobb.message_editor.message.MessagePlace;
 import dev.jaqobb.message_editor.util.MessageUtils;
-import net.md_5.bungee.api.ChatMessageType;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -52,21 +51,6 @@ public final class MessageEditorCommand implements CommandExecutor {
         }
         if (arguments.length == 0) {
             this.sendHelpMessage(sender, label);
-            return true;
-        }
-        if (arguments[0].equalsIgnoreCase("dev") && this.plugin.getUpdater().getCurrentVersion().contains("-SNAPSHOT") && sender.hasPermission("messageeditor.dev")) {
-            Player player = (Player) sender;
-            switch (arguments[1]) {
-                case "1":
-                    player.spigot().sendMessage(ChatMessageType.CHAT, MessageUtils.toBaseComponents("MessageEditor Test 1"));
-                    break;
-                case "2":
-                    player.spigot().sendMessage(ChatMessageType.SYSTEM, MessageUtils.toBaseComponents("MessageEditor Test 2"));
-                    break;
-                case "3":
-                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, MessageUtils.toBaseComponents("MessageEditor Test 3"));
-                    break;
-            }
             return true;
         }
         if (arguments[0].equalsIgnoreCase("reload")) {

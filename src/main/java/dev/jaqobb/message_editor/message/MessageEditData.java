@@ -29,6 +29,7 @@ import dev.jaqobb.message_editor.MessageEditorConstants;
 public final class MessageEditData {
 
     private final String id;
+    private String fileName;
     private final String originalOldMessage;
     private final boolean originalOldMessageJson;
     private String oldMessage;
@@ -46,11 +47,21 @@ public final class MessageEditData {
     private Mode currentMode;
 
     public MessageEditData(MessageData data) {
-        this(data.getId(), data.getMessage(), data.isJson(), data.getMessagePlace(), data.getMessage(), data.isJson(), data.getMessagePlace());
+        this(
+            data.getId(),
+            data.getId(),
+            data.getMessage(),
+            data.isJson(),
+            data.getMessagePlace(),
+            data.getMessage(),
+            data.isJson(),
+            data.getMessagePlace()
+        );
     }
 
     public MessageEditData(
         String id,
+        String fileName,
         String oldMessage,
         boolean oldMessageJson,
         MessagePlace oldMessagePlace,
@@ -59,6 +70,7 @@ public final class MessageEditData {
         MessagePlace newMessagePlace
     ) {
         this.id = id;
+        this.fileName = fileName;
         this.originalOldMessage = oldMessage;
         this.originalOldMessageJson = oldMessageJson;
         this.oldMessage = oldMessage;
@@ -78,6 +90,14 @@ public final class MessageEditData {
 
     public String getId() {
         return this.id;
+    }
+
+    public String getFileName() {
+        return this.fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     public String getOriginalOldMessage() {
@@ -183,6 +203,7 @@ public final class MessageEditData {
     public enum Mode {
 
         NONE(true),
+        EDITING_FILE_NAME(false),
         EDITING_OLD_MESSAGE_PATTERN_KEY(false),
         EDITING_OLD_MESSAGE_PATTERN_VALUE(false),
         EDITING_NEW_MESSAGE(false),

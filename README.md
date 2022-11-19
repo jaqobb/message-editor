@@ -8,21 +8,21 @@ Click [here](https://www.spigotmc.org/resources/message-editor.82154/) to get to
 ### Features
 
 Message Editor supports:
-* Editing chat messages - since 1.0.0
-* Editing action bar messages - since 1.0.0
-* Editing kick/disconnect messages - since 1.1.0
-* Cancelling sending messages - since 1.2.4
-* Editing boss bar titles - since 1.3.0 (requires server version at least 1.9)
-* Triggering message editing only on specific positions - since 1.3.2
-* Editing message positions - since 1.4.0
-* Editing scoreboard titles - since 1.5.0
-* Editing scoreboard entries - since 1.6.0
-* Editing messages with GUI - since 2.0.0
-* Editing inventory titles - since 2.2.0
-* Editing inventory item names - since 2.3.0
-* Editing inventory item lores - since 2.3.0
-* Editing entity names - since 2.4.0
-* Per-file message edit system - since 2.5.0
+* Editing chat messages - since 1.0.0,
+* Editing action bar messages - since 1.0.0,
+* Editing kick/disconnect messages - since 1.1.0,
+* Cancelling sending messages - since 1.2.4,
+* Editing boss bar titles - since 1.3.0 (requires server version at least 1.9),
+* Triggering message editing only on specific positions - since 1.3.2,
+* Editing message positions - since 1.4.0,
+* Editing scoreboard titles - since 1.5.0,
+* Editing scoreboard entries - since 1.6.0,
+* Editing messages with GUI - since 2.0.0,
+* Editing inventory titles - since 2.2.0,
+* Editing inventory item names - since 2.3.0,
+* Editing inventory item lores - since 2.3.0,
+* Editing entity names - since 2.4.0,
+* Per-file message edit system - since 2.5.0.
 
 ### Showcase
 
@@ -53,7 +53,7 @@ Advanced message editing:
 ### Requirements
 
 Message Editor requires:
-* Server version at least 1.8
-* ProtocolLib
-* PlaceholderAPI (optional) - if you want to use placeholders in edited messages
-* MVdWPlaceholderAPI (optional) if you want to use placeholders in edited messages
+* Server version at least 1.8,
+* The latest version of ProtocolLib,
+* PlaceholderAPI (optional) - if you want to use placeholders in edited messages,
+* MVdWPlaceholderAPI (optional) if you want to use placeholders in edited messages.
