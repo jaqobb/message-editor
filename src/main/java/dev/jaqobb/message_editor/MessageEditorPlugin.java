@@ -134,7 +134,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
     public void onEnable() {
         this.getLogger().log(Level.INFO, "Starting updater...");
         this.updater = new Updater(this, 82154);
-        this.getServer().getScheduler().runTaskTimerAsynchronously(this, this.updater, 0L, 20L * 60L * 30L);
+        this.getServer().getScheduler().runTaskTimerAsynchronously(this, this.updater, 0L, 20L * 60L * 60L);
         this.getLogger().log(Level.INFO, "Starting menu manager...");
         this.menuManager = new MenuManager(this);
         this.getLogger().log(Level.INFO, "Registering command...");
