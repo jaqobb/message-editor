@@ -52,6 +52,7 @@ case "${1}" in
     set -e
     cd "${base_folder}"
     rm -rf "server"
+    mkdir -p "server/buildtools"
     mkdir -p "server/plugins"
     echo "The test server files have been cleaned."
   )
