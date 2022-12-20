@@ -127,7 +127,7 @@ public final class MenuManager {
         } else {
             oldMessage = editData.getOldMessage();
         }
-        List<String> oldMessageLore = new ArrayList<>(10);
+        List<String> oldMessageLore = new ArrayList<>();
         oldMessageLore.add("");
         for (String oldMessageData : oldMessage.split(editData.isOldMessageJson() ? "\\n" : "\\\\n")) {
             String oldMessageChunk = "";
@@ -174,7 +174,7 @@ public final class MenuManager {
         } else {
             newMessage = editData.getNewMessage();
         }
-        List<String> newMessageLore = new ArrayList<>(10);
+        List<String> newMessageLore = new ArrayList<>();
         newMessageLore.add("");
         for (String newMessageData : newMessage.split(editData.isNewMessageJson() ? "\\n" : "\\\\n")) {
             String newMessageChunk = "";
@@ -206,7 +206,7 @@ public final class MenuManager {
         ItemStack newMessagePlaceItem = XMaterial.COMPASS.parseItem();
         ItemMeta newMessagePlaceItemMeta = newMessagePlaceItem.getItemMeta();
         newMessagePlaceItemMeta.setDisplayName(MessageUtils.translate("&fNew message place"));
-        List<String> newMessagePlaceItemMetaLore = new ArrayList<>(10);
+        List<String> newMessagePlaceItemMetaLore = new ArrayList<>();
         newMessagePlaceItemMetaLore.add("");
         MessagePlace newPlace = editData.getNewMessagePlace();
         newMessagePlaceItemMetaLore.add(MessageUtils.translate("&7ID: &e" + newPlace.name()));

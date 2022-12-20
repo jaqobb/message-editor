@@ -127,7 +127,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
         this.cachedMessagesData = CacheBuilder.newBuilder()
             .expireAfterAccess(15L, TimeUnit.MINUTES)
             .build();
-        this.currentMessageEditsData = new HashMap<>(16);
+        this.currentMessageEditsData = new HashMap<>();
     }
 
     @Override
@@ -194,7 +194,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
                 this.getLogger().log(Level.WARNING, "Could not create 'edits' directory.");
                 return;
             }
-            List<String> resources = new ArrayList<>(10);
+            List<String> resources = new ArrayList<>();
             URL resourceDirectory = this.getClassLoader().getResource("edits");
             String jarPath = resourceDirectory.getPath().substring(5, resourceDirectory.getPath().indexOf('!'));
             try (JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"))) {

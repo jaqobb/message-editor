@@ -24,6 +24,7 @@
 
 package dev.jaqobb.message_editor;
 
+import com.comphenix.protocol.utility.MinecraftVersion;
 import java.util.regex.Pattern;
 import net.md_5.bungee.api.ChatColor;
 
@@ -38,6 +39,8 @@ public final class MessageEditorConstants {
     public static final Pattern CHAT_COLOR_PATTERN = Pattern.compile("(?i)" + ChatColor.COLOR_CHAR + "([0-9A-FK-ORX])");
 
     public static final String SPECIAL_REGEX_CHARACTERS = "[/<>{}()\\[\\],.+\\-*?^$\\\\|]";
+
+    public static final MinecraftVersion WILD_UPDATE_3_VERSION = new MinecraftVersion("1.19.3");
 
     private MessageEditorConstants() {
         throw new UnsupportedOperationException("Cannot create instance of this class");

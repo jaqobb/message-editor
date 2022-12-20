@@ -29,7 +29,9 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
+import com.comphenix.protocol.wrappers.WrappedDataValue;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
+import dev.jaqobb.message_editor.MessageEditorConstants;
 import dev.jaqobb.message_editor.util.MessageUtils;
 import java.util.Arrays;
 import java.util.Collections;
@@ -220,21 +222,41 @@ public enum MessagePlace {
     ENTITY_NAME("EN", "Entity Name", MinecraftVersion.BOUNTIFUL_UPDATE, Collections.singleton(PacketType.Play.Server.ENTITY_METADATA)) {
         @Override
         public String getMessage(PacketContainer packet) {
-            List<WrappedWatchableObject> objects = packet.getWatchableCollectionModifier().read(0);
-            if (objects == null) {
-                return null;
-            }
-            for (WrappedWatchableObject object : objects) {
-                if (object.getIndex() != 2) {
-                    continue;
+            if (MinecraftVersion.atOrAbove(MessageEditorConstants.WILD_UPDATE_3_VERSION)) {
+                List<WrappedDataValue> dataValues = packet.getDataValueCollectionModifier().read(0);
+                if (dataValues == null) {
+                    return null;
                 }
-                Object value = object.getValue();
-                if (!(value instanceof Optional)) {
-                    continue;
+                for (WrappedDataValue dataValue : dataValues) {
+                    if (dataValue.getIndex() != 2) {
+                        continue;
+                    }
+                    Object value = dataValue.getValue();
+                    if (!(value instanceof Optional)) {
+                        continue;
+                    }
+                    Optional<?> name = (Optional<?>) value;
+                    if (name.isPresent()) {
+                        return ((WrappedChatComponent) name.get()).getJson();
+                    }
                 }
-                Optional<?> name = (Optional<?>) value;
-                if (name.isPresent()) {
-                    return WrappedChatComponent.fromHandle(name.get()).getJson();
+            } else {
+                List<WrappedWatchableObject> objects = packet.getWatchableCollectionModifier().read(0);
+                if (objects == null) {
+                    return null;
+                }
+                for (WrappedWatchableObject object : objects) {
+                    if (object.getIndex() != 2) {
+                        continue;
+                    }
+                    Object value = object.getValue();
+                    if (!(value instanceof Optional)) {
+                        continue;
+                    }
+                    Optional<?> name = (Optional<?>) value;
+                    if (name.isPresent()) {
+                        return WrappedChatComponent.fromHandle(name.get()).getJson();
+                    }
                 }
             }
             return null;
@@ -242,20 +264,38 @@ public enum MessagePlace {
 
         @Override
         public void setMessage(PacketContainer packet, String message, boolean json) {
-            List<WrappedWatchableObject> objects = packet.getWatchableCollectionModifier().read(0);
-            if (objects == null) {
-                return;
-            }
-            for (WrappedWatchableObject object : objects) {
-                if (object.getIndex() != 2) {
-                    continue;
+            if (MinecraftVersion.atOrAbove(MessageEditorConstants.WILD_UPDATE_3_VERSION)) {
+                List<WrappedDataValue> dataValues = packet.getDataValueCollectionModifier().read(0);
+                if (dataValues == null) {
+                    return;
                 }
-                if (json) {
-                    object.setValue(Optional.of(WrappedChatComponent.fromJson(message).getHandle()));
-                } else {
-                    object.setValue(Optional.of(WrappedChatComponent.fromJson(MessageUtils.toJson(MessageUtils.toBaseComponents(message), true)).getHandle()));
+                for (WrappedDataValue dataValue : dataValues) {
+                    if (dataValue.getIndex() != 2) {
+                        continue;
+                    }
+                    if (json) {
+                        dataValue.setValue(Optional.of(WrappedChatComponent.fromJson(message)));
+                    } else {
+                        dataValue.setValue(Optional.of(WrappedChatComponent.fromJson(MessageUtils.toJson(MessageUtils.toBaseComponents(message), true))));
+                    }
+                    return;
                 }
-                return;
+            } else {
+                List<WrappedWatchableObject> objects = packet.getWatchableCollectionModifier().read(0);
+                if (objects == null) {
+                    return;
+                }
+                for (WrappedWatchableObject object : objects) {
+                    if (object.getIndex() != 2) {
+                        continue;
+                    }
+                    if (json) {
+                        object.setValue(Optional.of(WrappedChatComponent.fromJson(message).getHandle()));
+                    } else {
+                        object.setValue(Optional.of(WrappedChatComponent.fromJson(MessageUtils.toJson(MessageUtils.toBaseComponents(message), true)).getHandle()));
+                    }
+                    return;
+                }
             }
         }
     };

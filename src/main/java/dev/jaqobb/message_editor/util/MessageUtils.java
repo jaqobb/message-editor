@@ -230,14 +230,7 @@ public final class MessageUtils {
         }
     }
 
-    public static void logMessage(
-        Logger logger,
-        MessagePlace place,
-        Player player,
-        String messageId,
-        boolean json,
-        String message
-    ) {
+    public static void logMessage(Logger logger, MessagePlace place, Player player, String messageId, boolean json, String message) {
         logger.log(Level.INFO, "Place: " + place.getFriendlyName() + " (" + place.name() + ")");
         logger.log(Level.INFO, "Player: " + player.getName());
         if (json) {
