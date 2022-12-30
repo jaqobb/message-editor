@@ -237,7 +237,12 @@ public enum MessagePlace {
                     }
                     Optional<?> name = (Optional<?>) value;
                     if (name.isPresent()) {
-                        return ((WrappedChatComponent) name.get()).getJson();
+                        Object nameValue = name.get();
+                        if (nameValue instanceof WrappedChatComponent) {
+                            return ((WrappedChatComponent) nameValue).getJson();
+                        } else {
+                            return WrappedChatComponent.fromHandle(nameValue).getJson();
+                        }
                     }
                 }
             } else {
@@ -255,7 +260,12 @@ public enum MessagePlace {
                     }
                     Optional<?> name = (Optional<?>) value;
                     if (name.isPresent()) {
-                        return WrappedChatComponent.fromHandle(name.get()).getJson();
+                        Object nameValue = name.get();
+                        if (nameValue instanceof WrappedChatComponent) {
+                            return ((WrappedChatComponent) nameValue).getJson();
+                        } else {
+                            return WrappedChatComponent.fromHandle(nameValue).getJson();
+                        }
                     }
                 }
             }
