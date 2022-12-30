@@ -166,9 +166,8 @@ public final class PlayerInventoryClickListener implements Listener {
             this.plugin.clearCachedMessages();
             try {
                 if (file.createNewFile()) {
-                    Map<String, Object> data = edit.serialize();
                     YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-                    for (Map.Entry<String, Object> entry : data.entrySet()) {
+                    for (Map.Entry<String, Object> entry : edit.serialize().entrySet()) {
                         configuration.set(entry.getKey(), entry.getValue());
                     }
                     configuration.save(file);

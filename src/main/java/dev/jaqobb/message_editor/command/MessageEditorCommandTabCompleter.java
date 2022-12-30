@@ -59,6 +59,9 @@ public final class MessageEditorCommandTabCompleter implements TabCompleter {
             if ("deactivateall".startsWith(argument)) {
                 completions.add("deactivateall");
             }
+            if ("migrate".startsWith(argument)) {
+                completions.add("migrate");
+            }
         }
         if (arguments.length > 1 && (arguments[0].equalsIgnoreCase("activate") || (arguments[0].equalsIgnoreCase("deactivate")))) {
             for (int i = 1; i < arguments.length; i += 1) {
@@ -69,8 +72,8 @@ public final class MessageEditorCommandTabCompleter implements TabCompleter {
                     if (!place.isSupported()) {
                         continue;
                     }
-                    boolean modifiable = arguments[0].equalsIgnoreCase("activate") != place.isAnalyzing();
-                    if (modifiable) {
+                    boolean correctState = arguments[0].equalsIgnoreCase("activate") != place.isAnalyzing();
+                    if (correctState) {
                         completions.add(place.name());
                     }
                 }

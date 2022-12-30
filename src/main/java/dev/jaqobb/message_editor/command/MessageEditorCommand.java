@@ -26,12 +26,21 @@ package dev.jaqobb.message_editor.command;
 
 import dev.jaqobb.message_editor.MessageEditorPlugin;
 import dev.jaqobb.message_editor.message.MessageData;
+import dev.jaqobb.message_editor.message.MessageEdit;
 import dev.jaqobb.message_editor.message.MessagePlace;
 import dev.jaqobb.message_editor.util.MessageUtils;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
 
@@ -43,6 +52,7 @@ public final class MessageEditorCommand implements CommandExecutor {
         this.plugin = plugin;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] arguments) {
         if (!sender.hasPermission("messageeditor.use")) {
@@ -158,6 +168,47 @@ public final class MessageEditorCommand implements CommandExecutor {
             sender.sendMessage(MessageUtils.translateWithPrefix("&7You have deactivated analyzing all message places."));
             return true;
         }
+        if (arguments[0].equalsIgnoreCase("migrate")) {
+            if (arguments.length != 1) {
+                sender.sendMessage(MessageUtils.translateWithPrefix("&7Correct usage: &e/" + label + " migrate&7."));
+                return true;
+            }
+            if (this.plugin.getConfig().getList("message-edits").isEmpty()) {
+                sender.sendMessage(MessageUtils.translateWithPrefix("&cThere are no message edits to migrate."));
+                return true;
+            }
+            int migratedMessageEdits = 0;
+            for (MessageEdit messageEdit : (List<MessageEdit>) this.plugin.getConfig().getList("message-edits")) {
+                String messageId = MessageUtils.generateId(messageEdit.getMessageBeforePlace(), messageEdit.getMessageBefore());
+                File file = new File(this.plugin.getDataFolder(), "edits" + File.separator + messageId + ".yml");
+                try {
+                    if (!file.createNewFile()) {
+                        sender.sendMessage(MessageUtils.translateWithPrefix("&cCould not create message edit file for message edit '&7" + messageId + "&c'."));
+                        continue;
+                    }
+                } catch (IOException exception) {
+                    this.plugin.getLogger().log(Level.WARNING, "Could not create message edit file for message edit '" + messageId + "'.", exception);
+                    sender.sendMessage(MessageUtils.translateWithPrefix("&cCould not create message edit file for message edit '" + messageId + "&c', check console for more information."));
+                    continue;
+                }
+                FileConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+                for (Map.Entry<String, Object> entry : messageEdit.serialize().entrySet()) {
+                    configuration.set(entry.getKey(), entry.getValue());
+                }
+                try {
+                    configuration.save(file);
+                } catch (IOException exception) {
+                    this.plugin.getLogger().log(Level.WARNING, "Could not save message edit file for message edit '" + messageId + "'.", exception);
+                    sender.sendMessage(MessageUtils.translateWithPrefix("&cCould not save message edit file for message edit '" + messageId + "&c', check console for more information."));
+                    continue;
+                }
+                migratedMessageEdits += 1;
+            }
+            this.plugin.getConfig().set("message-edits", new ArrayList<>());
+            this.plugin.saveConfig();
+            sender.sendMessage(MessageUtils.translateWithPrefix("&7You have migrated &e" + migratedMessageEdits + " message edits."));
+            return true;
+        }
         this.sendHelpMessage(sender, label);
         return true;
     }
@@ -169,6 +220,7 @@ public final class MessageEditorCommand implements CommandExecutor {
         target.sendMessage(MessageUtils.translateWithPrefix("&e/message-editor activate <message places> &7- Activates analyzing specified message place(s)."));
         target.sendMessage(MessageUtils.translateWithPrefix("&e/message-editor deactivate <message places> &7- Dectivates analyzing specified message place(s)."));
         target.sendMessage(MessageUtils.translateWithPrefix("&e/message-editor deactivate-all &7- Deactivates analyzing all message places."));
+        target.sendMessage(MessageUtils.translateWithPrefix("&e/message-editor migrate &7- Migrates old message edits to the new per-file system."));
         target.sendMessage(MessageUtils.translateWithPrefix(""));
         this.sendAvailableMessagePlaces(target);
     }
