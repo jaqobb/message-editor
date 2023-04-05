@@ -105,7 +105,7 @@ public final class MessageEditorPlugin extends JavaPlugin {
                 requiredVersion = version;
             }
         }
-        if (!MinecraftVersion.atOrAbove(requiredVersion)) {
+        if (!requiredVersion.atOrAbove()) {
             this.getLogger().log(Level.WARNING, "Your server does not support any message places.");
             this.getLogger().log(Level.WARNING, "The minimum required server version is " + requiredVersion.getVersion() + ".");
             this.getLogger().log(Level.WARNING, "Disabling plugin...");

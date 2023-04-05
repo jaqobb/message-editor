@@ -70,7 +70,7 @@ public enum MessagePlace {
         @Override
         public String getMessage(PacketContainer packet) {
             // <1.19. 1.19+ uses system chat packet for action bar messages.
-            if (!MinecraftVersion.atOrAbove(MinecraftVersion.WILD_UPDATE)) {
+            if (!MinecraftVersion.WILD_UPDATE.atOrAbove()) {
                 return MessageUtils.retrieveMessage(packet, PacketType.Play.Server.CHAT);
             }
             return MessageUtils.retrieveMessage(packet, PacketType.Play.Server.SYSTEM_CHAT);
@@ -79,7 +79,7 @@ public enum MessagePlace {
         @Override
         public void setMessage(PacketContainer packet, String message, boolean json) {
             // <1.19. 1.19+ uses system chat packet for action bar messages.
-            if (!MinecraftVersion.atOrAbove(MinecraftVersion.WILD_UPDATE)) {
+            if (!MinecraftVersion.WILD_UPDATE.atOrAbove()) {
                 MessageUtils.updateMessage(packet, PacketType.Play.Server.CHAT, message, json);
                 return;
             }
@@ -222,7 +222,7 @@ public enum MessagePlace {
     ENTITY_NAME("EN", "Entity Name", MinecraftVersion.BOUNTIFUL_UPDATE, Collections.singleton(PacketType.Play.Server.ENTITY_METADATA)) {
         @Override
         public String getMessage(PacketContainer packet) {
-            if (MinecraftVersion.atOrAbove(MessageEditorConstants.WILD_UPDATE_3_VERSION)) {
+            if (MessageEditorConstants.WILD_UPDATE_3_VERSION.atOrAbove()) {
                 List<WrappedDataValue> dataValues = packet.getDataValueCollectionModifier().read(0);
                 if (dataValues == null) {
                     return null;
@@ -274,7 +274,7 @@ public enum MessagePlace {
 
         @Override
         public void setMessage(PacketContainer packet, String message, boolean json) {
-            if (MinecraftVersion.atOrAbove(MessageEditorConstants.WILD_UPDATE_3_VERSION)) {
+            if (MessageEditorConstants.WILD_UPDATE_3_VERSION.atOrAbove()) {
                 List<WrappedDataValue> dataValues = packet.getDataValueCollectionModifier().read(0);
                 if (dataValues == null) {
                     return;
@@ -344,7 +344,7 @@ public enum MessagePlace {
         this.packetTypes = packetTypes;
         this.chatType = chatType;
         this.chatTypeEnum = chatTypeEnum;
-        this.supported = MinecraftVersion.atOrAbove(this.minimumRequiredMinecraftVersion);
+        this.supported = this.minimumRequiredMinecraftVersion.atOrAbove();
         this.analyzing = false;
     }
 

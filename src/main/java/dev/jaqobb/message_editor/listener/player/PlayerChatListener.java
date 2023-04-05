@@ -34,7 +34,8 @@ import dev.jaqobb.message_editor.message.MessageEditData;
 import dev.jaqobb.message_editor.message.MessagePlace;
 import dev.jaqobb.message_editor.util.MessageUtils;
 import java.io.File;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.bukkit.entity.Player;
@@ -167,18 +168,18 @@ public final class PlayerChatListener implements Listener {
                 player.playSound(player.getLocation(), XSound.BLOCK_ANVIL_HIT.parseSound(), 1.0F, 1.0F);
                 player.sendMessage(MessageUtils.translateWithPrefix("&cThis message place is not supported by your server or is unavailable."));
                 player.sendMessage(MessageUtils.translateWithPrefix("&7Available message places:"));
-                if (!MinecraftVersion.atOrAbove(MinecraftVersion.WILD_UPDATE)) {
-                    for (MessagePlace availableMessagePlace : Arrays.asList(MessagePlace.GAME_CHAT, MessagePlace.SYSTEM_CHAT, MessagePlace.ACTION_BAR)) {
-                        player.sendMessage(MessageUtils.translateWithPrefix("&7- &e" + availableMessagePlace.name() + " &7(&e" + availableMessagePlace.getFriendlyName() + "&7)"));
-                    }
-                } else {
-                    for (MessagePlace availableMessagePlace : Arrays.asList(MessagePlace.SYSTEM_CHAT, MessagePlace.ACTION_BAR)) {
-                        player.sendMessage(MessageUtils.translateWithPrefix("&7- &e" + availableMessagePlace.name() + " &7(&e" + availableMessagePlace.getFriendlyName() + "&7)"));
-                    }
+                Collection<MessagePlace> availableMessagePlaces = new ArrayList<>(3);
+                if (!MinecraftVersion.WILD_UPDATE.atOrAbove()) {
+                    availableMessagePlaces.add(MessagePlace.GAME_CHAT);
+                }
+                availableMessagePlaces.add(MessagePlace.SYSTEM_CHAT);
+                availableMessagePlaces.add(MessagePlace.ACTION_BAR);
+                for (MessagePlace availableMessagePlace : availableMessagePlaces) {
+                    player.sendMessage(MessageUtils.translateWithPrefix("&7- &e" + availableMessagePlace.name() + " &7(&e" + availableMessagePlace.getFriendlyName() + "&7)"));
                 }
                 return;
             }
-            if (place == MessagePlace.GAME_CHAT && MinecraftVersion.atOrAbove(MinecraftVersion.WILD_UPDATE)) {
+            if (place == MessagePlace.GAME_CHAT && MinecraftVersion.WILD_UPDATE.atOrAbove()) {
                 place = MessagePlace.SYSTEM_CHAT;
             }
             editData.setCurrentMode(MessageEditData.Mode.NONE);

@@ -211,7 +211,7 @@ public final class MenuManager {
         MessagePlace newPlace = editData.getNewMessagePlace();
         newMessagePlaceItemMetaLore.add(MessageUtils.translate("&7ID: &e" + newPlace.name()));
         newMessagePlaceItemMetaLore.add(MessageUtils.translate("&7Friendly name: &e" + newPlace.getFriendlyName()));
-        if (MinecraftVersion.atOrAbove(MinecraftVersion.WILD_UPDATE)) {
+        if (!MinecraftVersion.WILD_UPDATE.atOrAbove()) {
             if (newPlace == MessagePlace.GAME_CHAT || newPlace == MessagePlace.SYSTEM_CHAT || newPlace == MessagePlace.ACTION_BAR) {
                 newMessagePlaceItemMetaLore.add("");
                 newMessagePlaceItemMetaLore.add(MessageUtils.translate("&7Click to edit new message place."));

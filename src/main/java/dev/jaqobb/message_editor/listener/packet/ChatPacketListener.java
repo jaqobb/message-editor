@@ -63,7 +63,7 @@ public final class ChatPacketListener extends PacketAdapter {
             return;
         }
         PacketContainer packet = event.getPacket().shallowClone();
-        if (packet.getType() == PacketType.Play.Server.CHAT && MinecraftVersion.atOrAbove(MinecraftVersion.WILD_UPDATE)) {
+        if (packet.getType() == PacketType.Play.Server.CHAT && MinecraftVersion.WILD_UPDATE.atOrAbove()) {
             return;
         }
         Player player = event.getPlayer();
@@ -80,7 +80,7 @@ public final class ChatPacketListener extends PacketAdapter {
         if (cachedMessage == null) {
             for (MessageEdit edit : this.getPlugin().getMessageEdits()) {
                 MessagePlace beforePlace = edit.getMessageBeforePlace();
-                if (beforePlace == MessagePlace.GAME_CHAT && MinecraftVersion.atOrAbove(MinecraftVersion.WILD_UPDATE)) {
+                if (beforePlace == MessagePlace.GAME_CHAT && MinecraftVersion.WILD_UPDATE.atOrAbove()) {
                     beforePlace = MessagePlace.SYSTEM_CHAT;
                 }
                 if (beforePlace != null && beforePlace != place) {

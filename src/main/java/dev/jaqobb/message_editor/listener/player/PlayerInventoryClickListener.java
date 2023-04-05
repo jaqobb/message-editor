@@ -33,7 +33,8 @@ import dev.jaqobb.message_editor.message.MessagePlace;
 import dev.jaqobb.message_editor.util.MessageUtils;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.logging.Level;
@@ -124,14 +125,14 @@ public final class PlayerInventoryClickListener implements Listener {
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
             player.sendMessage(MessageUtils.translateWithPrefix("&7Enter new message place, or enter '&edone&7' if you changed your mind and no longer want to edit message place."));
             player.sendMessage(MessageUtils.translateWithPrefix("&7Available message places:"));
-            if (!MinecraftVersion.atOrAbove(MinecraftVersion.WILD_UPDATE)) {
-                for (MessagePlace availableMessagePlace : Arrays.asList(MessagePlace.GAME_CHAT, MessagePlace.SYSTEM_CHAT, MessagePlace.ACTION_BAR)) {
-                    player.sendMessage(MessageUtils.translateWithPrefix("&7- &e" + availableMessagePlace.name() + " &7(&e" + availableMessagePlace.getFriendlyName() + "&7)"));
-                }
-            } else {
-                for (MessagePlace availableMessagePlace : Arrays.asList(MessagePlace.SYSTEM_CHAT, MessagePlace.ACTION_BAR)) {
-                    player.sendMessage(MessageUtils.translateWithPrefix("&7- &e" + availableMessagePlace.name() + " &7(&e" + availableMessagePlace.getFriendlyName() + "&7)"));
-                }
+            Collection<MessagePlace> availableMessagePlaces = new ArrayList<>(3);
+            if (!MinecraftVersion.WILD_UPDATE.atOrAbove()) {
+                availableMessagePlaces.add(MessagePlace.GAME_CHAT);
+            }
+            availableMessagePlaces.add(MessagePlace.SYSTEM_CHAT);
+            availableMessagePlaces.add(MessagePlace.ACTION_BAR);
+            for (MessagePlace availableMessagePlace : availableMessagePlaces) {
+                player.sendMessage(MessageUtils.translateWithPrefix("&7- &e" + availableMessagePlace.name() + " &7(&e" + availableMessagePlace.getFriendlyName() + "&7)"));
             }
         } else if (slot == 48) {
             player.closeInventory();
