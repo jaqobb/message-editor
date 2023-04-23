@@ -79,7 +79,6 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 // TODO: Fix disconnect message place (it just does not seem to be working at all?)?
-// TODO: Fix Message Editor not working on Paper
 public final class MessageEditorPlugin extends JavaPlugin {
 
     static {
