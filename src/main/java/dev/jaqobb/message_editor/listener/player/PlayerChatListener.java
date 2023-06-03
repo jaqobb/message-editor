@@ -24,25 +24,30 @@
 
 package dev.jaqobb.message_editor.listener.player;
 
-import com.comphenix.protocol.utility.MinecraftVersion;
-import com.cryptomorin.xseries.XSound;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
-import dev.jaqobb.message_editor.MessageEditorConstants;
-import dev.jaqobb.message_editor.MessageEditorPlugin;
-import dev.jaqobb.message_editor.message.MessageEditData;
-import dev.jaqobb.message_editor.message.MessagePlace;
-import dev.jaqobb.message_editor.util.MessageUtils;
 import java.io.File;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+
+import com.comphenix.protocol.utility.MinecraftVersion;
+import com.cryptomorin.xseries.XSound;
+import com.google.gson.JsonParseException;
+import com.google.gson.internal.Streams;
+import com.google.gson.stream.JsonReader;
+
+import dev.jaqobb.message_editor.MessageEditorConstants;
+import dev.jaqobb.message_editor.MessageEditorPlugin;
+import dev.jaqobb.message_editor.message.MessageEditData;
+import dev.jaqobb.message_editor.message.MessagePlace;
+import dev.jaqobb.message_editor.util.MessageUtils;
 
 public final class PlayerChatListener implements Listener {
 
@@ -73,9 +78,12 @@ public final class PlayerChatListener implements Listener {
                 if (!editData.getNewMessageCache().isEmpty()) {
                     editData.setNewMessage(editData.getNewMessageCache());
                     try {
-                        JsonParser.parseString(editData.getNewMessage());
+                        // Streams is being used instead of JsonParser
+                        // because JsonParse parses the string in a lenient mode
+                        // which we don't want.
+                        Streams.parse(new JsonReader(new StringReader(editData.getNewMessage())));
                         editData.setNewMessageJson(true);
-                    } catch (JsonSyntaxException exception) {
+                    } catch (JsonParseException exception) {
                         editData.setNewMessage(MessageUtils.translate(editData.getNewMessage()));
                         editData.setNewMessageJson(false);
                     }
@@ -112,9 +120,12 @@ public final class PlayerChatListener implements Listener {
             editData.setOldMessage(editData.getOldMessage().replaceFirst(Pattern.quote(patternKey), Matcher.quoteReplacement(patternValue.replace("\\", "\\\\"))));
             editData.setOldMessagePattern(editData.getOldMessagePattern().replaceFirst(Pattern.quote(patternKey.replaceAll(MessageEditorConstants.SPECIAL_REGEX_CHARACTERS, "\\\\$0")), Matcher.quoteReplacement(patternValue)));
             try {
-                JsonParser.parseString(editData.getOldMessage());
+                // Streams is being used instead of JsonParser
+                // because JsonParse parses the string in a lenient mode
+                // which we don't want.
+                Streams.parse(new JsonReader(new StringReader(editData.getOldMessage())));
                 editData.setOldMessageJson(true);
-            } catch (JsonSyntaxException exception) {
+            } catch (JsonParseException exception) {
                 editData.setOldMessage(MessageUtils.translate(editData.getOldMessage()));
                 editData.setOldMessagePattern(MessageUtils.translate(editData.getOldMessagePattern()));
                 editData.setOldMessageJson(false);
@@ -147,9 +158,12 @@ public final class PlayerChatListener implements Listener {
             editData.setCurrentMode(MessageEditData.Mode.EDITING_NEW_MESSAGE_KEY);
             editData.setNewMessage(editData.getNewMessage().replaceFirst(Pattern.quote(key), Matcher.quoteReplacement(value)));
             try {
-                JsonParser.parseString(editData.getNewMessage());
+                // Streams is being used instead of JsonParser
+                // because JsonParse parses the string in a lenient mode
+                // which we don't want.
+                Streams.parse(new JsonReader(new StringReader(editData.getNewMessage())));
                 editData.setNewMessageJson(true);
-            } catch (JsonSyntaxException exception) {
+            } catch (JsonParseException exception) {
                 editData.setNewMessage(MessageUtils.translate(editData.getNewMessage()));
                 editData.setNewMessageJson(false);
             }

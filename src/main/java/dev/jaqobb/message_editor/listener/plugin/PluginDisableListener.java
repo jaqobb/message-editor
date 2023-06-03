@@ -24,14 +24,16 @@
 
 package dev.jaqobb.message_editor.listener.plugin;
 
-import dev.jaqobb.message_editor.MessageEditorConstants;
-import dev.jaqobb.message_editor.MessageEditorPlugin;
 import java.util.logging.Level;
+
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.plugin.Plugin;
+
+import dev.jaqobb.message_editor.MessageEditorConstants;
+import dev.jaqobb.message_editor.MessageEditorPlugin;
 
 public final class PluginDisableListener implements Listener {
 

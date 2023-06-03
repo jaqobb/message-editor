@@ -24,39 +24,54 @@
 
 package dev.jaqobb.message_editor.util;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.wrappers.WrappedChatComponent;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
-import dev.jaqobb.message_editor.MessageEditorConstants;
-import dev.jaqobb.message_editor.message.MessagePlace;
+import java.io.StringReader;
 import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
+
+import org.bukkit.entity.Player;
+
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.WrappedChatComponent;
+import com.google.gson.JsonParseException;
+import com.google.gson.internal.Streams;
+import com.google.gson.stream.JsonReader;
+
+import dev.jaqobb.message_editor.MessageEditorConstants;
+import dev.jaqobb.message_editor.message.MessagePlace;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
-import org.bukkit.entity.Player;
 
 public final class MessageUtils {
 
     private static final char[] CHARACTERS = {'q', 'Q', 'w', 'W', 'e', 'E', 'r', 'R', 't', 'T', 'y', 'Y', 'u', 'U', 'i', 'I', 'o', 'O', 'p', 'P', 'a', 'A', 's', 'S', 'd', 'D', 'f', 'F', 'g', 'G', 'h', 'H', 'j', 'J', 'k', 'K', 'l', 'L', 'z', 'Z', 'x', 'X', 'c', 'C', 'v', 'V', 'b', 'B', 'n', 'N', 'm', 'M', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '_'};
 
-    private static final BaseComponent[] EMPTY_BASE_COMPONENT_ARRAY = new BaseComponent[0];
     private static final boolean HEX_COLORS_SUPPORTED;
+    private static final boolean ADVENTURE_PRESENT;
 
     static {
         boolean hexColorsSupported;
+        boolean adventurePresent;
         try {
             ChatColor.class.getDeclaredMethod("of", String.class);
             hexColorsSupported = true;
         } catch (NoSuchMethodException exception) {
             hexColorsSupported = false;
         }
+        try {
+            Class.forName("net.kyori.adventure.Adventure");
+            adventurePresent = true;
+        } catch (ClassNotFoundException exception) {
+            adventurePresent = false;
+        }
         HEX_COLORS_SUPPORTED = hexColorsSupported;
+        ADVENTURE_PRESENT = adventurePresent;
     }
 
     private MessageUtils() {
@@ -198,7 +213,7 @@ public final class MessageUtils {
                 }
             }
         }
-        return new BaseComponent[]{finalComponent};
+        return new BaseComponent[] {finalComponent};
     }
 
     // Using ComponentSerializer#toString when the amount of components is greater than 1
@@ -223,9 +238,12 @@ public final class MessageUtils {
             return false;
         }
         try {
-            JsonParser.parseString(string);
+            // Streams is being used instead of JsonParser
+            // because JsonParse parses the string in a lenient mode
+            // which we don't want.
+            Streams.parse(new JsonReader(new StringReader(string)));
             return true;
-        } catch (JsonSyntaxException exception) {
+        } catch (JsonParseException exception) {
             return false;
         }
     }
@@ -259,6 +277,10 @@ public final class MessageUtils {
                 }
             }
         } else if (simulatedPacketType == PacketType.Play.Server.SYSTEM_CHAT) {
+            if (ADVENTURE_PRESENT) {
+                Component component = packet.getSpecificModifier(Component.class).read(0);
+                return GsonComponentSerializer.gson().serialize(component);
+            }
             return packet.getStrings().read(0);
         }
         return null;
@@ -280,7 +302,9 @@ public final class MessageUtils {
                 }
             }
         } else if (simulatedPacketType == PacketType.Play.Server.SYSTEM_CHAT) {
-            if (json) {
+            if (ADVENTURE_PRESENT) {
+                packet.getSpecificModifier(Component.class).write(0, GsonComponentSerializer.gson().deserialize(message));
+            } else if (json) {
                 packet.getStrings().write(0, message);
             } else {
                 packet.getStrings().write(0, toJson(toBaseComponents(message), true));

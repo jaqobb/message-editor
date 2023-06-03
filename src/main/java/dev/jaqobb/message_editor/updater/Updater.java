@@ -24,15 +24,17 @@
 
 package dev.jaqobb.message_editor.updater;
 
-import dev.jaqobb.message_editor.MessageEditorPlugin;
-import dev.jaqobb.message_editor.util.MessageUtils;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
+
 import javax.net.ssl.HttpsURLConnection;
+
+import dev.jaqobb.message_editor.MessageEditorPlugin;
+import dev.jaqobb.message_editor.util.MessageUtils;
 
 public final class Updater implements Runnable {
 

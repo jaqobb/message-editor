@@ -84,6 +84,7 @@ repositories {
 
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.19.4-R0.1-SNAPSHOT")
+    compileOnly("net.kyori:adventure-platform-bukkit:4.3.0")
     compileOnly("com.comphenix.protocol:ProtocolLib:5.0.0")
     compileOnly("me.clip:placeholderapi:2.11.3")
     implementation("com.github.cryptomorin:XSeries:9.3.1")
