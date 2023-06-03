@@ -1,13 +1,15 @@
-# Message Editor 
+# Message Editor
+
 ![Workflow: build](https://github.com/jaqobb/message-editor/workflows/build/badge.svg) ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 
 Message Editor is a Spigot plugin that allows editing in-game messages that were previously unmodifiable, in easy and fast way.
 
 Click [here](https://www.spigotmc.org/resources/message-editor.82154/) to get to the project's SpigotMC page.
 
-### Features
+## Features
 
 Message Editor supports:
+
 * Editing chat messages - since 1.0.0,
 * Editing action bar messages - since 1.0.0,
 * Editing kick/disconnect messages - since 1.1.0,
@@ -24,19 +26,19 @@ Message Editor supports:
 * Editing entity names - since 2.4.0,
 * Per-file message edit system - since 2.5.0.
 
-### Showcase
+## Showcase
 
 Images show first the original message and then the same message but after being edited using Message Editor.
 
-![](images/showcase_before_2.png)
+![Showcase](images/showcase_before_2.png)
 
-![](images/showcase_after_2.png)
+![Showcase](images/showcase_after_2.png)
 
-![](images/showcase_before.png)
+![Showcase](images/showcase_before.png)
 
-![](images/showcase_after.png)
+![Showcase](images/showcase_after.png)
 
-### Usage
+## Usage
 
 Basic message editing:
 
@@ -50,10 +52,10 @@ Advanced message editing:
 
 [![Advanced message editing](https://img.youtube.com/vi/tUDvZOxwlok/0.jpg)](https://www.youtube.com/watch?v=tUDvZOxwlok)
 
-### Requirements
+## Requirements
 
 Message Editor requires:
+
 * Server version at least 1.8,
 * The latest version of ProtocolLib,
-* PlaceholderAPI (optional) - if you want to use placeholders in edited messages,
-* MVdWPlaceholderAPI (optional) if you want to use placeholders in edited messages.
+* PlaceholderAPI (optional) - if you want to use placeholders in edited messages.
