@@ -79,7 +79,7 @@ public final class PlayerChatListener implements Listener {
                     editData.setNewMessage(editData.getNewMessageCache());
                     try {
                         // Streams is being used instead of JsonParser
-                        // because JsonParse parses the string in a lenient mode
+                        // because JsonParser parses the string in lenient mode
                         // which we don't want.
                         Streams.parse(new JsonReader(new StringReader(editData.getNewMessage())));
                         editData.setNewMessageJson(true);
@@ -121,7 +121,7 @@ public final class PlayerChatListener implements Listener {
             editData.setOldMessagePattern(editData.getOldMessagePattern().replaceFirst(Pattern.quote(patternKey.replaceAll(MessageEditorConstants.SPECIAL_REGEX_CHARACTERS, "\\\\$0")), Matcher.quoteReplacement(patternValue)));
             try {
                 // Streams is being used instead of JsonParser
-                // because JsonParse parses the string in a lenient mode
+                // because JsonParser parses the string in lenient mode
                 // which we don't want.
                 Streams.parse(new JsonReader(new StringReader(editData.getOldMessage())));
                 editData.setOldMessageJson(true);
@@ -159,7 +159,7 @@ public final class PlayerChatListener implements Listener {
             editData.setNewMessage(editData.getNewMessage().replaceFirst(Pattern.quote(key), Matcher.quoteReplacement(value)));
             try {
                 // Streams is being used instead of JsonParser
-                // because JsonParse parses the string in a lenient mode
+                // because JsonParser parses the string in lenient mode
                 // which we don't want.
                 Streams.parse(new JsonReader(new StringReader(editData.getNewMessage())));
                 editData.setNewMessageJson(true);

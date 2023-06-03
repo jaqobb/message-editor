@@ -239,7 +239,7 @@ public final class MessageUtils {
         }
         try {
             // Streams is being used instead of JsonParser
-            // because JsonParse parses the string in a lenient mode
+            // because JsonParser parses the string in lenient mode
             // which we don't want.
             Streams.parse(new JsonReader(new StringReader(string)));
             return true;
