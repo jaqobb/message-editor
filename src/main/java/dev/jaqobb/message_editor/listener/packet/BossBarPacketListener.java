@@ -40,10 +40,10 @@ public final class BossBarPacketListener extends CommonPacketListener {
     @Override
     public boolean shouldProcess(PacketContainer packet) {
         if (!MinecraftVersion.CAVES_CLIFFS_1.atOrAbove()) {
-            BossBarAction action = packet.getEnumModifier(BossBarAction.class, 1).read(0);
+            BossBarAction action = packet.getEnumModifier(BossBarAction.class, 1).readSafely(0);
             return action == BossBarAction.ADD || action == BossBarAction.UPDATE_NAME;
         }
         // Since there's a chat component, it means we are doing using it for something.
-        return packet.getStructures().read(1).getChatComponents().size() == 1;
+        return packet.getStructures().readSafely(1).getChatComponents().size() == 1;
     }
 }

@@ -267,28 +267,32 @@ public final class MessageUtils {
 
     public static String retrieveMessage(PacketContainer packet, PacketType simulatedPacketType) {
         if (simulatedPacketType == PacketType.Play.Server.CHAT) {
-            WrappedChatComponent message = packet.getChatComponents().read(0);
+            WrappedChatComponent message = packet.getChatComponents().readSafely(0);
             if (message != null) {
                 return message.getJson();
             } else if (packet.getSpecificModifier(BaseComponent[].class).size() == 1) {
-                BaseComponent[] messageComponents = packet.getSpecificModifier(BaseComponent[].class).read(0);
+                BaseComponent[] messageComponents = packet.getSpecificModifier(BaseComponent[].class).readSafely(0);
                 if (messageComponents != null) {
                     return toJson(messageComponents, false);
                 }
             }
         } else if (simulatedPacketType == PacketType.Play.Server.SYSTEM_CHAT) {
             if (ADVENTURE_PRESENT) {
-                Component component = packet.getSpecificModifier(Component.class).read(0);
-                return GsonComponentSerializer.gson().serialize(component);
+                // Additional check for safety in case adventure is detected but packets do not use it.
+                // If it is not used, fall back to the general method.
+                Component component = packet.getSpecificModifier(Component.class).readSafely(0);
+                if (component != null) {
+                    return GsonComponentSerializer.gson().serialize(component);
+                }
             }
-            return packet.getStrings().read(0);
+            return packet.getStrings().readSafely(0);
         }
         return null;
     }
 
     public static void updateMessage(PacketContainer packet, PacketType simulatedPacketType, String message, boolean json) {
         if (simulatedPacketType == PacketType.Play.Server.CHAT) {
-            if (packet.getChatComponents().read(0) != null) {
+            if (packet.getChatComponents().readSafely(0) != null) {
                 if (json) {
                     packet.getChatComponents().write(0, WrappedChatComponent.fromJson(message));
                 } else {
@@ -303,8 +307,13 @@ public final class MessageUtils {
             }
         } else if (simulatedPacketType == PacketType.Play.Server.SYSTEM_CHAT) {
             if (ADVENTURE_PRESENT) {
-                packet.getSpecificModifier(Component.class).write(0, GsonComponentSerializer.gson().deserialize(message));
-            } else if (json) {
+                // Additional check for safety in case adventure is detected but packets do not use it.
+                // If it is not used, fall back to the general method.
+                if (packet.getSpecificModifier(Component.class).readSafely(0) != null) {
+                    packet.getSpecificModifier(Component.class).write(0, GsonComponentSerializer.gson().deserialize(message));
+                }
+            }
+            if (json) {
                 packet.getStrings().write(0, message);
             } else {
                 packet.getStrings().write(0, toJson(toBaseComponents(message), true));

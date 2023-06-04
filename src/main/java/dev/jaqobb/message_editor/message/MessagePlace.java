@@ -95,7 +95,7 @@ public enum MessagePlace {
 
         @Override
         public String getMessage(PacketContainer packet) {
-            return packet.getChatComponents().read(0).getJson();
+            return packet.getChatComponents().readSafely(0).getJson();
         }
 
         @Override
@@ -111,7 +111,7 @@ public enum MessagePlace {
 
         @Override
         public String getMessage(PacketContainer packet) {
-            return packet.getChatComponents().read(0).getJson();
+            return packet.getChatComponents().readSafely(0).getJson();
         }
 
         @Override
@@ -128,9 +128,9 @@ public enum MessagePlace {
         @Override
         public String getMessage(PacketContainer packet) {
             if (!MinecraftVersion.CAVES_CLIFFS_1.atOrAbove()) {
-                return packet.getChatComponents().read(0).getJson();
+                return packet.getChatComponents().readSafely(0).getJson();
             }
-            return packet.getStructures().read(1).getChatComponents().read(0).getJson();
+            return packet.getStructures().readSafely(1).getChatComponents().readSafely(0).getJson();
         }
 
         @Override
@@ -143,9 +143,9 @@ public enum MessagePlace {
                 }
             }
             if (json) {
-                packet.getStructures().read(1).getChatComponents().write(0, WrappedChatComponent.fromJson(message));
+                packet.getStructures().readSafely(1).getChatComponents().write(0, WrappedChatComponent.fromJson(message));
             } else {
-                packet.getStructures().read(1).getChatComponents().write(0, WrappedChatComponent.fromJson(MessageUtils.toJson(MessageUtils.toBaseComponents(message), true)));
+                packet.getStructures().readSafely(1).getChatComponents().write(0, WrappedChatComponent.fromJson(MessageUtils.toJson(MessageUtils.toBaseComponents(message), true)));
             }
         }
     },
@@ -154,9 +154,9 @@ public enum MessagePlace {
         @Override
         public String getMessage(PacketContainer packet) {
             if (packet.getStrings().size() == 2) {
-                return packet.getStrings().read(1);
+                return packet.getStrings().readSafely(1);
             }
-            return packet.getChatComponents().read(0).getJson();
+            return packet.getChatComponents().readSafely(0).getJson();
         }
 
         @Override
@@ -176,7 +176,7 @@ public enum MessagePlace {
 
         @Override
         public String getMessage(PacketContainer packet) {
-            return packet.getStrings().read(0);
+            return packet.getStrings().readSafely(0);
         }
 
         @Override
@@ -192,7 +192,7 @@ public enum MessagePlace {
 
         @Override
         public String getMessage(PacketContainer packet) {
-            return packet.getChatComponents().read(0).getJson();
+            return packet.getChatComponents().readSafely(0).getJson();
         }
 
         @Override
@@ -237,7 +237,7 @@ public enum MessagePlace {
         @Override
         public String getMessage(PacketContainer packet) {
             if (MessageEditorConstants.WILD_UPDATE_3_VERSION.atOrAbove()) {
-                List<WrappedDataValue> dataValues = packet.getDataValueCollectionModifier().read(0);
+                List<WrappedDataValue> dataValues = packet.getDataValueCollectionModifier().readSafely(0);
                 if (dataValues == null) {
                     return null;
                 }
@@ -260,7 +260,7 @@ public enum MessagePlace {
                     }
                 }
             } else {
-                List<WrappedWatchableObject> objects = packet.getWatchableCollectionModifier().read(0);
+                List<WrappedWatchableObject> objects = packet.getWatchableCollectionModifier().readSafely(0);
                 if (objects == null) {
                     return null;
                 }
@@ -289,7 +289,7 @@ public enum MessagePlace {
         @Override
         public void setMessage(PacketContainer packet, String message, boolean json) {
             if (MessageEditorConstants.WILD_UPDATE_3_VERSION.atOrAbove()) {
-                List<WrappedDataValue> dataValues = packet.getDataValueCollectionModifier().read(0);
+                List<WrappedDataValue> dataValues = packet.getDataValueCollectionModifier().readSafely(0);
                 if (dataValues == null) {
                     return;
                 }
@@ -305,7 +305,7 @@ public enum MessagePlace {
                     return;
                 }
             } else {
-                List<WrappedWatchableObject> objects = packet.getWatchableCollectionModifier().read(0);
+                List<WrappedWatchableObject> objects = packet.getWatchableCollectionModifier().readSafely(0);
                 if (objects == null) {
                     return;
                 }
@@ -412,15 +412,15 @@ public enum MessagePlace {
     public static MessagePlace fromPacket(PacketContainer packet) {
         if (packet.getType() == PacketType.Play.Server.SYSTEM_CHAT) {
             // Hacky way to ensure action bar messages on 1.19+ return correct message place.
-            return fromPacketType(PacketType.Play.Server.CHAT, (byte) (packet.getBooleans().read(0) ? 2 : 1));
+            return fromPacketType(PacketType.Play.Server.CHAT, (byte) (packet.getBooleans().readSafely(0) ? 2 : 1));
         }
         if (packet.getType() != PacketType.Play.Server.CHAT) {
             return fromPacketType(packet.getType());
         }
         if (packet.getBytes().size() == 1) {
-            return fromPacketType(packet.getType(), packet.getBytes().read(0));
+            return fromPacketType(packet.getType(), packet.getBytes().readSafely(0));
         }
-        return fromPacketType(packet.getType(), packet.getChatTypes().read(0));
+        return fromPacketType(packet.getType(), packet.getChatTypes().readSafely(0));
     }
 
     public static MessagePlace fromPacketType(PacketType packetType) {

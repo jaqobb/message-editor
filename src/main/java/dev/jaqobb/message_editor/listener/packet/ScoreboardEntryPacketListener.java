@@ -38,6 +38,6 @@ public final class ScoreboardEntryPacketListener extends CommonPacketListener {
 
     @Override
     public boolean shouldProcess(PacketContainer packet) {
-        return packet.getScoreboardActions().read(0) != EnumWrappers.ScoreboardAction.REMOVE;
+        return packet.getScoreboardActions().readSafely(0) != EnumWrappers.ScoreboardAction.REMOVE;
     }
 }

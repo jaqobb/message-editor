@@ -68,9 +68,9 @@ public final class InventoryItemsPacketListener extends PacketAdapter {
         PacketContainer packet = event.getPacket().shallowClone();
         Iterable<ItemStack> items;
         if (packet.getItemArrayModifier().size() == 1) {
-            items = Arrays.asList(packet.getItemArrayModifier().read(0));
+            items = Arrays.asList(packet.getItemArrayModifier().readSafely(0));
         } else {
-            items = packet.getItemListModifier().read(0);
+            items = packet.getItemListModifier().readSafely(0);
         }
         boolean update = false;
         for (ItemStack item : items) {

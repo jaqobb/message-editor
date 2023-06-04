@@ -39,7 +39,7 @@ public final class ScoreboardTitlePacketListener extends CommonPacketListener {
     public boolean shouldProcess(PacketContainer packet) {
         // 0 = create scoreboard objective
         // 2 = update scoreboard objective display name
-        int action = packet.getIntegers().read(0);
+        int action = packet.getIntegers().readSafely(0);
         return action == 0 || action == 2;
     }
 }
