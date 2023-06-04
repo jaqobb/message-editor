@@ -311,6 +311,7 @@ public final class MessageUtils {
                 // If it is not used, fall back to the general method.
                 if (packet.getSpecificModifier(Component.class).readSafely(0) != null) {
                     packet.getSpecificModifier(Component.class).write(0, GsonComponentSerializer.gson().deserialize(message));
+                    return;
                 }
             }
             if (json) {
