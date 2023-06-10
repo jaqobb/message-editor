@@ -4,62 +4,54 @@ import shutil
 import requests
 
 
+SPIGOT_BUILD_TOOLS_DOWNLOAD_URL = "https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar"
+PAPER_DOWNLOAD_URL = "https://api.papermc.io/v2/projects/paper/versions/{minecraft_version}/builds/{paper_build}/downloads/paper-{minecraft_version}-{paper_build}.jar"
+
+
 def main():
     arguments = sys.argv[1:]
     if len(arguments) == 0:
         print_help()
         return
-    command = arguments[0].casefold()
+    command_name = arguments[0].casefold()
     command_arguments = arguments[1:]
-    if command == "download-spigot":
-        download_spigot(command_arguments)
-        return
-    if command == "download-paper":
-        download_paper(command_arguments)
-        return
-    if command == "copy":
-        copy()
-        return
-    if command == "start":
-        start()
-        return
-    if command == "clean":
-        clean()
-        return
-    if command == "prepare":
-        prepare()
-        return
-    print_help()
-    return
+    commands = {
+        "download-spigot": download_spigot,
+        "download-paper": download_paper,
+        "copy-plugin": copy_plugin,
+        "start": start,
+        "delete": delete,
+        "prepare": prepare,
+    }
+    commands.get(command_name, print_help)(*command_arguments)
 
 
-def download_spigot(arguments):
-    if len(arguments) == 0:
-        print("Please specify a Minecraft version you want to download the latest version of Spigot for.")
-        return
-    minecraft_version = arguments[0]
-    print(f"Downloading the latest version of Spigot for Minecraft {minecraft_version}...")
-    open("server/buildtools/BuildTools.jar", "wb").write(requests.get("https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar").content)
+def download_spigot(minecraft_version):
+    print(f"Downloading Spigot for Minecraft {minecraft_version}...")
+    open("server/buildtools/BuildTools.jar", "wb").write(
+        requests.get(SPIGOT_BUILD_TOOLS_DOWNLOAD_URL).content
+    )
     os.chdir("server/buildtools")
     os.system(f"java -jar BuildTools.jar --rev {minecraft_version}")
     shutil.copyfile(f"spigot-{minecraft_version}.jar", f"../server.jar")
-    print(f"The latest version of Spigot for Minecraft {minecraft_version} has been downloaded.")
+    print(f"Spigot for Minecraft {minecraft_version} has been downloaded.")
     return
 
 
-def download_paper(arguments):
-    if len(arguments) < 2:
-        print("Please specify a Minecraft version you want to download Paper for and a build of Paper.")
-        return
-    minecraft_version = arguments[0]
-    paper_build = arguments[1]
+def download_paper(minecraft_version, paper_build):
     print(f"Downloading Paper-{paper_build} for Minecraft {minecraft_version}...")
-    open("server/server.jar", "wb").write(requests.get(f"https://api.papermc.io/v2/projects/paper/versions/{minecraft_version}/builds/{paper_build}/downloads/paper-{minecraft_version}-{paper_build}.jar").content)
+    open("server/server.jar", "wb").write(
+        requests.get(
+            PAPER_DOWNLOAD_URL.format(
+                minecraft_version=minecraft_version, paper_build=paper_build
+            )
+        ).content
+    )
     print(f"Paper-{paper_build} for Minecraft {minecraft_version} has been downloaded.")
     return
 
 
-def copy():
+def copy_plugin():
     plugin_name = ""
     plugin_version = ""
     plugin_has_shadow = False
@@ -67,14 +59,14 @@ def copy():
     with open("settings.gradle.kts", "r") as file:
         for line in file:
             if line.startswith("rootProject.name ="):
-                plugin_name = line[len("rootProject.name =") + 2:-2]
+                plugin_name = line[len("rootProject.name =") + 2 : -2]
                 pass
     with open("build.gradle.kts", "r") as file:
         for line in file:
             if line.startswith("version ="):
-                plugin_version = line[len("version =") + 2:-2]
+                plugin_version = line[len("version =") + 2 : -2]
                 pass
-            if "id(\"com.github.johnrengelman.shadow\")" in line:
+            if 'id("com.github.johnrengelman.shadow")' in line:
                 plugin_has_shadow = True
                 pass
     if plugin_has_shadow:
@@ -96,12 +88,12 @@ def start():
     return
 
 
-def clean():
-    print("Cleaning test server files...")
+def delete():
+    print("Deleting test server files...")
     if os.path.exists("server"):
         print("Deleting server directory...")
         shutil.rmtree("server")
-    print("Test server files cleaned.")
+    print("Test server files deleted.")
     return
 
 
@@ -122,12 +114,12 @@ def prepare():
 
 def print_help():
     print("Available commands:")
-    print(" * download-spigot <Minecraft version>         | Downloads latest version of Spigot for specified Minecraft version.")
-    print(" * download-paper  <Minecraft version> <build> | Downloads specified build of Paper for specified Minecraft version.")
-    print(" * copy                                        | Compiles and copies plugin to test server files.")
-    print(" * start                                       | Starts test server.")
-    print(" * clean                                       | Cleans test server files.")
-    print(" * prepare                                     | Creates test server empty core directories.")
+    print(" * download-spigot <Minecraft version>")
+    print(" * download-paper  <Minecraft version> <build>")
+    print(" * copy-plugin")
+    print(" * start")
+    print(" * delete")
+    print(" * prepare")
     return
 
 
