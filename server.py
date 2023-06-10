@@ -28,9 +28,9 @@ def main():
 
 def download_spigot(minecraft_version):
     print(f"Downloading Spigot for Minecraft {minecraft_version}...")
-    open("server/buildtools/BuildTools.jar", "wb").write(
-        requests.get(SPIGOT_BUILD_TOOLS_DOWNLOAD_URL).content
-    )
+    request_content = requests.get(SPIGOT_BUILD_TOOLS_DOWNLOAD_URL).content
+    with open("server/buildtools/BuildTools.jar", "wb") as file:
+        file.write(request_content)
     os.chdir("server/buildtools")
     os.system(f"java -jar BuildTools.jar --rev {minecraft_version}")
     shutil.copyfile(f"spigot-{minecraft_version}.jar", f"../server.jar")
@@ -40,13 +40,12 @@ def download_spigot(minecraft_version):
 
 def download_paper(minecraft_version, paper_build):
     print(f"Downloading Paper-{paper_build} for Minecraft {minecraft_version}...")
-    open("server/server.jar", "wb").write(
-        requests.get(
-            PAPER_DOWNLOAD_URL.format(
-                minecraft_version=minecraft_version, paper_build=paper_build
-            )
-        ).content
+    request_url = PAPER_DOWNLOAD_URL.format(
+        minecraft_version=minecraft_version, paper_build=paper_build
     )
+    request_content = requests.get(request_url).content
+    with open("server/server.jar", "wb") as file:
+        file.write(request_content)
     print(f"Paper-{paper_build} for Minecraft {minecraft_version} has been downloaded.")
     return
 
