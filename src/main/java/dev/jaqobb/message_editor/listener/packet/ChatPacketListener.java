@@ -41,6 +41,7 @@ import dev.jaqobb.message_editor.message.MessageData;
 import dev.jaqobb.message_editor.message.MessageEdit;
 import dev.jaqobb.message_editor.message.MessagePlace;
 import dev.jaqobb.message_editor.util.MessageUtils;
+import me.clip.placeholderapi.PlaceholderAPI;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -116,7 +117,7 @@ public final class ChatPacketListener extends PacketAdapter {
                 String newMessage = messageEditMatcher.replaceAll(messageEdit.getMessageAfter());
                 newMessage = ChatColor.translateAlternateColorCodes('&', newMessage);
                 if (this.getPlugin().isPlaceholderApiPresent()) {
-                    newMessage = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, newMessage);
+                    newMessage = PlaceholderAPI.setPlaceholders(player, newMessage);
                 }
                 this.getPlugin().cacheMessage(message, messageEdit, newMessage);
                 if (newMessage.isEmpty()) {

@@ -64,17 +64,19 @@ def copy():
     plugin_version = ""
     plugin_has_shadow = False
     plugin_file = ""
-    for line in open("settings.gradle.kts", "r"):
-        if line.startswith("rootProject.name ="):
-            plugin_name = line[len("rootProject.name =") + 2:-2]
-            pass
-    for line in open("build.gradle.kts", "r"):
-        if line.startswith("version ="):
-            plugin_version = line[len("version =") + 2:-2]
-            pass
-        if "id(\"com.github.johnrengelman.shadow\")" in line:
-            plugin_has_shadow = True
-            pass
+    with open("settings.gradle.kts", "r") as file:
+        for line in file:
+            if line.startswith("rootProject.name ="):
+                plugin_name = line[len("rootProject.name =") + 2:-2]
+                pass
+    with open("build.gradle.kts", "r") as file:
+        for line in file:
+            if line.startswith("version ="):
+                plugin_version = line[len("version =") + 2:-2]
+                pass
+            if "id(\"com.github.johnrengelman.shadow\")" in line:
+                plugin_has_shadow = True
+                pass
     if plugin_has_shadow:
         plugin_file = f"{plugin_name}-{plugin_version}-all.jar"
         os.system("gradlew clean build shadowJar")
