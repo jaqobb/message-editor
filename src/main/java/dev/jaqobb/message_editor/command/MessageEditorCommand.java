@@ -181,7 +181,7 @@ public final class MessageEditorCommand implements CommandExecutor {
             }
             int migratedMessageEdits = 0;
             for (MessageEdit messageEdit : (List<MessageEdit>) this.plugin.getConfig().getList("message-edits")) {
-                String messageId = MessageUtils.generateId(messageEdit.getMessageBeforePlace(), messageEdit.getMessageBefore());
+                String messageId = MessageUtils.generateId(messageEdit.getMessageBeforePlace());
                 File file = new File(this.plugin.getDataFolder(), "edits" + File.separator + messageId + ".yml");
                 try {
                     if (!file.createNewFile()) {

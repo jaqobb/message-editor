@@ -120,7 +120,7 @@ public final class InventoryItemsPacketListener extends PacketAdapter {
                     json = false;
                     message = BaseComponent.toLegacyText(MessageUtils.toBaseComponents(message));
                 }
-                String id = MessageUtils.generateId(MessagePlace.INVENTORY_ITEM_NAME, message);
+                String id = MessageUtils.generateId(MessagePlace.INVENTORY_ITEM_NAME);
                 this.getPlugin().cacheMessageData(id, new MessageData(id, MessagePlace.INVENTORY_ITEM_NAME, message, json));
                 if (MessagePlace.INVENTORY_ITEM_NAME.isAnalyzing()) {
                     MessageUtils.logMessage(this.getPlugin().getLogger(), MessagePlace.INVENTORY_ITEM_NAME, player, id, json, message);
@@ -169,7 +169,7 @@ public final class InventoryItemsPacketListener extends PacketAdapter {
                     json = false;
                     message = BaseComponent.toLegacyText(MessageUtils.toBaseComponents(message));
                 }
-                String id = MessageUtils.generateId(MessagePlace.INVENTORY_ITEM_LORE, message);
+                String id = MessageUtils.generateId(MessagePlace.INVENTORY_ITEM_LORE);
                 this.getPlugin().cacheMessageData(id, new MessageData(id, MessagePlace.INVENTORY_ITEM_LORE, message, json));
                 if (MessagePlace.INVENTORY_ITEM_LORE.isAnalyzing()) {
                     MessageUtils.logMessage(this.getPlugin().getLogger(), MessagePlace.INVENTORY_ITEM_LORE, player, id, json, message);

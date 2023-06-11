@@ -25,6 +25,8 @@
 package dev.jaqobb.message_editor.util;
 
 import java.io.StringReader;
+import java.security.SecureRandom;
+import java.util.Random;
 import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -50,28 +52,16 @@ import net.md_5.bungee.chat.ComponentSerializer;
 
 public final class MessageUtils {
 
-    private static final char[] CHARACTERS = {'q', 'Q', 'w', 'W', 'e', 'E', 'r', 'R', 't', 'T', 'y', 'Y', 'u', 'U', 'i', 'I', 'o', 'O', 'p', 'P', 'a', 'A', 's', 'S', 'd', 'D', 'f', 'F', 'g', 'G', 'h', 'H', 'j', 'J', 'k', 'K', 'l', 'L', 'z', 'Z', 'x', 'X', 'c', 'C', 'v', 'V', 'b', 'B', 'n', 'N', 'm', 'M', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '_'};
+    private static final Random ID_NUMBER_GENERATOR = new SecureRandom();
+    private static final char[] ID_CHARACTERS = "_-0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM".toCharArray();
+    private static final int ID_LENGTH = 8;
 
     private static final boolean HEX_COLORS_SUPPORTED;
     private static final boolean ADVENTURE_PRESENT;
 
     static {
-        boolean hexColorsSupported;
-        boolean adventurePresent;
-        try {
-            ChatColor.class.getDeclaredMethod("of", String.class);
-            hexColorsSupported = true;
-        } catch (NoSuchMethodException exception) {
-            hexColorsSupported = false;
-        }
-        try {
-            Class.forName("net.kyori.adventure.Adventure");
-            adventurePresent = true;
-        } catch (ClassNotFoundException exception) {
-            adventurePresent = false;
-        }
-        HEX_COLORS_SUPPORTED = hexColorsSupported;
-        ADVENTURE_PRESENT = adventurePresent;
+        HEX_COLORS_SUPPORTED = methodExists(ChatColor.class, "of", String.class);
+        ADVENTURE_PRESENT = classExists("net.kyori.adventure.Adventure");
     }
 
     private MessageUtils() {
@@ -86,27 +76,24 @@ public final class MessageUtils {
         return translate(MessageEditorConstants.PREFIX + message);
     }
 
-    public static String generateId(MessagePlace place, String message) {
-        String placeId = place.getId();
-        String messageHash = message.hashCode() < 0 ? String.valueOf(-message.hashCode() * 2L) : String.valueOf(message.hashCode());
-        String messageId = "";
-        for (int i = 0; i < messageHash.length(); i += 1) {
-            if (i + 1 < messageHash.length()) {
-                String currentNumber = String.valueOf(messageHash.charAt(i));
-                String nextNumber = String.valueOf(messageHash.charAt(i + 1));
-                int number = Integer.parseInt(currentNumber + nextNumber);
-                if (number < CHARACTERS.length) {
-                    messageId += CHARACTERS[number];
-                } else {
-                    messageId += CHARACTERS[Integer.parseInt(currentNumber)];
-                    messageId += CHARACTERS[Integer.parseInt(nextNumber)];
+    // https://github.com/aventrix/jnanoid/blob/develop/src/main/java/com/aventrix/jnanoid/jnanoid/NanoIdUtils.java
+    public static String generateId(MessagePlace place) {
+        int mask = (2 << (int) Math.floor(Math.log(ID_CHARACTERS.length - 1) / Math.log(2))) - 1;
+        int step = (int) Math.ceil(1.6D * mask * ID_LENGTH / ID_CHARACTERS.length);
+        StringBuilder idBuilder = new StringBuilder(place.getId());
+        while (true) {
+            byte[] bytes = new byte[step];
+            ID_NUMBER_GENERATOR.nextBytes(bytes);
+            for (int index = 0; index < step; index++) {
+                int characterIndex = bytes[index] & mask;
+                if (characterIndex < ID_CHARACTERS.length) {
+                    idBuilder.append(ID_CHARACTERS[characterIndex]);
+                    if (idBuilder.length() == ID_LENGTH) {
+                        return idBuilder.toString();
+                    }
                 }
-                i += 1;
-            } else {
-                messageId += CHARACTERS[Integer.parseInt(String.valueOf(messageHash.charAt(i)))];
             }
         }
-        return placeId + messageId;
     }
 
     public static String getLastColors(String message) {
@@ -319,6 +306,24 @@ public final class MessageUtils {
             } else {
                 packet.getStrings().write(0, toJson(toBaseComponents(message), true));
             }
+        }
+    }
+
+    private static boolean classExists(String name) {
+        try {
+            Class.forName(name);
+            return true;
+        } catch (ClassNotFoundException exception) {
+            return false;
+        }
+    }
+
+    private static boolean methodExists(Class<?> clazz, String name, Class<?>... parameterTypes) {
+        try {
+            clazz.getDeclaredMethod(name, parameterTypes);
+            return true;
+        } catch (NoSuchMethodException exception) {
+            return false;
         }
     }
 }

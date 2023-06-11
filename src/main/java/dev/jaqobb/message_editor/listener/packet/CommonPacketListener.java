@@ -106,7 +106,7 @@ class CommonPacketListener extends PacketAdapter {
             }
         }
         boolean json = MessageUtils.isJson(message);
-        String id = MessageUtils.generateId(this.messagePlace, message);
+        String id = MessageUtils.generateId(this.messagePlace);
         this.getPlugin().cacheMessageData(id, new MessageData(id, this.messagePlace, message, json));
         if (this.messagePlace.isAnalyzing()) {
             MessageUtils.logMessage(this.getPlugin().getLogger(), this.messagePlace, player, id, json, message);
