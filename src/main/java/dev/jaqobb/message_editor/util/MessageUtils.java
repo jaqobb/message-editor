@@ -55,6 +55,8 @@ public final class MessageUtils {
     private static final Random ID_NUMBER_GENERATOR = new SecureRandom();
     private static final char[] ID_CHARACTERS = "_-0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM".toCharArray();
     private static final int ID_LENGTH = 8;
+    private static final int ID_MASK = (2 << (int) Math.floor(Math.log(ID_CHARACTERS.length - 1) / Math.log(2))) - 1;
+    private static final int ID_STEP = (int) Math.ceil(1.6D * ID_MASK * ID_LENGTH / ID_CHARACTERS.length);
 
     private static final boolean HEX_COLORS_SUPPORTED;
     private static final boolean ADVENTURE_PRESENT;
@@ -78,14 +80,12 @@ public final class MessageUtils {
 
     // https://github.com/aventrix/jnanoid/blob/develop/src/main/java/com/aventrix/jnanoid/jnanoid/NanoIdUtils.java
     public static String generateId(MessagePlace place) {
-        int mask = (2 << (int) Math.floor(Math.log(ID_CHARACTERS.length - 1) / Math.log(2))) - 1;
-        int step = (int) Math.ceil(1.6D * mask * ID_LENGTH / ID_CHARACTERS.length);
         StringBuilder idBuilder = new StringBuilder(place.getId());
         while (true) {
-            byte[] bytes = new byte[step];
+            byte[] bytes = new byte[ID_STEP];
             ID_NUMBER_GENERATOR.nextBytes(bytes);
-            for (int index = 0; index < step; index++) {
-                int characterIndex = bytes[index] & mask;
+            for (int index = 0; index < ID_STEP; index++) {
+                int characterIndex = bytes[index] & ID_MASK;
                 if (characterIndex < ID_CHARACTERS.length) {
                     idBuilder.append(ID_CHARACTERS[characterIndex]);
                     if (idBuilder.length() == ID_LENGTH) {
