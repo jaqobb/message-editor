@@ -189,7 +189,7 @@ public final class PlayerChatListener implements Listener {
                 availableMessagePlaces.add(MessagePlace.SYSTEM_CHAT);
                 availableMessagePlaces.add(MessagePlace.ACTION_BAR);
                 for (MessagePlace availableMessagePlace : availableMessagePlaces) {
-                    player.sendMessage(MessageUtils.translateWithPrefix("&7- &e" + availableMessagePlace.name() + " &7(&e" + availableMessagePlace.getFriendlyName() + "&7)"));
+                    player.sendMessage(MessageUtils.translate(" &8- &e" + availableMessagePlace.name() + " &7(&e" + availableMessagePlace.getFriendlyName() + "&7)"));
                 }
                 return;
             }

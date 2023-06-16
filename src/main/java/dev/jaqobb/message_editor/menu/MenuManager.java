@@ -45,14 +45,15 @@ import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XSound;
 
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.chat.ComponentSerializer;
+
 import dev.jaqobb.message_editor.MessageEditorConstants;
 import dev.jaqobb.message_editor.MessageEditorPlugin;
 import dev.jaqobb.message_editor.message.MessageData;
 import dev.jaqobb.message_editor.message.MessageEditData;
 import dev.jaqobb.message_editor.message.MessagePlace;
 import dev.jaqobb.message_editor.util.MessageUtils;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.chat.ComponentSerializer;
 
 public final class MenuManager {
 
@@ -135,12 +136,12 @@ public final class MenuManager {
         for (String oldMessageData : oldMessage.split(editData.isOldMessageJson() ? "\\n" : "\\\\n")) {
             String oldMessageChunk = "";
             String[] oldMessageDataChunk = oldMessageData.split(" ");
-            for (int i = 0; i < oldMessageDataChunk.length; i += 1) {
-                if (i > 0 && i < oldMessageDataChunk.length && !oldMessageChunk.isEmpty()) {
+            for (int index = 0; index < oldMessageDataChunk.length; index += 1) {
+                if (index > 0 && index < oldMessageDataChunk.length && !oldMessageChunk.isEmpty()) {
                     oldMessageChunk += " ";
                 }
-                oldMessageChunk += oldMessageDataChunk[i];
-                if (i == oldMessageDataChunk.length - 1 || oldMessageChunk.length() >= MessageEditorConstants.MESSAGE_LENGTH) {
+                oldMessageChunk += oldMessageDataChunk[index];
+                if (index == oldMessageDataChunk.length - 1 || oldMessageChunk.length() >= MessageEditorConstants.MESSAGE_LENGTH) {
                     if (oldMessageLore.size() == 1) {
                         oldMessageLore.add(oldMessageChunk);
                     } else {
@@ -182,12 +183,12 @@ public final class MenuManager {
         for (String newMessageData : newMessage.split(editData.isNewMessageJson() ? "\\n" : "\\\\n")) {
             String newMessageChunk = "";
             String[] newMessageDataChunk = newMessageData.split(" ");
-            for (int i = 0; i < newMessageDataChunk.length; i += 1) {
-                if (i > 0 && i < newMessageDataChunk.length && !newMessageChunk.isEmpty()) {
+            for (int index = 0; index < newMessageDataChunk.length; index += 1) {
+                if (index > 0 && index < newMessageDataChunk.length && !newMessageChunk.isEmpty()) {
                     newMessageChunk += " ";
                 }
-                newMessageChunk += newMessageDataChunk[i];
-                if (i == newMessageDataChunk.length - 1 || newMessageChunk.length() >= MessageEditorConstants.MESSAGE_LENGTH) {
+                newMessageChunk += newMessageDataChunk[index];
+                if (index == newMessageDataChunk.length - 1 || newMessageChunk.length() >= MessageEditorConstants.MESSAGE_LENGTH) {
                     if (newMessageLore.size() == 1) {
                         newMessageLore.add(newMessageChunk);
                     } else {

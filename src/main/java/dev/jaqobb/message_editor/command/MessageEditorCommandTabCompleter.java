@@ -66,9 +66,9 @@ public final class MessageEditorCommandTabCompleter implements TabCompleter {
             }
         }
         if (arguments.length > 1 && (arguments[0].equalsIgnoreCase("activate") || (arguments[0].equalsIgnoreCase("deactivate")))) {
-            for (int i = 1; i < arguments.length; i += 1) {
+            for (int index = 1; index < arguments.length; index += 1) {
                 for (MessagePlace place : MessagePlace.VALUES) {
-                    if (!place.name().startsWith(arguments[i].toUpperCase())) {
+                    if (!place.name().startsWith(arguments[index].toUpperCase())) {
                         continue;
                     }
                     if (!place.isSupported()) {

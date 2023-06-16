@@ -39,15 +39,15 @@ import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedDataValue;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 
-import dev.jaqobb.message_editor.MessageEditorConstants;
-import dev.jaqobb.message_editor.util.MessageUtils;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
+
+import dev.jaqobb.message_editor.MessageEditorConstants;
+import dev.jaqobb.message_editor.util.MessageUtils;
 
 public enum MessagePlace {
 
     GAME_CHAT("GC", "Game Chat", MinecraftVersion.BOUNTIFUL_UPDATE, Collections.singleton(PacketType.Play.Server.CHAT), (byte) 0, EnumWrappers.ChatType.CHAT) {
-
         @Override
         public String getMessage(PacketContainer packet) {
             return MessageUtils.retrieveMessage(packet, PacketType.Play.Server.CHAT);
@@ -59,7 +59,6 @@ public enum MessagePlace {
         }
     },
     SYSTEM_CHAT("SC", "System Chat", MinecraftVersion.BOUNTIFUL_UPDATE, new HashSet<>(Arrays.asList(PacketType.Play.Server.CHAT, PacketType.Play.Server.SYSTEM_CHAT)), (byte) 1, EnumWrappers.ChatType.SYSTEM) {
-
         @Override
         public String getMessage(PacketContainer packet) {
             return MessageUtils.retrieveMessage(packet, packet.getType());
@@ -71,7 +70,6 @@ public enum MessagePlace {
         }
     },
     ACTION_BAR("AB", "Action Bar", MinecraftVersion.BOUNTIFUL_UPDATE, Collections.singleton(PacketType.Play.Server.CHAT), (byte) 2, EnumWrappers.ChatType.GAME_INFO) {
-
         @Override
         public String getMessage(PacketContainer packet) {
             // <1.19. 1.19+ uses system chat packet for action bar messages.
@@ -92,7 +90,6 @@ public enum MessagePlace {
         }
     },
     KICK("K", "Kick", MinecraftVersion.BOUNTIFUL_UPDATE, Collections.singleton(PacketType.Play.Server.KICK_DISCONNECT)) {
-
         @Override
         public String getMessage(PacketContainer packet) {
             return packet.getChatComponents().readSafely(0).getJson();
@@ -108,7 +105,6 @@ public enum MessagePlace {
         }
     },
     DISCONNECT("D", "Disconnect", MinecraftVersion.BOUNTIFUL_UPDATE, Collections.singleton(PacketType.Login.Server.DISCONNECT)) {
-
         @Override
         public String getMessage(PacketContainer packet) {
             return packet.getChatComponents().readSafely(0).getJson();
@@ -124,7 +120,6 @@ public enum MessagePlace {
         }
     },
     BOSS_BAR("BB", "Boss Bar", MinecraftVersion.COMBAT_UPDATE, Collections.singleton(PacketType.Play.Server.BOSS)) {
-
         @Override
         public String getMessage(PacketContainer packet) {
             if (!MinecraftVersion.CAVES_CLIFFS_1.atOrAbove()) {
@@ -150,7 +145,6 @@ public enum MessagePlace {
         }
     },
     SCOREBOARD_TITLE("ST", "Scoreboard Title", MinecraftVersion.BOUNTIFUL_UPDATE, Collections.singleton(PacketType.Play.Server.SCOREBOARD_OBJECTIVE)) {
-
         @Override
         public String getMessage(PacketContainer packet) {
             if (packet.getStrings().size() == 2) {
@@ -173,7 +167,6 @@ public enum MessagePlace {
         }
     },
     SCOREBOARD_ENTRY("SE", "Scoreboard Entry", MinecraftVersion.BOUNTIFUL_UPDATE, Collections.singleton(PacketType.Play.Server.SCOREBOARD_SCORE)) {
-
         @Override
         public String getMessage(PacketContainer packet) {
             return packet.getStrings().readSafely(0);
@@ -189,7 +182,6 @@ public enum MessagePlace {
         }
     },
     INVENTORY_TITLE("IT", "Inventory Title", MinecraftVersion.BOUNTIFUL_UPDATE, Collections.singleton(PacketType.Play.Server.OPEN_WINDOW)) {
-
         @Override
         public String getMessage(PacketContainer packet) {
             return packet.getChatComponents().readSafely(0).getJson();
@@ -205,7 +197,6 @@ public enum MessagePlace {
         }
     },
     INVENTORY_ITEM_NAME("ITN", "Inventory Item Name", MinecraftVersion.BOUNTIFUL_UPDATE, Collections.singleton(PacketType.Play.Server.WINDOW_ITEMS)) {
-
         // Items are an exception and do not use this.
         @Override
         public String getMessage(PacketContainer packet) {
@@ -219,7 +210,6 @@ public enum MessagePlace {
         }
     },
     INVENTORY_ITEM_LORE("ITL", "Inventory Item Lore", MinecraftVersion.BOUNTIFUL_UPDATE, Collections.singleton(PacketType.Play.Server.WINDOW_ITEMS)) {
-
         // Items are an exception and do not use this.
         @Override
         public String getMessage(PacketContainer packet) {
@@ -233,7 +223,6 @@ public enum MessagePlace {
         }
     },
     ENTITY_NAME("EN", "Entity Name", MinecraftVersion.BOUNTIFUL_UPDATE, Collections.singleton(PacketType.Play.Server.ENTITY_METADATA)) {
-
         @Override
         public String getMessage(PacketContainer packet) {
             if (MessageEditorConstants.WILD_UPDATE_3_VERSION.atOrAbove()) {

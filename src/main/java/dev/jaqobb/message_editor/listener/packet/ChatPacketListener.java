@@ -36,18 +36,20 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.utility.MinecraftVersion;
 
-import dev.jaqobb.message_editor.MessageEditorPlugin;
-import dev.jaqobb.message_editor.message.MessageData;
-import dev.jaqobb.message_editor.message.MessageEdit;
-import dev.jaqobb.message_editor.message.MessagePlace;
-import dev.jaqobb.message_editor.util.MessageUtils;
-import me.clip.placeholderapi.PlaceholderAPI;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
+
+import me.clip.placeholderapi.PlaceholderAPI;
+
+import dev.jaqobb.message_editor.MessageEditorPlugin;
+import dev.jaqobb.message_editor.message.MessageData;
+import dev.jaqobb.message_editor.message.MessageEdit;
+import dev.jaqobb.message_editor.message.MessagePlace;
+import dev.jaqobb.message_editor.util.MessageUtils;
 
 public final class ChatPacketListener extends PacketAdapter {
 
@@ -124,9 +126,9 @@ public final class ChatPacketListener extends PacketAdapter {
                     event.setCancelled(true);
                     return;
                 }
-                MessagePlace newPlace = messageEdit.getMessageAfterPlace();
-                if (newPlace == MessagePlace.GAME_CHAT || newPlace == MessagePlace.SYSTEM_CHAT || newPlace == MessagePlace.ACTION_BAR) {
-                    place = newPlace;
+                MessagePlace afterPlace = messageEdit.getMessageAfterPlace();
+                if (afterPlace == MessagePlace.GAME_CHAT || afterPlace == MessagePlace.SYSTEM_CHAT || afterPlace == MessagePlace.ACTION_BAR) {
+                    place = afterPlace;
                     if (place == MessagePlace.GAME_CHAT && packet.getType() == PacketType.Play.Server.SYSTEM_CHAT) {
                         place = MessagePlace.SYSTEM_CHAT;
                     }
@@ -141,19 +143,19 @@ public final class ChatPacketListener extends PacketAdapter {
             MessageUtils.logMessage(this.getPlugin().getLogger(), place, player, id, json, message);
         }
         if (this.getPlugin().isAttachSpecialHoverAndClickEvents() && player.hasPermission("messageeditor.use")) {
-            BaseComponent[] messageToSend;
+            BaseComponent[] messageComponents;
             if (json) {
-                messageToSend = ComponentSerializer.parse(message);
+                messageComponents = ComponentSerializer.parse(message);
             } else {
-                messageToSend = MessageUtils.toBaseComponents(message);
+                messageComponents = MessageUtils.toBaseComponents(message);
             }
-            for (BaseComponent messageToSendElement : messageToSend) {
+            for (BaseComponent messageToSendElement : messageComponents) {
                 messageToSendElement.setHoverEvent(
                     new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(MessageUtils.translate("&7Click to start editing this message.")))
                 );
                 messageToSendElement.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/message-editor edit " + id));
             }
-            message = MessageUtils.toJson(messageToSend, false);
+            message = MessageUtils.toJson(messageComponents, false);
             json = true;
         }
         if (place != originalPlace) {

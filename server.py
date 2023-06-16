@@ -1,6 +1,7 @@
-import sys
 import os
 import shutil
+import sys
+
 import requests
 
 
@@ -41,7 +42,8 @@ def download_spigot(minecraft_version):
 def download_paper(minecraft_version, paper_build):
     print(f"Downloading Paper b{paper_build} for Minecraft {minecraft_version}...")
     request_url = PAPER_DOWNLOAD_URL.format(
-        minecraft_version=minecraft_version, paper_build=paper_build
+        minecraft_version = minecraft_version,
+        paper_build = paper_build
     )
     request_content = requests.get(request_url).content
     with open("server/server.jar", "wb") as file:
@@ -54,16 +56,15 @@ def copy_plugin():
     plugin_name = ""
     plugin_version = ""
     plugin_has_shadow = False
-    plugin_file = ""
     with open("settings.gradle.kts", "r") as file:
         for line in file:
             if line.startswith("rootProject.name ="):
-                plugin_name = line[len("rootProject.name =") + 2 : -2]
+                plugin_name = line[len("rootProject.name =") + 2:-2]
                 pass
     with open("build.gradle.kts", "r") as file:
         for line in file:
             if line.startswith("version ="):
-                plugin_version = line[len("version =") + 2 : -2]
+                plugin_version = line[len("version =") + 2:-2]
                 pass
             if 'id("com.github.johnrengelman.shadow")' in line:
                 plugin_has_shadow = True

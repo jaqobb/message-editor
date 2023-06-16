@@ -135,7 +135,7 @@ public final class PlayerInventoryClickListener implements Listener {
             availableMessagePlaces.add(MessagePlace.SYSTEM_CHAT);
             availableMessagePlaces.add(MessagePlace.ACTION_BAR);
             for (MessagePlace availableMessagePlace : availableMessagePlaces) {
-                player.sendMessage(MessageUtils.translateWithPrefix("&7- &e" + availableMessagePlace.name() + " &7(&e" + availableMessagePlace.getFriendlyName() + "&7)"));
+                player.sendMessage(MessageUtils.translate(" &8- &e" + availableMessagePlace.name() + " &7(&e" + availableMessagePlace.getFriendlyName() + "&7)"));
             }
         } else if (slot == 48) {
             player.closeInventory();
@@ -156,8 +156,8 @@ public final class PlayerInventoryClickListener implements Listener {
             if (oldMessagePatternMatcher.matches()) {
                 StringJoiner excludePattern = new StringJoiner("|", "(?!", ")");
                 excludePattern.add("\\$0");
-                for (int i = 0; i < oldMessagePatternMatcher.groupCount(); i += 1) {
-                    excludePattern.add("\\$" + (i + 1));
+                for (int groupId = 0; groupId < oldMessagePatternMatcher.groupCount(); groupId += 1) {
+                    excludePattern.add("\\$" + (groupId + 1));
                 }
                 String excludePatternString = excludePattern + "\\$[0-9]+";
                 newMessage = newMessage.replaceAll(excludePatternString, "\\\\$0");

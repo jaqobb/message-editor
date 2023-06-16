@@ -43,7 +43,8 @@ public final class BossBarPacketListener extends CommonPacketListener {
             BossBarAction action = packet.getEnumModifier(BossBarAction.class, 1).readSafely(0);
             return action == BossBarAction.ADD || action == BossBarAction.UPDATE_NAME;
         }
-        // Since there's a chat component, it means we are doing using it for something.
+        // Since there is a chat component, it means that the packet is
+        // for adding a boss bar or updating its name.
         return packet.getStructures().readSafely(1).getChatComponents().size() == 1;
     }
 }

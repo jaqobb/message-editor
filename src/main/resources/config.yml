@@ -1,13 +1,16 @@
 # Update-related settings.
 update:
-  # Whether administration should be notified about plugin update.
+  # Whether administrators should be notified about plugin update.
   notify: true
 
 # Whether special hover and click events should be attached to chat messages.
+# 
+# This option allows administrators to click on system chat messages
+# to open message editor menu without having to analyze message place.
 attach-special-hover-and-click-events: true
 
 # Enabled packet listeners. You can disable the ones you do not use to save resources.
-# NOTE: Each edit in this section requires a full server restart to take effect.
+# NOTE: Each change in this section requires a full server restart to take effect.
 packet-listeners:
   chat: true
   kick: true
@@ -20,10 +23,8 @@ packet-listeners:
   entity-name: true
 
 # NOTE:
-# This option should not be used.
-#
-# Although it still works, its main use now
-# is to maintain compatibility with older versions.
+# This option should not be used and remains here
+# purely to maintain compatibility with older versions.
 #
 # Usage of the new per-file message edit system is advised.
 # Check out files in the 'edits' directory for more information.

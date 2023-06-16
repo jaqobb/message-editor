@@ -41,8 +41,6 @@ import com.google.gson.JsonParseException;
 import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonReader;
 
-import dev.jaqobb.message_editor.MessageEditorConstants;
-import dev.jaqobb.message_editor.message.MessagePlace;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
@@ -50,12 +48,17 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 
+import dev.jaqobb.message_editor.MessageEditorConstants;
+import dev.jaqobb.message_editor.message.MessagePlace;
+
 public final class MessageUtils {
 
     private static final Random ID_NUMBER_GENERATOR = new SecureRandom();
     private static final char[] ID_CHARACTERS = "_-0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM".toCharArray();
     private static final int ID_LENGTH = 8;
-    private static final int ID_MASK = (2 << (int) Math.floor(Math.log(ID_CHARACTERS.length - 1) / Math.log(2))) - 1;
+    @SuppressWarnings("UnnecessaryExplicitNumericCast")
+    // Explicit cast is actually necessary.
+    private static final int ID_MASK = (2 << (int) Math.floor(StrictMath.log(ID_CHARACTERS.length - 1) / StrictMath.log(2))) - 1;
     private static final int ID_STEP = (int) Math.ceil(1.6D * ID_MASK * ID_LENGTH / ID_CHARACTERS.length);
 
     private static final boolean HEX_COLORS_SUPPORTED;
@@ -99,21 +102,21 @@ public final class MessageUtils {
     public static String getLastColors(String message) {
         int length = message.length();
         String colors = "";
-        for (int i = length - 1; i > -1; i -= 1) {
-            char section = message.charAt(i);
-            if (section == ChatColor.COLOR_CHAR && i < length - 1) {
-                char character = message.charAt(i + 1);
-                if (i - 12 >= 0) {
-                    char hexColorSection = message.charAt(i - 12);
+        for (int index = length - 1; index > -1; index -= 1) {
+            char section = message.charAt(index);
+            if (section == ChatColor.COLOR_CHAR && index < length - 1) {
+                char character = message.charAt(index + 1);
+                if (index - 12 >= 0) {
+                    char hexColorSection = message.charAt(index - 12);
                     if (hexColorSection == ChatColor.COLOR_CHAR) {
-                        char hexColorCharacter = message.charAt(i - 11);
+                        char hexColorCharacter = message.charAt(index - 11);
                         if ((hexColorCharacter == 'x' || hexColorCharacter == 'X') && HEX_COLORS_SUPPORTED) {
                             String hexColor = "";
                             for (int j = -9; j <= 1; j += 2) {
-                                hexColor += message.charAt(i + j);
+                                hexColor += message.charAt(index + j);
                             }
                             try {
-                                i -= 13;
+                                index -= 13;
                                 colors = ChatColor.of("#" + hexColor) + colors;
                                 continue;
                             } catch (IllegalArgumentException ignored) {
@@ -123,7 +126,7 @@ public final class MessageUtils {
                 }
                 ChatColor color = ChatColor.getByChar(character);
                 if (color != null) {
-                    i -= 1;
+                    index -= 1;
                     colors = color + colors;
                     if (color == ChatColor.RESET || (color != ChatColor.MAGIC && color != ChatColor.BOLD && color != ChatColor.STRIKETHROUGH && color != ChatColor.UNDERLINE && color != ChatColor.ITALIC)) {
                         break;
@@ -139,32 +142,32 @@ public final class MessageUtils {
         TextComponent component = new TextComponent();
         ChatColor componentNewColor = null;
         boolean firstColor = true;
-        for (int i = 0; i < message.length(); i += 1) {
+        for (int index = 0; index < message.length(); index += 1) {
             boolean makeComponent = false;
-            char character = message.charAt(i);
-            if (i == message.length() - 1) {
+            char character = message.charAt(index);
+            if (index == message.length() - 1) {
                 makeComponent = true;
                 component.setText(component.getText() + character);
             } else if (character != '§') {
                 component.setText(component.getText() + character);
             } else {
-                char hexColorCharacter = message.charAt(i + 1);
+                char hexColorCharacter = message.charAt(index + 1);
                 if ((hexColorCharacter == 'x' || hexColorCharacter == 'X') && HEX_COLORS_SUPPORTED) {
                     String hexColor = "";
                     for (int j = 3; j <= 13; j += 2) {
-                        hexColor += message.charAt(i + j);
+                        hexColor += message.charAt(index + j);
                     }
                     try {
-                        i += 13;
+                        index += 13;
                         component.setColor(ChatColor.of("#" + hexColor));
                         firstColor = false;
                         continue;
                     } catch (IllegalArgumentException ignored) {
                     }
                 }
-                ChatColor color = ChatColor.getByChar(message.charAt(i + 1));
+                ChatColor color = ChatColor.getByChar(message.charAt(index + 1));
                 if (color != null) {
-                    i += 1;
+                    index += 1;
                     if ((color != component.getColor() && firstColor) || color == ChatColor.MAGIC || color == ChatColor.BOLD || color == ChatColor.STRIKETHROUGH || color == ChatColor.UNDERLINE || color == ChatColor.ITALIC) {
                         if (color == ChatColor.MAGIC) {
                             component.setObfuscated(true);

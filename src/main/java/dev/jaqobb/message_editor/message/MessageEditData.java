@@ -217,7 +217,7 @@ public final class MessageEditData {
             this.invalidateCache = invalidateCache;
         }
 
-        public boolean isInvalidateCache() {
+        public boolean shouldInvalidateCache() {
             return this.invalidateCache;
         }
     }

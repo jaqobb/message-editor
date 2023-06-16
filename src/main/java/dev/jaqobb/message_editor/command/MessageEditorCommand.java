@@ -90,12 +90,12 @@ public final class MessageEditorCommand implements CommandExecutor {
             }
             Player player = (Player) sender;
             if (arguments.length != 2) {
-                player.sendMessage(MessageUtils.translateWithPrefix("&7Correct usage: &e/" + label + " edit <message ID>&7."));
+                player.sendMessage(MessageUtils.translateWithPrefix("&7Correct usage: &e/" + label + " edit &6<message id>&7."));
                 return true;
             }
             MessageData data = this.plugin.getCachedMessageData(arguments[1]);
             if (data == null) {
-                player.sendMessage(MessageUtils.translateWithPrefix("&cThere is no cached message data attached to the '&7" + arguments[1] + "&c' message ID."));
+                player.sendMessage(MessageUtils.translateWithPrefix("&cThere is no cached message data attached to the '&7" + arguments[1] + "&c' message id."));
                 return true;
             }
             this.plugin.getMenuManager().openMenu(player, data, true);
@@ -103,17 +103,14 @@ public final class MessageEditorCommand implements CommandExecutor {
         }
         if (arguments[0].equalsIgnoreCase("activate")) {
             if (arguments.length == 1) {
-                sender.sendMessage(MessageUtils.translateWithPrefix("&7Correct usage: &e/" + label + " activate <message places>&7."));
-                sender.sendMessage(MessageUtils.translateWithPrefix(""));
+                sender.sendMessage(MessageUtils.translateWithPrefix("&7Correct usage: &e/" + label + " activate &6<message places>&7."));
                 this.sendAvailableMessagePlaces(sender);
                 return true;
             }
-            int placesAffected = 0;
-            for (int i = 1; i < arguments.length; i += 1) {
-                String argument = arguments[i];
-                MessagePlace place = MessagePlace.fromName(argument);
+            for (int index = 1; index < arguments.length; index += 1) {
+                MessagePlace place = MessagePlace.fromName(arguments[index]);
                 if (place == null) {
-                    sender.sendMessage(MessageUtils.translateWithPrefix("&cCould not convert '&7" + argument + "&c' to a message place."));
+                    sender.sendMessage(MessageUtils.translateWithPrefix("&cCould not convert '&7" + arguments[index] + "&c' to a message place."));
                     continue;
                 }
                 if (!place.isSupported()) {
@@ -122,27 +119,23 @@ public final class MessageEditorCommand implements CommandExecutor {
                 }
                 if (!place.isAnalyzing()) {
                     place.setAnalyzing(true);
-                    placesAffected += 1;
+                    sender.sendMessage(MessageUtils.translateWithPrefix("&7Analyzing &e" + place.getFriendlyName() + " &7message place has been activated."));
                 } else {
                     sender.sendMessage(MessageUtils.translateWithPrefix("&cAnalyzing &7" + place.getFriendlyName() + " &cmessage place is already activated."));
                 }
             }
-            sender.sendMessage(MessageUtils.translateWithPrefix("&7You have activated analyzing &e" + placesAffected + " &7message place(s)."));
             return true;
         }
         if (arguments[0].equalsIgnoreCase("deactivate")) {
             if (arguments.length == 1) {
-                sender.sendMessage(MessageUtils.translateWithPrefix("&7Correct usage: &e/" + label + " deactivate <message places>&7."));
-                sender.sendMessage(MessageUtils.translateWithPrefix(""));
+                sender.sendMessage(MessageUtils.translateWithPrefix("&7Correct usage: &e/" + label + " deactivate &6<message places>&7."));
                 this.sendAvailableMessagePlaces(sender);
                 return true;
             }
-            int placesAffected = 0;
-            for (int i = 1; i < arguments.length; i += 1) {
-                String argument = arguments[i];
-                MessagePlace place = MessagePlace.fromName(argument);
+            for (int index = 1; index < arguments.length; index += 1) {
+                MessagePlace place = MessagePlace.fromName(arguments[index]);
                 if (place == null) {
-                    sender.sendMessage(MessageUtils.translateWithPrefix("&cCould not convert '&7" + argument + "&c' to a message place."));
+                    sender.sendMessage(MessageUtils.translateWithPrefix("&cCould not convert '&7" + arguments[index] + "&c' to a message place."));
                     continue;
                 }
                 if (!place.isSupported()) {
@@ -151,12 +144,11 @@ public final class MessageEditorCommand implements CommandExecutor {
                 }
                 if (place.isAnalyzing()) {
                     place.setAnalyzing(false);
-                    placesAffected += 1;
+                    sender.sendMessage(MessageUtils.translateWithPrefix("&7Analyzing &e" + place.getFriendlyName() + " &7message place has been deactivated."));
                 } else {
                     sender.sendMessage(MessageUtils.translateWithPrefix("&cAnalyzing &7" + place.getFriendlyName() + " &cmessage place is already deactivated."));
                 }
             }
-            sender.sendMessage(MessageUtils.translateWithPrefix("&7You have deactivated analyzing &e" + placesAffected + " &7message place(s)."));
             return true;
         }
         if (arguments[0].equalsIgnoreCase("deactivate-all") || arguments[0].equalsIgnoreCase("deactivateall")) {
@@ -175,40 +167,40 @@ public final class MessageEditorCommand implements CommandExecutor {
                 sender.sendMessage(MessageUtils.translateWithPrefix("&7Correct usage: &e/" + label + " migrate&7."));
                 return true;
             }
-            if (this.plugin.getConfig().getList("message-edits").isEmpty()) {
+            List<MessageEdit> edits = (List<MessageEdit>) this.plugin.getConfig().getList("message-edits");
+            if (edits.isEmpty()) {
                 sender.sendMessage(MessageUtils.translateWithPrefix("&cThere are no message edits to migrate."));
                 return true;
             }
-            int migratedMessageEdits = 0;
-            for (MessageEdit messageEdit : (List<MessageEdit>) this.plugin.getConfig().getList("message-edits")) {
-                String messageId = MessageUtils.generateId(messageEdit.getMessageBeforePlace());
-                File file = new File(this.plugin.getDataFolder(), "edits" + File.separator + messageId + ".yml");
+            int migrated = 0;
+            for (MessageEdit edit : edits) {
+                String id = MessageUtils.generateId(edit.getMessageBeforePlace());
+                File file = new File(this.plugin.getDataFolder(), "edits" + File.separator + id + ".yml");
                 try {
                     if (!file.createNewFile()) {
-                        sender.sendMessage(MessageUtils.translateWithPrefix("&cCould not create message edit file for message edit '&7" + messageId + "&c'."));
+                        sender.sendMessage(MessageUtils.translateWithPrefix("&cCould not create message edit file for message edit '&7" + id + "&c'."));
                         continue;
                     }
                 } catch (IOException exception) {
-                    this.plugin.getLogger().log(Level.WARNING, "Could not create message edit file for message edit '" + messageId + "'.", exception);
-                    sender.sendMessage(MessageUtils.translateWithPrefix("&cCould not create message edit file for message edit '" + messageId + "&c', check console for more information."));
+                    this.plugin.getLogger().log(Level.WARNING, "Could not create message edit file for message edit '" + id + "'.", exception);
+                    sender.sendMessage(MessageUtils.translateWithPrefix("&cCould not create message edit file for message edit '&7" + id + "&c', check console for more information."));
                     continue;
                 }
                 FileConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-                for (Map.Entry<String, Object> entry : messageEdit.serialize().entrySet()) {
+                for (Map.Entry<String, Object> entry : edit.serialize().entrySet()) {
                     configuration.set(entry.getKey(), entry.getValue());
                 }
                 try {
                     configuration.save(file);
+                    migrated += 1;
                 } catch (IOException exception) {
-                    this.plugin.getLogger().log(Level.WARNING, "Could not save message edit file for message edit '" + messageId + "'.", exception);
-                    sender.sendMessage(MessageUtils.translateWithPrefix("&cCould not save message edit file for message edit '" + messageId + "&c', check console for more information."));
-                    continue;
+                    this.plugin.getLogger().log(Level.WARNING, "Could not save message edit file for message edit '" + id + "'.", exception);
+                    sender.sendMessage(MessageUtils.translateWithPrefix("&cCould not save message edit file for message edit '" + id + "&c', check console for more information."));
                 }
-                migratedMessageEdits += 1;
             }
             this.plugin.getConfig().set("message-edits", new ArrayList<>());
             this.plugin.saveConfig();
-            sender.sendMessage(MessageUtils.translateWithPrefix("&7You have migrated &e" + migratedMessageEdits + " message edits."));
+            sender.sendMessage(MessageUtils.translateWithPrefix("&7You have migrated &e" + migrated + "&7/&e" + edits.size() + " &7message edits."));
             return true;
         }
         this.sendHelpMessage(sender, label);
@@ -216,14 +208,13 @@ public final class MessageEditorCommand implements CommandExecutor {
     }
 
     private void sendHelpMessage(CommandSender target, String label) {
-        target.sendMessage(MessageUtils.translateWithPrefix("&7Available commands:"));
-        target.sendMessage(MessageUtils.translateWithPrefix("&e/message-editor reload &7- Reloads plugin."));
-        target.sendMessage(MessageUtils.translateWithPrefix("&e/message-editor edit <message ID> &7- Opens message editor."));
-        target.sendMessage(MessageUtils.translateWithPrefix("&e/message-editor activate <message places> &7- Activates analyzing specified message place(s)."));
-        target.sendMessage(MessageUtils.translateWithPrefix("&e/message-editor deactivate <message places> &7- Dectivates analyzing specified message place(s)."));
-        target.sendMessage(MessageUtils.translateWithPrefix("&e/message-editor deactivate-all &7- Deactivates analyzing all message places."));
-        target.sendMessage(MessageUtils.translateWithPrefix("&e/message-editor migrate &7- Migrates old message edits to the new per-file system."));
-        target.sendMessage(MessageUtils.translateWithPrefix(""));
+        target.sendMessage(MessageUtils.translateWithPrefix("&7Correct usage: &e/message-editor &e<label> &6[<arguments>]&7."));
+        target.sendMessage(MessageUtils.translate(" &8- &ereload &7- Reloads plugin."));
+        target.sendMessage(MessageUtils.translate(" &8- &eedit &6<message id> &7- Opens message editor."));
+        target.sendMessage(MessageUtils.translate(" &8- &eactivate &6<message places> &7- Activates analyzing message places."));
+        target.sendMessage(MessageUtils.translate(" &8- &edeactivate &6<message places> &7- Dectivates analyzing message places."));
+        target.sendMessage(MessageUtils.translate(" &8- &edeactivate-all &7- Deactivates analyzing all message places."));
+        target.sendMessage(MessageUtils.translate(" &8- &emigrate &7- Migrates old message edits to the new per-file system."));
         this.sendAvailableMessagePlaces(target);
     }
 
@@ -231,7 +222,7 @@ public final class MessageEditorCommand implements CommandExecutor {
         target.sendMessage(MessageUtils.translateWithPrefix("&7Available message places:"));
         for (MessagePlace place : MessagePlace.VALUES) {
             if (place.isSupported()) {
-                target.sendMessage(MessageUtils.translateWithPrefix("&7- &e" + place.name() + " &7(&e" + place.getFriendlyName() + "&7)"));
+                target.sendMessage(MessageUtils.translate(" &8- &e" + place.name() + " &7(&e" + place.getFriendlyName() + "&7)"));
             }
         }
     }
