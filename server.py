@@ -42,8 +42,8 @@ def download_spigot(minecraft_version):
 def download_paper(minecraft_version, paper_build):
     print(f"Downloading Paper b{paper_build} for Minecraft {minecraft_version}...")
     request_url = PAPER_DOWNLOAD_URL.format(
-        minecraft_version = minecraft_version,
-        paper_build = paper_build
+        minecraft_version=minecraft_version,
+        paper_build=paper_build
     )
     request_content = requests.get(request_url).content
     with open("server/server.jar", "wb") as file:
