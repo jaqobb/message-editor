@@ -24,16 +24,13 @@
 
 package dev.jaqobb.message_editor.listener.player;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-import java.util.StringJoiner;
-import java.util.logging.Level;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import com.comphenix.protocol.utility.MinecraftVersion;
+import com.cryptomorin.xseries.XSound;
+import dev.jaqobb.message_editor.MessageEditorPlugin;
+import dev.jaqobb.message_editor.message.MessageEdit;
+import dev.jaqobb.message_editor.message.MessageEditData;
+import dev.jaqobb.message_editor.message.MessagePlace;
+import dev.jaqobb.message_editor.util.MessageUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -45,15 +42,15 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
-
-import com.comphenix.protocol.utility.MinecraftVersion;
-import com.cryptomorin.xseries.XSound;
-
-import dev.jaqobb.message_editor.MessageEditorPlugin;
-import dev.jaqobb.message_editor.message.MessageEdit;
-import dev.jaqobb.message_editor.message.MessageEditData;
-import dev.jaqobb.message_editor.message.MessagePlace;
-import dev.jaqobb.message_editor.util.MessageUtils;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.StringJoiner;
+import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class PlayerInventoryClickListener implements Listener {
 

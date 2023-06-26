@@ -24,6 +24,21 @@
 
 package dev.jaqobb.message_editor.util;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.WrappedChatComponent;
+import com.google.gson.JsonParseException;
+import com.google.gson.internal.Streams;
+import com.google.gson.stream.JsonReader;
+import dev.jaqobb.message_editor.MessageEditorConstants;
+import dev.jaqobb.message_editor.message.MessagePlace;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.chat.ComponentSerializer;
+import org.bukkit.entity.Player;
 import java.io.StringReader;
 import java.security.SecureRandom;
 import java.util.Random;
@@ -31,25 +46,6 @@ import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
-
-import org.bukkit.entity.Player;
-
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.wrappers.WrappedChatComponent;
-import com.google.gson.JsonParseException;
-import com.google.gson.internal.Streams;
-import com.google.gson.stream.JsonReader;
-
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.chat.ComponentSerializer;
-
-import dev.jaqobb.message_editor.MessageEditorConstants;
-import dev.jaqobb.message_editor.message.MessagePlace;
 
 public final class MessageUtils {
 

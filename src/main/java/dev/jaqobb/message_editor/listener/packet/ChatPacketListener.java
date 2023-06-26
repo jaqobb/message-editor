@@ -24,32 +24,27 @@
 
 package dev.jaqobb.message_editor.listener.packet;
 
-import java.util.Map;
-import java.util.regex.Matcher;
-
-import org.bukkit.entity.Player;
-
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.utility.MinecraftVersion;
-
+import dev.jaqobb.message_editor.MessageEditorPlugin;
+import dev.jaqobb.message_editor.message.MessageData;
+import dev.jaqobb.message_editor.message.MessageEdit;
+import dev.jaqobb.message_editor.message.MessagePlace;
+import dev.jaqobb.message_editor.util.MessageUtils;
+import me.clip.placeholderapi.PlaceholderAPI;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
-
-import me.clip.placeholderapi.PlaceholderAPI;
-
-import dev.jaqobb.message_editor.MessageEditorPlugin;
-import dev.jaqobb.message_editor.message.MessageData;
-import dev.jaqobb.message_editor.message.MessageEdit;
-import dev.jaqobb.message_editor.message.MessagePlace;
-import dev.jaqobb.message_editor.util.MessageUtils;
+import org.bukkit.entity.Player;
+import java.util.Map;
+import java.util.regex.Matcher;
 
 public final class ChatPacketListener extends PacketAdapter {
 

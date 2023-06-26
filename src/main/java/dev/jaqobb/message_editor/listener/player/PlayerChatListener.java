@@ -24,30 +24,27 @@
 
 package dev.jaqobb.message_editor.listener.player;
 
+import com.comphenix.protocol.utility.MinecraftVersion;
+import com.cryptomorin.xseries.XSound;
+import com.google.gson.JsonParseException;
+import com.google.gson.internal.Streams;
+import com.google.gson.stream.JsonReader;
+import dev.jaqobb.message_editor.MessageEditorConstants;
+import dev.jaqobb.message_editor.MessageEditorPlugin;
+import dev.jaqobb.message_editor.message.MessageEditData;
+import dev.jaqobb.message_editor.message.MessagePlace;
+import dev.jaqobb.message_editor.util.MessageUtils;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import java.io.File;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-
-import com.comphenix.protocol.utility.MinecraftVersion;
-import com.cryptomorin.xseries.XSound;
-import com.google.gson.JsonParseException;
-import com.google.gson.internal.Streams;
-import com.google.gson.stream.JsonReader;
-
-import dev.jaqobb.message_editor.MessageEditorConstants;
-import dev.jaqobb.message_editor.MessageEditorPlugin;
-import dev.jaqobb.message_editor.message.MessageEditData;
-import dev.jaqobb.message_editor.message.MessagePlace;
-import dev.jaqobb.message_editor.util.MessageUtils;
 
 public final class PlayerChatListener implements Listener {
 

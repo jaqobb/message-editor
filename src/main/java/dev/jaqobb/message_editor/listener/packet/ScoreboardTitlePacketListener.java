@@ -25,7 +25,6 @@
 package dev.jaqobb.message_editor.listener.packet;
 
 import com.comphenix.protocol.events.PacketContainer;
-
 import dev.jaqobb.message_editor.MessageEditorPlugin;
 import dev.jaqobb.message_editor.message.MessagePlace;
 

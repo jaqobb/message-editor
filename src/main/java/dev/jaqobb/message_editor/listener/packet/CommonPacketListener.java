@@ -24,25 +24,20 @@
 
 package dev.jaqobb.message_editor.listener.packet;
 
-import java.util.Map;
-import java.util.regex.Matcher;
-
-import org.bukkit.entity.Player;
-
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-
-import net.md_5.bungee.api.ChatColor;
-
-import me.clip.placeholderapi.PlaceholderAPI;
-
 import dev.jaqobb.message_editor.MessageEditorPlugin;
 import dev.jaqobb.message_editor.message.MessageData;
 import dev.jaqobb.message_editor.message.MessageEdit;
 import dev.jaqobb.message_editor.message.MessagePlace;
 import dev.jaqobb.message_editor.util.MessageUtils;
+import me.clip.placeholderapi.PlaceholderAPI;
+import net.md_5.bungee.api.ChatColor;
+import org.bukkit.entity.Player;
+import java.util.Map;
+import java.util.regex.Matcher;
 
 class CommonPacketListener extends PacketAdapter {
 

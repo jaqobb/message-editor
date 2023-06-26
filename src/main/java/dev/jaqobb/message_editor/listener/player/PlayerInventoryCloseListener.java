@@ -24,14 +24,13 @@
 
 package dev.jaqobb.message_editor.listener.player;
 
+import dev.jaqobb.message_editor.MessageEditorPlugin;
+import dev.jaqobb.message_editor.message.MessageEditData;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-
-import dev.jaqobb.message_editor.MessageEditorPlugin;
-import dev.jaqobb.message_editor.message.MessageEditData;
 
 public final class PlayerInventoryCloseListener implements Listener {
 

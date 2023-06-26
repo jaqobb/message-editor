@@ -24,11 +24,9 @@
 
 package dev.jaqobb.message_editor;
 
-import java.util.regex.Pattern;
-
 import com.comphenix.protocol.utility.MinecraftVersion;
-
 import net.md_5.bungee.api.ChatColor;
+import java.util.regex.Pattern;
 
 public final class MessageEditorConstants {
 

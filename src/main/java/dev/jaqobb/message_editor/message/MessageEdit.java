@@ -24,13 +24,12 @@
 
 package dev.jaqobb.message_editor.message;
 
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.configuration.serialization.SerializableAs;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
-import org.bukkit.configuration.serialization.SerializableAs;
 
 @SerializableAs("MessageEdit")
 public final class MessageEdit implements ConfigurationSerializable {

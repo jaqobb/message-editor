@@ -24,14 +24,12 @@
 
 package dev.jaqobb.message_editor.command;
 
-import java.util.LinkedList;
-import java.util.List;
-
+import dev.jaqobb.message_editor.message.MessagePlace;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-
-import dev.jaqobb.message_editor.message.MessagePlace;
+import java.util.LinkedList;
+import java.util.List;
 
 public final class MessageEditorCommandTabCompleter implements TabCompleter {
 

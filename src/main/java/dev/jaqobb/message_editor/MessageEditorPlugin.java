@@ -24,37 +24,11 @@
 
 package dev.jaqobb.message_editor;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-import java.util.logging.Level;
-
-import org.bstats.bukkit.Metrics;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.configuration.serialization.ConfigurationSerialization;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.utility.MinecraftVersion;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-
 import dev.jaqobb.message_editor.command.MessageEditorCommand;
 import dev.jaqobb.message_editor.command.MessageEditorCommandTabCompleter;
 import dev.jaqobb.message_editor.listener.packet.BossBarPacketListener;
@@ -80,6 +54,29 @@ import dev.jaqobb.message_editor.message.MessageEdit;
 import dev.jaqobb.message_editor.message.MessageEditData;
 import dev.jaqobb.message_editor.message.MessagePlace;
 import dev.jaqobb.message_editor.updater.Updater;
+import org.bstats.bukkit.Metrics;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.logging.Level;
 
 // TODO: Fix disconnect message place (it just does not seem to be working at all?)?
 public final class MessageEditorPlugin extends JavaPlugin {
