@@ -10,7 +10,6 @@ PAPER_DOWNLOAD_URL = "https://api.papermc.io/v2/projects/paper/versions/{minecra
 
 
 def main():
-    print("test")
     arguments = sys.argv[1:]
     if len(arguments) == 0:
         print_help()
