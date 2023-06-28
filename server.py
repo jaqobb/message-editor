@@ -1,6 +1,7 @@
 import os
 import shutil
 import sys
+import platform
 
 import requests
 
@@ -71,10 +72,16 @@ def copy_plugin():
                 pass
     if plugin_has_shadow:
         plugin_file = f"{plugin_name}-{plugin_version}-all.jar"
-        os.system("gradlew clean build shadowJar")
+        if platform.system() == "Windows":
+            os.system("gradlew clean build shadowJar")
+        else:
+            os.system("./gradlew clean build shadowJar")
     else:
         plugin_file = f"{plugin_name}-{plugin_version}.jar"
-        os.system("gradlew clean build")
+        if platform.system() == "Windows":
+            os.system("gradlew clean build")
+        else:
+            os.system("./gradlew clean build")
     print(f"Copying plugin jar, {plugin_file}, to test server files...")
     shutil.copyfile(f"build/libs/{plugin_file}", f"server/plugins/{plugin_file}")
     print(f"Plugin jar, {plugin_file}, has been copied to test server files.")
