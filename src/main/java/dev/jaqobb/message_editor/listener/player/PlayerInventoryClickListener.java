@@ -87,13 +87,13 @@ public final class PlayerInventoryClickListener implements Listener {
             editData.setCurrentMode(MessageEditData.Mode.EDITING_FILE_NAME);
             player.closeInventory();
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
-            player.sendMessage(MessageUtils.translateWithPrefix("&7Enter new file name where you want your message edit to be stored, or enter '&edone&7' if you changed your mind and no longer want to edit file name."));
+            player.sendMessage(MessageUtils.translateWithPrefix("&7Enter new file name where you want your message edit to be stored or '&edone&7' if you changed your mind about editing file name."));
         } else if (slot == 20) {
             editData.setCurrentMode(MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_KEY);
             editData.setOldMessagePatternKey("");
             player.closeInventory();
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
-            player.sendMessage(MessageUtils.translateWithPrefix("&7Enter old message pattern key, that is what you want to replace, or enter '&edone&7' if you are done replacing everything you want."));
+            player.sendMessage(MessageUtils.translateWithPrefix("&7Enter what you want to replace or '&edone&7' if you are done replacing."));
         } else if (slot == 24) {
             ClickType click = event.getClick();
             if (click.isLeftClick()) {
@@ -101,17 +101,17 @@ public final class PlayerInventoryClickListener implements Listener {
                 editData.setNewMessageCache("");
                 player.closeInventory();
                 player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
-                player.sendMessage(MessageUtils.translateWithPrefix("&7Enter new message. Enter '&edone&7' once you are done entering the new message."));
+                player.sendMessage(MessageUtils.translateWithPrefix("&7Enter new message. Once you are done, enter '&edone&7'."));
                 MessagePlace place = editData.getNewMessagePlace();
                 if (place == MessagePlace.GAME_CHAT || place == MessagePlace.SYSTEM_CHAT || place == MessagePlace.ACTION_BAR) {
-                    player.sendMessage(MessageUtils.translateWithPrefix("&7You can also enter '&eremove&7' if you do not want the new message to be sent to the players (this will completely remove the message)."));
+                    player.sendMessage(MessageUtils.translateWithPrefix("&7You can also enter '&eremove&7' if you do not want the new message to be sent to the players."));
                 }
             } else if (click.isRightClick()) {
                 editData.setCurrentMode(MessageEditData.Mode.EDITING_NEW_MESSAGE_KEY);
                 editData.setNewMessageKey("");
                 player.closeInventory();
                 player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
-                player.sendMessage(MessageUtils.translateWithPrefix("&7Enter new message key, that is what you want to replace, or enter '&edone&7' if you are done replacing everything you want."));
+                player.sendMessage(MessageUtils.translateWithPrefix("&7Enter what you want to replace or '&edone&7' if you are done replacing."));
             }
         } else if (slot == 33) {
             MessagePlace place = editData.getOldMessagePlace();
@@ -123,7 +123,7 @@ public final class PlayerInventoryClickListener implements Listener {
             editData.setCurrentMode(MessageEditData.Mode.EDITING_NEW_MESSAGE_PLACE);
             player.closeInventory();
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
-            player.sendMessage(MessageUtils.translateWithPrefix("&7Enter new message place, or enter '&edone&7' if you changed your mind and no longer want to edit message place."));
+            player.sendMessage(MessageUtils.translateWithPrefix("&7Enter new message place or '&edone&7' if you changed your mind about editing message place."));
             player.sendMessage(MessageUtils.translateWithPrefix("&7Available message places:"));
             Collection<MessagePlace> availableMessagePlaces = new ArrayList<>(3);
             if (!MinecraftVersion.WILD_UPDATE.atOrAbove()) {

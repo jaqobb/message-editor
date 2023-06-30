@@ -117,10 +117,9 @@ public final class MessageEditorPlugin extends JavaPlugin {
         this.getLogger().log(Level.INFO, "Loading configuration...");
         this.saveDefaultConfig();
         this.reloadConfig();
-        this.getLogger().log(Level.INFO, "Checking for placeholder APIs...");
         PluginManager pluginManager = this.getServer().getPluginManager();
         this.placeholderApiPresent = pluginManager.getPlugin(MessageEditorConstants.PLACEHOLDER_API_PLUGIN_NAME) != null;
-        this.getLogger().log(Level.INFO, MessageEditorConstants.PLACEHOLDER_API_PLUGIN_NAME + ": " + (this.placeholderApiPresent ? "present" : "not present") + ".");
+        this.getLogger().log(Level.INFO, MessageEditorConstants.PLACEHOLDER_API_PLUGIN_NAME + ": " + (this.placeholderApiPresent ? "found" : "not found") + ".");
         this.cachedMessages = CacheBuilder.newBuilder()
             .expireAfterAccess(15L, TimeUnit.MINUTES)
             .build();

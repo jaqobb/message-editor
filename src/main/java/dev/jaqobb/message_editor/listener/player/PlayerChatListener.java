@@ -109,7 +109,7 @@ public final class PlayerChatListener implements Listener {
             editData.setOldMessagePatternKey(message);
             editData.setCurrentMode(MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_VALUE);
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
-            player.sendMessage(MessageUtils.translateWithPrefix("&7Now enter old message pattern value, that is what you want the key to be replaced with, or enter '&edone&7' if you are done replacing everything you want."));
+            player.sendMessage(MessageUtils.translateWithPrefix("&7Now enter what you want it to be replaced with or '&edone&7' if you are done replacing."));
         } else if (editDataMode == MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_VALUE) {
             String patternKey = editData.getOldMessagePatternKey();
             String patternValue = message;
@@ -130,7 +130,7 @@ public final class PlayerChatListener implements Listener {
             editData.setOldMessagePatternKey("");
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
             player.sendMessage(MessageUtils.translateWithPrefix("&7The first occurence of '&e" + patternKey + "&7' has been replaced with '&e" + patternValue + "&7'."));
-            player.sendMessage(MessageUtils.translateWithPrefix("&7Enter old message pattern key, that is what you want to replace, or enter '&edone&7' if you are done replacing everything you want."));
+            player.sendMessage(MessageUtils.translateWithPrefix("&7Enter what you want to replace or '&edone&7' if you are done replacing."));
         } else if (editDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE) {
             MessagePlace place = editData.getNewMessagePlace();
             if ((place == MessagePlace.GAME_CHAT || place == MessagePlace.SYSTEM_CHAT || place == MessagePlace.ACTION_BAR) && editData.getNewMessageCache().isEmpty() && message.equals("remove")) {
@@ -142,13 +142,13 @@ public final class PlayerChatListener implements Listener {
                 return;
             }
             editData.setNewMessageCache(editData.getNewMessageCache() + message);
-            player.sendMessage(MessageUtils.translateWithPrefix("&7Message has been added. Continue if your message is longer and had to divide it into parts. Otherwise enter '&edone&7' to set the new message."));
+            player.sendMessage(MessageUtils.translateWithPrefix("&7Message has been added. Continue if your message is longer and had to be divided into parts. Otherwise enter '&edone&7' to set the new message."));
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
         } else if (editDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE_KEY) {
             editData.setNewMessageKey(message);
             editData.setCurrentMode(MessageEditData.Mode.EDITING_NEW_MESSAGE_VALUE);
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
-            player.sendMessage(MessageUtils.translateWithPrefix("&7Now enter new message value, that is what you want the key to be replaced with, or enter '&edone&7' if you are done replacing everything you want."));
+            player.sendMessage(MessageUtils.translateWithPrefix("&7Now enter what you want it to be replaced with or '&edone&7' if you are done replacing."));
         } else if (editDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE_VALUE) {
             String key = editData.getNewMessageKey();
             String value = message;
@@ -167,7 +167,7 @@ public final class PlayerChatListener implements Listener {
             editData.setNewMessageKey("");
             player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
             player.sendMessage(MessageUtils.translateWithPrefix("&7The first occurence of '&e" + key + "&7' has been replaced with '&e" + value + "&7'."));
-            player.sendMessage(MessageUtils.translateWithPrefix("&7Enter new message key, that is what you want to replace, or enter '&edone&7' if you are done replacing everything you want."));
+            player.sendMessage(MessageUtils.translateWithPrefix("&7Enter what you want to replace or '&edone&7' if you are done replacing."));
         } else if (editDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE_PLACE) {
             MessagePlace place = MessagePlace.fromName(message);
             if (place == null) {
