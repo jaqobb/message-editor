@@ -1,0 +1,79 @@
+#!/bin/bash
+
+base_folder=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+
+case "${1}" in
+"download-spigot")
+  set -e
+  if [ -z "${2}" ]; then
+    echo "You have to specify a Minecraft version."
+  else
+    echo "Downloading Spigot for Minecraft ${2}..."
+    curl "https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar" --output "${base_folder}/server/buildtools/BuildTools.jar"
+    cd "${base_folder}/server/buildtools"
+    java -jar BuildTools.jar --rev "${2}"
+    cd "${base_folder}"
+    cp "${base_folder}/server/buildtools/spigot-${2}.jar" "${base_folder}/server/server.jar"
+    echo "Spigot for Minecraft ${2} has been downloaded."
+  fi
+  ;;
+"download-paper")
+  set -e
+  if [ -z "${2}" ]; then
+    echo "You have to specify a Minecraft version."
+  else
+    if [ -z "${3}" ]; then
+      echo "You have to specify a build."
+    else
+      echo "Downloading Paper b${3} for Minecraft ${2}..."
+      curl "https://api.papermc.io/v2/projects/paper/versions/${2}/builds/${3}/downloads/paper-${2}-${3}.jar" --output "${base_folder}/server/server.jar"
+      echo "Paper b${3} for Minecraft ${2} has been downloaded."
+    fi
+  fi
+  ;;
+"copy-plugin")
+  set -e
+  plugin_name=$(grep <"${base_folder}/settings.gradle.kts" "rootProject.name =" | cut -d ' ' -f 3 | tr -d \" | head -1)
+  plugin_version=$(grep <"${base_folder}/build.gradle.kts" "version =" | cut -d ' ' -f 3 | tr -d \" | head -1)
+  plugin_has_shadow=$(grep <"${base_folder}/build.gradle.kts" "id(\"com.github.johnrengelman.shadow\")" | head -1)
+  if [ -z "${plugin_has_shadow}" ]; then
+    plugin_file="${plugin_name}-${plugin_version}.jar"
+    ./gradlew clean build
+  else
+    plugin_file="${plugin_name}-${plugin_version}-all.jar"
+    ./gradlew clean build shadowJar
+  fi
+  echo "Copying plugin jar, ${plugin_file}, to test server files..."
+  cp "${base_folder}/build/libs/${plugin_file}" "${base_folder}/server/plugins/${plugin_file}"
+  echo "Plugin jar, ${plugin_file}, has been copied to test server files."
+  ;;
+"start")
+  set -e
+  echo "Starting test server..."
+  cd "${base_folder}/server"
+  java -Dcom.mojang.eula.agree=true -jar "server.jar" --nogui --nojline
+  ;;
+"delete")
+  set -e
+  echo "Deleting test server files..."
+  rm -rf "server"
+  echo "Test server files deleted."
+  ;;
+"prepare")
+  set -e
+  echo "Preparing test server's empty core directories..."
+  mkdir -p "server/buildtools"
+  mkdir -p "server/plugins"
+  echo "Test server's empty core directiories prepared."
+  ;;
+*)
+  echo "${base_folder}"
+  echo "Available commands:"
+  echo " * download-spigot <Minecraft version>"
+  echo " * download-paper <Minecraft version> <build>"
+  echo " * copy-plugin"
+  echo " * start"
+  echo " * delete"
+  echo " * prepare"
+  ;;
+esac
