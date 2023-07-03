@@ -64,15 +64,13 @@ public final class Updater implements Runnable {
 
     public String getUpdateMessage() {
         if (this.currentVersion.contains("-SNAPSHOT")) {
-            return MessageUtils.translateWithPrefix("&cYou are running a development version (&7" + this.currentVersion + "&c) It is not advised to run development versions on production servers as they are very likely to not work as intended.");
-        } else if (this.latestVersion == null || this.versionDifference == null) {
-            return MessageUtils.translateWithPrefix("&cCould not retrieve the latest version data. Make sure that you have internet access.");
-        } else if (this.versionDifference > 0) {
-            return MessageUtils.translateWithPrefix("&7You are running a future version (&e" + this.currentVersion + " &7> &e" + this.latestVersion + "&7). This version is safe to use but is yet to be officially uploaded or the latest version data is yet to be updated.");
+            return MessageUtils.translateWithPrefix("&cYou are running a development version of &7Message Editor &c(&7" + this.currentVersion + "&c). Development versions are not heavily tested so avoid running them on production servers.");
+        } else if (this.versionDifference == null || this.latestVersion == null) {
+            return MessageUtils.translateWithPrefix("&cCould not retrieve the latest version of &7Message Editor&c.");
         } else if (this.versionDifference < 0) {
-            return MessageUtils.translateWithPrefix("&7You are running a past version (&e" + this.currentVersion + " &7< &e" + this.latestVersion + "&7). Updating is recommended to receive new features, bug fixes and more.");
+            return MessageUtils.translateWithPrefix("&7You are running an outdated version of &eMessage Editor &7(&e" + this.currentVersion + " &7< &e" + this.latestVersion + "&7). Consider updating to receive new features, bug fixes and more.");
         } else {
-            return MessageUtils.translateWithPrefix("&7You are running the latest version (&e" + this.currentVersion + "&7).");
+            return MessageUtils.translateWithPrefix("&7You are running the latest version of &eMessage Editor&7.");
         }
     }
 
@@ -84,20 +82,32 @@ public final class Updater implements Runnable {
         try {
             HttpsURLConnection connection = (HttpsURLConnection) new URL("https://api.spigotmc.org/legacy/update.php?resource=" + this.pluginId).openConnection();
             connection.setRequestMethod("GET");
-            try (InputStream input = connection.getInputStream(); BufferedReader reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8))) {
+            try (
+                InputStream input = connection.getInputStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8))
+            ) {
                 this.latestVersion = reader.readLine();
                 String[] currentVersionData = this.currentVersion.split("\\.");
                 String[] latestVersionData = this.latestVersion.split("\\.");
                 if (currentVersionData.length == 3 && latestVersionData.length == 3) {
-                    int majorDifference = Integer.compare(Integer.parseInt(currentVersionData[0]), Integer.parseInt(latestVersionData[0]));
+                    int majorDifference = Integer.compare(
+                        Integer.parseInt(currentVersionData[0]),
+                        Integer.parseInt(latestVersionData[0])
+                    );
                     if (majorDifference != 0) {
                         this.versionDifference = majorDifference;
                     } else {
-                        int minorDifference = Integer.compare(Integer.parseInt(currentVersionData[1]), Integer.parseInt(latestVersionData[1]));
+                        int minorDifference = Integer.compare(
+                            Integer.parseInt(currentVersionData[1]),
+                            Integer.parseInt(latestVersionData[1])
+                        );
                         if (minorDifference != 0) {
                             this.versionDifference = minorDifference;
                         } else {
-                            this.versionDifference = Integer.compare(Integer.parseInt(currentVersionData[2]), Integer.parseInt(latestVersionData[2]));
+                            this.versionDifference = Integer.compare(
+                                Integer.parseInt(currentVersionData[2]),
+                                Integer.parseInt(latestVersionData[2])
+                            );
                         }
                     }
                 }
