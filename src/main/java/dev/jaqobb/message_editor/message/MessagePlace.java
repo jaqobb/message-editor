@@ -31,7 +31,6 @@ import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedDataValue;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
-import dev.jaqobb.message_editor.MessageEditorConstants;
 import dev.jaqobb.message_editor.util.MessageUtils;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
@@ -222,7 +221,7 @@ public enum MessagePlace {
     ENTITY_NAME("EN", "Entity Name", MinecraftVersion.BOUNTIFUL_UPDATE, Collections.singleton(PacketType.Play.Server.ENTITY_METADATA)) {
         @Override
         public String getMessage(PacketContainer packet) {
-            if (MessageEditorConstants.WILD_UPDATE_3_VERSION.atOrAbove()) {
+            if (MinecraftVersion.FEATURE_PREVIEW_UPDATE.atOrAbove()) {
                 List<WrappedDataValue> dataValues = packet.getDataValueCollectionModifier().readSafely(0);
                 if (dataValues == null) {
                     return null;
@@ -274,7 +273,7 @@ public enum MessagePlace {
 
         @Override
         public void setMessage(PacketContainer packet, String message, boolean json) {
-            if (MessageEditorConstants.WILD_UPDATE_3_VERSION.atOrAbove()) {
+            if (MinecraftVersion.FEATURE_PREVIEW_UPDATE.atOrAbove()) {
                 List<WrappedDataValue> dataValues = packet.getDataValueCollectionModifier().readSafely(0);
                 if (dataValues == null) {
                     return;

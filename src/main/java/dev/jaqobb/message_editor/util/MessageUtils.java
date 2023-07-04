@@ -30,7 +30,6 @@ import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.google.gson.JsonParseException;
 import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonReader;
-import dev.jaqobb.message_editor.MessageEditorConstants;
 import dev.jaqobb.message_editor.message.MessagePlace;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -48,10 +47,16 @@ import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class MessageUtils {
 
+    public static final String MESSAGE_PREFIX = "&8[&6Message Editor&8] ";
     public static final int MESSAGE_LENGTH = 40;
+
+    public static final Pattern CHAT_COLOR_PATTERN = Pattern.compile("(?i)" + ChatColor.COLOR_CHAR + "([0-9A-FK-ORX])");
+
+    public static final String SPECIAL_REGEX_CHARACTERS = "[/<>{}()\\[\\],.+\\-*?^$\\\\|]";
 
     private static final Random ID_NUMBER_GENERATOR = new SecureRandom();
     private static final char[] ID_CHARACTERS = "_-0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM".toCharArray();
@@ -61,8 +66,8 @@ public final class MessageUtils {
     private static final int ID_MASK = (2 << (int) Math.floor(StrictMath.log(ID_CHARACTERS.length - 1) / StrictMath.log(2))) - 1;
     private static final int ID_STEP = (int) Math.ceil(1.6D * ID_MASK * ID_LENGTH / ID_CHARACTERS.length);
 
-    private static final boolean HEX_COLORS_SUPPORTED;
-    private static final boolean ADVENTURE_PRESENT;
+    public static final boolean HEX_COLORS_SUPPORTED;
+    public static final boolean ADVENTURE_PRESENT;
 
     static {
         HEX_COLORS_SUPPORTED = methodExists(ChatColor.class, "of", String.class);
@@ -78,7 +83,7 @@ public final class MessageUtils {
     }
 
     public static String translateWithPrefix(String message) {
-        return translate(MessageEditorConstants.PREFIX + message);
+        return translate(MESSAGE_PREFIX + message);
     }
 
     public static List<String> splitMessage(String message, boolean json) {
@@ -265,12 +270,12 @@ public final class MessageUtils {
         logger.log(Level.INFO, "Place: " + place.getFriendlyName() + " (" + place.name() + ")");
         logger.log(Level.INFO, "Player: " + player.getName());
         if (json) {
-            String messageReplaced = message.replaceAll(MessageEditorConstants.SPECIAL_REGEX_CHARACTERS, "\\\\$0");
+            String messageReplaced = message.replaceAll(SPECIAL_REGEX_CHARACTERS, "\\\\$0");
             String messageClear = BaseComponent.toLegacyText(ComponentSerializer.parse(message));
             logger.log(Level.INFO, "Message JSON: '" + messageReplaced + "'");
             logger.log(Level.INFO, "Message clear: '" + messageClear + "'");
         } else {
-            Matcher matcher = MessageEditorConstants.CHAT_COLOR_PATTERN.matcher(message);
+            Matcher matcher = CHAT_COLOR_PATTERN.matcher(message);
             String messageSuffix = matcher.find() ? " (replace & -> § (section sign) in colors)" : "";
             logger.log(Level.INFO, "Message: '" + matcher.replaceAll("&$1").replace("\\", "\\\\") + "'" + messageSuffix);
             logger.log(Level.INFO, "Message clear: '" + matcher.replaceAll("") + "'");

@@ -24,7 +24,7 @@
 
 package dev.jaqobb.message_editor.message;
 
-import dev.jaqobb.message_editor.MessageEditorConstants;
+import dev.jaqobb.message_editor.util.MessageUtils;
 
 public final class MessageEditData {
 
@@ -74,7 +74,7 @@ public final class MessageEditData {
         this.originalOldMessage = oldMessage;
         this.originalOldMessageJson = oldMessageJson;
         this.oldMessage = oldMessage;
-        this.oldMessagePattern = oldMessage.replaceAll(MessageEditorConstants.SPECIAL_REGEX_CHARACTERS, "\\\\$0");
+        this.oldMessagePattern = oldMessage.replaceAll(MessageUtils.SPECIAL_REGEX_CHARACTERS, "\\\\$0");
         this.oldMessageJson = oldMessageJson;
         this.oldMessagePatternKey = "";
         this.oldMessagePlace = oldMessagePlace;

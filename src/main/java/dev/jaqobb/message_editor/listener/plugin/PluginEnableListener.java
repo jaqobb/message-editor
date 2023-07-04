@@ -24,7 +24,6 @@
 
 package dev.jaqobb.message_editor.listener.plugin;
 
-import dev.jaqobb.message_editor.MessageEditorConstants;
 import dev.jaqobb.message_editor.MessageEditorPlugin;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -44,9 +43,9 @@ public final class PluginEnableListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPluginEnable(PluginEnableEvent event) {
         Plugin plugin = event.getPlugin();
-        if (plugin.getName().equals(MessageEditorConstants.PLACEHOLDER_API_PLUGIN_NAME)) {
+        if (plugin.getName().equals("PlaceholderAPI")) {
             this.plugin.setPlaceholderApiPresent(true);
-            this.plugin.getLogger().log(Level.INFO, MessageEditorConstants.PLACEHOLDER_API_PLUGIN_NAME + " integration has been enabled.");
+            this.plugin.getLogger().log(Level.INFO, "PlaceholderAPI integration has been enabled.");
         }
     }
 }
