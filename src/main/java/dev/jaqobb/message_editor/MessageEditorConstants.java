@@ -34,8 +34,6 @@ public final class MessageEditorConstants {
 
     public static final String PLACEHOLDER_API_PLUGIN_NAME = "PlaceholderAPI";
 
-    public static final int MESSAGE_LENGTH = 40;
-
     public static final Pattern CHAT_COLOR_PATTERN = Pattern.compile("(?i)" + ChatColor.COLOR_CHAR + "([0-9A-FK-ORX])");
 
     public static final String SPECIAL_REGEX_CHARACTERS = "[/<>{}()\\[\\],.+\\-*?^$\\\\|]";

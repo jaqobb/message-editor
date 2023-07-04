@@ -41,6 +41,8 @@ import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.entity.Player;
 import java.io.StringReader;
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.StringJoiner;
 import java.util.logging.Level;
@@ -48,6 +50,8 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
 public final class MessageUtils {
+
+    public static final int MESSAGE_LENGTH = 40;
 
     private static final Random ID_NUMBER_GENERATOR = new SecureRandom();
     private static final char[] ID_CHARACTERS = "_-0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM".toCharArray();
@@ -75,6 +79,29 @@ public final class MessageUtils {
 
     public static String translateWithPrefix(String message) {
         return translate(MessageEditorConstants.PREFIX + message);
+    }
+
+    public static List<String> splitMessage(String message, boolean json) {
+        List<String> result = new ArrayList<>();
+        for (String messageData : message.split(json ? "\\n" : "\\\\n")) {
+            String[] messageDataChunk = messageData.split(" ");
+            String messageChunk = "";
+            for (int index = 0; index < messageDataChunk.length; index += 1) {
+                if (index > 0 && index < messageDataChunk.length && !messageChunk.isEmpty()) {
+                    messageChunk += " ";
+                }
+                messageChunk += messageDataChunk[index];
+                if (index == messageDataChunk.length - 1 || messageChunk.length() >= MESSAGE_LENGTH) {
+                    if (result.isEmpty()) {
+                        result.add(messageChunk);
+                    } else {
+                        result.add(getLastColors(result.get(result.size() - 1)) + messageChunk);
+                    }
+                    messageChunk = "";
+                }
+            }
+        }
+        return result;
     }
 
     // https://github.com/aventrix/jnanoid/blob/develop/src/main/java/com/aventrix/jnanoid/jnanoid/NanoIdUtils.java

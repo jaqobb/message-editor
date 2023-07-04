@@ -31,7 +31,6 @@ import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XSound;
-import dev.jaqobb.message_editor.MessageEditorConstants;
 import dev.jaqobb.message_editor.MessageEditorPlugin;
 import dev.jaqobb.message_editor.message.MessageData;
 import dev.jaqobb.message_editor.message.MessageEditData;
@@ -129,24 +128,7 @@ public final class MenuManager {
         }
         List<String> oldMessageLore = new ArrayList<>();
         oldMessageLore.add("");
-        for (String oldMessageData : oldMessage.split(editData.isOldMessageJson() ? "\\n" : "\\\\n")) {
-            String oldMessageChunk = "";
-            String[] oldMessageDataChunk = oldMessageData.split(" ");
-            for (int index = 0; index < oldMessageDataChunk.length; index += 1) {
-                if (index > 0 && index < oldMessageDataChunk.length && !oldMessageChunk.isEmpty()) {
-                    oldMessageChunk += " ";
-                }
-                oldMessageChunk += oldMessageDataChunk[index];
-                if (index == oldMessageDataChunk.length - 1 || oldMessageChunk.length() >= MessageEditorConstants.MESSAGE_LENGTH) {
-                    if (oldMessageLore.size() == 1) {
-                        oldMessageLore.add(oldMessageChunk);
-                    } else {
-                        oldMessageLore.add(MessageUtils.getLastColors(oldMessageLore.get(oldMessageLore.size() - 1)) + oldMessageChunk);
-                    }
-                    oldMessageChunk = "";
-                }
-            }
-        }
+        oldMessageLore.addAll(MessageUtils.splitMessage(oldMessage, editData.isOldMessageJson()));
         oldMessageLore.add("");
         oldMessageLore.add(MessageUtils.translate("&7Click to edit old message pattern."));
         oldMessageItemMeta.setLore(oldMessageLore);
@@ -176,24 +158,7 @@ public final class MenuManager {
         }
         List<String> newMessageLore = new ArrayList<>();
         newMessageLore.add("");
-        for (String newMessageData : newMessage.split(editData.isNewMessageJson() ? "\\n" : "\\\\n")) {
-            String newMessageChunk = "";
-            String[] newMessageDataChunk = newMessageData.split(" ");
-            for (int index = 0; index < newMessageDataChunk.length; index += 1) {
-                if (index > 0 && index < newMessageDataChunk.length && !newMessageChunk.isEmpty()) {
-                    newMessageChunk += " ";
-                }
-                newMessageChunk += newMessageDataChunk[index];
-                if (index == newMessageDataChunk.length - 1 || newMessageChunk.length() >= MessageEditorConstants.MESSAGE_LENGTH) {
-                    if (newMessageLore.size() == 1) {
-                        newMessageLore.add(newMessageChunk);
-                    } else {
-                        newMessageLore.add(MessageUtils.getLastColors(newMessageLore.get(newMessageLore.size() - 1)) + newMessageChunk);
-                    }
-                    newMessageChunk = "";
-                }
-            }
-        }
+        newMessageLore.addAll(MessageUtils.splitMessage(newMessage, editData.isNewMessageJson()));
         newMessageLore.add("");
         newMessageLore.add(MessageUtils.translate("&7Click LMB to edit new message"));
         newMessageLore.add(MessageUtils.translate("&7in the override mode."));
