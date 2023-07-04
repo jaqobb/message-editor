@@ -26,9 +26,6 @@ package dev.jaqobb.message_editor.listener.player;
 
 import com.comphenix.protocol.utility.MinecraftVersion;
 import com.cryptomorin.xseries.XSound;
-import com.google.gson.JsonParseException;
-import com.google.gson.internal.Streams;
-import com.google.gson.stream.JsonReader;
 import dev.jaqobb.message_editor.MessageEditorPlugin;
 import dev.jaqobb.message_editor.message.MessageEditData;
 import dev.jaqobb.message_editor.message.MessagePlace;
@@ -39,7 +36,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import java.io.File;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.regex.Matcher;
@@ -73,13 +69,9 @@ public final class PlayerChatListener implements Listener {
             } else if (editDataMode == MessageEditData.Mode.EDITING_NEW_MESSAGE) {
                 if (!editData.getNewMessageCache().isEmpty()) {
                     editData.setNewMessage(editData.getNewMessageCache());
-                    try {
-                        // Streams is being used instead of JsonParser
-                        // because JsonParser parses the string in lenient mode
-                        // which we don't want.
-                        Streams.parse(new JsonReader(new StringReader(editData.getNewMessage())));
+                    if (MessageUtils.isJson(editData.getNewMessage())) {
                         editData.setNewMessageJson(true);
-                    } catch (JsonParseException exception) {
+                    } else {
                         editData.setNewMessage(MessageUtils.translate(editData.getNewMessage()));
                         editData.setNewMessageJson(false);
                     }
@@ -115,13 +107,9 @@ public final class PlayerChatListener implements Listener {
             editData.setCurrentMode(MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_KEY);
             editData.setOldMessage(editData.getOldMessage().replaceFirst(Pattern.quote(patternKey), Matcher.quoteReplacement(patternValue.replace("\\", "\\\\"))));
             editData.setOldMessagePattern(editData.getOldMessagePattern().replaceFirst(Pattern.quote(patternKey.replaceAll(MessageUtils.SPECIAL_REGEX_CHARACTERS, "\\\\$0")), Matcher.quoteReplacement(patternValue)));
-            try {
-                // Streams is being used instead of JsonParser
-                // because JsonParser parses the string in lenient mode
-                // which we don't want.
-                Streams.parse(new JsonReader(new StringReader(editData.getOldMessage())));
+            if (MessageUtils.isJson(editData.getOldMessage())) {
                 editData.setOldMessageJson(true);
-            } catch (JsonParseException exception) {
+            } else {
                 editData.setOldMessage(MessageUtils.translate(editData.getOldMessage()));
                 editData.setOldMessagePattern(MessageUtils.translate(editData.getOldMessagePattern()));
                 editData.setOldMessageJson(false);
@@ -153,13 +141,9 @@ public final class PlayerChatListener implements Listener {
             String value = message;
             editData.setCurrentMode(MessageEditData.Mode.EDITING_NEW_MESSAGE_KEY);
             editData.setNewMessage(editData.getNewMessage().replaceFirst(Pattern.quote(key), Matcher.quoteReplacement(value)));
-            try {
-                // Streams is being used instead of JsonParser
-                // because JsonParser parses the string in lenient mode
-                // which we don't want.
-                Streams.parse(new JsonReader(new StringReader(editData.getNewMessage())));
+            if (MessageUtils.isJson(editData.getNewMessage())) {
                 editData.setNewMessageJson(true);
-            } catch (JsonParseException exception) {
+            } else {
                 editData.setNewMessage(MessageUtils.translate(editData.getNewMessage()));
                 editData.setNewMessageJson(false);
             }

@@ -251,15 +251,12 @@ public final class MessageUtils {
         }
     }
 
-    public static boolean isJson(String string) {
-        if (string == null || string.trim().isEmpty()) {
-            return false;
-        }
+    public static boolean isJson(String message) {
         try {
             // Streams is being used instead of JsonParser
             // because JsonParser parses the string in lenient mode
             // which we don't want.
-            Streams.parse(new JsonReader(new StringReader(string)));
+            Streams.parse(new JsonReader(new StringReader(message)));
             return true;
         } catch (JsonParseException exception) {
             return false;
