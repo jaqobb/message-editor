@@ -25,7 +25,6 @@
 package dev.jaqobb.message_editor.listener.player;
 
 import com.comphenix.protocol.utility.MinecraftVersion;
-import com.cryptomorin.xseries.XSound;
 import dev.jaqobb.message_editor.MessageEditorPlugin;
 import dev.jaqobb.message_editor.message.MessageEdit;
 import dev.jaqobb.message_editor.message.MessageEditData;
@@ -86,45 +85,45 @@ public final class PlayerInventoryClickListener implements Listener {
         if (slot == 4) {
             editData.setCurrentMode(MessageEditData.Mode.EDITING_FILE_NAME);
             player.closeInventory();
-            player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
-            player.sendMessage(MessageUtils.translateWithPrefix("&7Enter new file name where you want your message edit to be stored or '&edone&7' if you changed your mind about editing file name."));
+            MessageUtils.sendSuccessSound(player);
+            MessageUtils.sendPrefixedMessage(player, "&7Enter new file name where you want your message edit to be stored or '&edone&7' if you changed your mind about editing file name.");
         } else if (slot == 20) {
             editData.setCurrentMode(MessageEditData.Mode.EDITING_OLD_MESSAGE_PATTERN_KEY);
             editData.setOldMessagePatternKey("");
             player.closeInventory();
-            player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
-            player.sendMessage(MessageUtils.translateWithPrefix("&7Enter what you want to replace or '&edone&7' if you are done replacing."));
+            MessageUtils.sendSuccessSound(player);
+            MessageUtils.sendPrefixedMessage(player, "&7Enter what you want to replace or '&edone&7' if you are done replacing.");
         } else if (slot == 24) {
             ClickType click = event.getClick();
             if (click.isLeftClick()) {
                 editData.setCurrentMode(MessageEditData.Mode.EDITING_NEW_MESSAGE);
                 editData.setNewMessageCache("");
                 player.closeInventory();
-                player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
-                player.sendMessage(MessageUtils.translateWithPrefix("&7Enter new message. Once you are done, enter '&edone&7'."));
+                MessageUtils.sendSuccessSound(player);
+                MessageUtils.sendPrefixedMessage(player, "&7Enter new message. Once you are done, enter '&edone&7'.");
                 MessagePlace place = editData.getNewMessagePlace();
                 if (place == MessagePlace.GAME_CHAT || place == MessagePlace.SYSTEM_CHAT || place == MessagePlace.ACTION_BAR) {
-                    player.sendMessage(MessageUtils.translateWithPrefix("&7You can also enter '&eremove&7' if you do not want the new message to be sent to the players."));
+                    MessageUtils.sendPrefixedMessage(player, "&7You can also enter '&eremove&7' if you do not want the new message to be sent to the players.");
                 }
             } else if (click.isRightClick()) {
                 editData.setCurrentMode(MessageEditData.Mode.EDITING_NEW_MESSAGE_KEY);
                 editData.setNewMessageKey("");
                 player.closeInventory();
-                player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
-                player.sendMessage(MessageUtils.translateWithPrefix("&7Enter what you want to replace or '&edone&7' if you are done replacing."));
+                MessageUtils.sendSuccessSound(player);
+                MessageUtils.sendPrefixedMessage(player, "&7Enter what you want to replace or '&edone&7' if you are done replacing.");
             }
         } else if (slot == 33) {
             MessagePlace place = editData.getOldMessagePlace();
             if (place != MessagePlace.GAME_CHAT && place != MessagePlace.SYSTEM_CHAT && place != MessagePlace.ACTION_BAR) {
-                player.playSound(player.getLocation(), XSound.ENTITY_ITEM_BREAK.parseSound(), 1.0F, 1.0F);
-                player.sendMessage(MessageUtils.translateWithPrefix("&cYou cannot change new message place of this message."));
+                MessageUtils.sendErrorSound(player);
+                MessageUtils.sendPrefixedMessage(player, "&cYou cannot change new message place of this message.");
                 return;
             }
             editData.setCurrentMode(MessageEditData.Mode.EDITING_NEW_MESSAGE_PLACE);
             player.closeInventory();
-            player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
-            player.sendMessage(MessageUtils.translateWithPrefix("&7Enter new message place or '&edone&7' if you changed your mind about editing message place."));
-            player.sendMessage(MessageUtils.translateWithPrefix("&7Available message places:"));
+            MessageUtils.sendSuccessSound(player);
+            MessageUtils.sendPrefixedMessage(player, "&7Enter new message place or '&edone&7' if you changed your mind about editing message place.");
+            MessageUtils.sendPrefixedMessage(player, "&7Available message places:");
             Collection<MessagePlace> availableMessagePlaces = new ArrayList<>(3);
             if (!MinecraftVersion.WILD_UPDATE.atOrAbove()) {
                 availableMessagePlaces.add(MessagePlace.GAME_CHAT);
@@ -132,16 +131,16 @@ public final class PlayerInventoryClickListener implements Listener {
             availableMessagePlaces.add(MessagePlace.SYSTEM_CHAT);
             availableMessagePlaces.add(MessagePlace.ACTION_BAR);
             for (MessagePlace availableMessagePlace : availableMessagePlaces) {
-                player.sendMessage(MessageUtils.translate(" &8- &e" + availableMessagePlace.name() + " &7(&e" + availableMessagePlace.getFriendlyName() + "&7)"));
+                MessageUtils.sendMessage(player, " &8- &e" + availableMessagePlace.name() + " &7(&e" + availableMessagePlace.getFriendlyName() + "&7)");
             }
         } else if (slot == 48) {
             player.closeInventory();
-            player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
+            MessageUtils.sendSuccessSound(player);
         } else if (slot == 50) {
             File file = new File(this.plugin.getDataFolder(), "edits" + File.separator + editData.getFileName() + ".yml");
             if (file.exists()) {
-                player.playSound(player.getLocation(), XSound.ENTITY_ITEM_BREAK.parseSound(), 1.0F, 1.0F);
-                player.sendMessage(MessageUtils.translateWithPrefix("&cThere is already a message edit that uses a file with the name '&7" + editData.getFileName() + ".yml&c'."));
+                MessageUtils.sendErrorSound(player);
+                MessageUtils.sendPrefixedMessage(player, "&cThere is already a message edit that uses a file with the name '&7" + editData.getFileName() + ".yml&c'.");
                 return;
             }
             String oldMessagePatternString = editData.getOldMessagePattern();
@@ -172,16 +171,18 @@ public final class PlayerInventoryClickListener implements Listener {
                         configuration.set(entry.getKey(), entry.getValue());
                     }
                     configuration.save(file);
+                    MessageUtils.sendSuccessSound(player);
+                    MessageUtils.sendPrefixedMessage(player, "&7Message edit has been saved and applied.");
                 } else {
-                    player.sendMessage(MessageUtils.translateWithPrefix("&cCould not create message edit file."));
+                    MessageUtils.sendErrorSound(player);
+                    MessageUtils.sendPrefixedMessage(player, "&cCould not create message edit file.");
                 }
             } catch (IOException exception) {
                 this.plugin.getLogger().log(Level.WARNING, "Could not save message edit.", exception);
-                player.sendMessage(MessageUtils.translateWithPrefix("&cCould not save message edit, check console for more information."));
+                MessageUtils.sendErrorSound(player);
+                MessageUtils.sendPrefixedMessage(player, "&cCould not save message edit, check console for more information.");
             }
             player.closeInventory();
-            player.playSound(player.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
-            player.sendMessage(MessageUtils.translateWithPrefix("&7Message edit has been saved and applied."));
         }
     }
 }

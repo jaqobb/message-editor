@@ -25,7 +25,6 @@
 package dev.jaqobb.message_editor.updater;
 
 import dev.jaqobb.message_editor.MessageEditorPlugin;
-import dev.jaqobb.message_editor.util.MessageUtils;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -64,13 +63,13 @@ public final class Updater implements Runnable {
 
     public String getUpdateMessage() {
         if (this.currentVersion.contains("-SNAPSHOT")) {
-            return MessageUtils.translateWithPrefix("&cYou are running a development version of &7Message Editor &c(&7" + this.currentVersion + "&c). Development versions are not heavily tested so avoid running them on production servers.");
+            return "&cYou are running a development version of &7Message Editor &c(&7" + this.currentVersion + "&c). Development versions are not heavily tested so avoid running them on production servers.";
         } else if (this.versionDifference == null || this.latestVersion == null) {
-            return MessageUtils.translateWithPrefix("&cCould not retrieve the latest version of &7Message Editor&c.");
+            return "&cCould not retrieve the latest version of &7Message Editor&c.";
         } else if (this.versionDifference < 0) {
-            return MessageUtils.translateWithPrefix("&7You are running an outdated version of &eMessage Editor &7(&e" + this.currentVersion + " &7< &e" + this.latestVersion + "&7). Consider updating to receive new features, bug fixes and more.");
+            return "&7You are running an outdated version of &eMessage Editor &7(&e" + this.currentVersion + " &7< &e" + this.latestVersion + "&7). Consider updating to receive new features, bug fixes and more.";
         } else {
-            return MessageUtils.translateWithPrefix("&7You are running the latest version of &eMessage Editor&7.");
+            return "&7You are running the latest version of &eMessage Editor&7.";
         }
     }
 

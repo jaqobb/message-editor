@@ -25,6 +25,7 @@
 package dev.jaqobb.message_editor.listener.player;
 
 import dev.jaqobb.message_editor.MessageEditorPlugin;
+import dev.jaqobb.message_editor.util.MessageUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -43,7 +44,7 @@ public final class PlayerJoinListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         if (player.hasPermission("messageeditor.use") && this.plugin.isUpdateNotify()) {
-            player.sendMessage(this.plugin.getUpdater().getUpdateMessage());
+            MessageUtils.sendPrefixedMessage(player, this.plugin.getUpdater().getUpdateMessage());
         }
     }
 }

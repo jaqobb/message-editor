@@ -27,6 +27,7 @@ package dev.jaqobb.message_editor.util;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
+import com.cryptomorin.xseries.XSound;
 import com.google.gson.JsonParseException;
 import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonReader;
@@ -37,6 +38,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import java.io.StringReader;
 import java.security.SecureRandom;
@@ -84,6 +86,26 @@ public final class MessageUtils {
 
     public static String translateWithPrefix(String message) {
         return translate(MESSAGE_PREFIX + message);
+    }
+
+    public static void sendSuccessSound(Player recipient) {
+        recipient.playSound(recipient.getLocation(), XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound(), 1.0F, 1.0F);
+    }
+
+    public static void sendErrorSound(Player recipient) {
+        recipient.playSound(recipient.getLocation(), XSound.ENTITY_ITEM_BREAK.parseSound(), 1.0F, 1.0F);
+    }
+
+    public static void sendIllegalOptionSound(Player recipient) {
+        recipient.playSound(recipient.getLocation(), XSound.BLOCK_ANVIL_HIT.parseSound(), 1.0F, 1.0F);
+    }
+
+    public static void sendMessage(CommandSender recipient, String message) {
+        recipient.sendMessage(translate(message));
+    }
+
+    public static void sendPrefixedMessage(CommandSender recipient, String message) {
+        recipient.sendMessage(translateWithPrefix(message));
     }
 
     public static List<String> splitMessage(String message, boolean json) {

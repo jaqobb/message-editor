@@ -36,7 +36,6 @@ import dev.jaqobb.message_editor.message.MessageEdit;
 import dev.jaqobb.message_editor.message.MessagePlace;
 import dev.jaqobb.message_editor.util.MessageUtils;
 import me.clip.placeholderapi.PlaceholderAPI;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -104,7 +103,7 @@ public final class InventoryItemsPacketListener extends PacketAdapter {
                         message = cachedMessage.getValue();
                     } else {
                         String newMessage = messageEditMatcher.replaceAll(messageEdit.getMessageAfter());
-                        newMessage = ChatColor.translateAlternateColorCodes('&', newMessage);
+                        newMessage = MessageUtils.translate(newMessage);
                         if (this.getPlugin().isPlaceholderApiPresent()) {
                             newMessage = PlaceholderAPI.setPlaceholders(player, newMessage);
                         }
@@ -153,7 +152,7 @@ public final class InventoryItemsPacketListener extends PacketAdapter {
                         message = cachedMessage.getValue();
                     } else {
                         String newMessage = messageEditMatcher.replaceAll(messageEdit.getMessageAfter());
-                        newMessage = ChatColor.translateAlternateColorCodes('&', newMessage);
+                        newMessage = MessageUtils.translate(newMessage);
                         if (this.getPlugin().isPlaceholderApiPresent()) {
                             newMessage = PlaceholderAPI.setPlaceholders(player, newMessage);
                         }
