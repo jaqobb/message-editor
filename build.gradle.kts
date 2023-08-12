@@ -85,7 +85,7 @@ repositories {
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.20.1-R0.1-SNAPSHOT")
     compileOnly("net.kyori:adventure-platform-bukkit:4.3.0")
-    compileOnly("com.comphenix.protocol:ProtocolLib:5.0.0")
+    compileOnly("com.comphenix.protocol:ProtocolLib:5.1.0")
     compileOnly("me.clip:placeholderapi:2.11.3")
     implementation("com.github.cryptomorin:XSeries:9.4.0")
     implementation("org.bstats:bstats-bukkit:3.0.2")
