@@ -26,6 +26,7 @@ package dev.jaqobb.message_editor.util;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.cryptomorin.xseries.XSound;
 import com.google.gson.JsonParseException;
@@ -322,6 +323,9 @@ public final class MessageUtils {
                     return GsonComponentSerializer.gson().serialize(component);
                 }
             }
+            if (MinecraftVersion.v1_20_4.atOrAbove()) {
+                return packet.getChatComponents().readSafely(0).getJson();
+            }
             return packet.getStrings().readSafely(0);
         }
         return null;
@@ -352,9 +356,17 @@ public final class MessageUtils {
                 }
             }
             if (json) {
-                packet.getStrings().write(0, message);
+                if (MinecraftVersion.v1_20_4.atOrAbove()) {
+                    packet.getChatComponents().write(0, WrappedChatComponent.fromJson(message));
+                } else {
+                    packet.getStrings().write(0, message);
+                }
             } else {
-                packet.getStrings().write(0, toJson(toBaseComponents(message), true));
+                if (MinecraftVersion.v1_20_4.atOrAbove()) {
+                    packet.getChatComponents().write(0, WrappedChatComponent.fromJson(toJson(toBaseComponents(message), true)));
+                } else {
+                    packet.getStrings().write(0, toJson(toBaseComponents(message), true));
+                }
             }
         }
     }

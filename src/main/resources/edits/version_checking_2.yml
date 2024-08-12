@@ -1,0 +1,4 @@
+message-before-pattern: \{"text":""\,"extra":\["Checking version\, please wait\.\.\."\]\}
+message-before-place: SYSTEM_CHAT
+message-after: §e§l> §7Checking version, please wait...
+message-after-place: SYSTEM_CHAT
